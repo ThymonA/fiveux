@@ -10,6 +10,8 @@
         }
     ],
     "client": [],
-    "server": [],
+    "server": [
+        "server/players.lua"
+    ],
     "shared": []
 }

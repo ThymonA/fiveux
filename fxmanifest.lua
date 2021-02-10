@@ -11,6 +11,7 @@ url 'https://github.com/ThymonA/fiveux/'
 server_scripts {
 	'modules/__boot__/functions/functions.lua',
     'modules/__boot__/functions/string.lua',
+    'modules/__boot__/module/constants.lua',
 	'modules/__boot__/module/cache.lua',
     'modules/__boot__/module/config.lua',
     'modules/__boot__/module/debug.lua',
@@ -22,6 +23,7 @@ server_scripts {
 client_scripts {
     'modules/__boot__/functions/functions.lua',
     'modules/__boot__/functions/string.lua',
+    'modules/__boot__/module/constants.lua',
 	'modules/__boot__/module/cache.lua',
     'modules/__boot__/module/config.lua',
     'modules/__boot__/module/debug.lua',

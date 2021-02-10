@@ -22,14 +22,13 @@ function environment:create(category, module, directory)
     local env = {}
     local envType = IsDuplicityVersion() and 'server' or 'client'
 
-    for k, v in pairs(_G) do env[k] = v end
     for k, v in pairs(_ENV) do env[k] = v end
 
     env.__CATEGORY__ = category
     env.__NAME__ = module
     env.__MODULE__ = module
     env.__DIRECTORY__ = directory
-    env._ENV = setmetatable(env, { __index = _G, __newindex = _G })
+    env._ENV = env
     env.ENVIRONMENT = envType
 
     env.print = function(...)

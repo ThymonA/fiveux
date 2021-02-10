@@ -26,6 +26,7 @@ function modules:load(name, env, ...)
     if (data == nil) then data = {} end
 
     local module = data[name] or nil
+    local m_name = ensure(env.__NAME__, 'global')
 
     if (module == nil) then return nil end
 
@@ -37,8 +38,6 @@ function modules:load(name, env, ...)
     end, ...)
 
     env[name] = done and result or nil
-
-    local m_name = ensure(env.__NAME__, 'global')
 
     debug:info(m_name, ("Module '%s' has been loaded for '%s'"):format(name, m_name))
 end

@@ -1,6 +1,7 @@
 _G.RESOURCE_NAME = ensure(GetCurrentResourceName(), 'fiveux')
 _G.ENVIRONMENT = IsDuplicityVersion() and 'server' or 'client'
 _G.__NAME__ = 'global'
+_G.__PRIMARY__ = 'license'
 
 boot = {}
 
@@ -14,6 +15,15 @@ end
 
 function boot:load()
     if (self:loaded()) then return end
+
+    local cfg = config:load('general')
+    local primaryIdentifier = ensure(cfg.primaryIdentifier, 'license'):lower()
+
+    if (not any(primaryIdentifier, constants.identifierTypes, 'value')) then
+        primaryIdentifier = 'license'
+    end
+
+    __PRIMARY__ = primaryIdentifier
 
     local categories = self:getCategories()
     
@@ -130,6 +140,7 @@ function boot:executeFile(category, module, file, env)
     local directory = ensure(env.__DIRECTORY__, file)
     local file_path =  ('%s/%s'):format(directory, file)
     local file_data = LoadResourceFile(RESOURCE_NAME, file_path)
+    local error_printed = false
 
     if (file_data == nil) then return false end
 
@@ -139,17 +150,24 @@ function boot:executeFile(category, module, file, env)
 
     if (fn) then
         local ok = xpcall(fn, function(err)
+            error_printed = true
             print_error(("Failed to load file '%s': %s"):format(file, err), module)
         end)
 
         if (ok) then
             return true
         else
-            print_error(("Failed to load file '%s'"):format(file), module)
+            if (not error_printed) then
+                print_error(("Failed to load file '%s'"):format(file), module)
+            end
+
             return false
         end
     else
-        print_error(("Failed to load file '%s'"):format(file), module)
+        if (not error_printed) then
+            print_error(("Failed to load file '%s'"):format(file), module)
+        end
+
         return false
     end
 end
