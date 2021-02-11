@@ -1,6 +1,6 @@
-debug = {}
+debugger = {}
 
-function debug:info(module, ...)
+function debugger:info(module, ...)
     module = ensure(module, 'general')
 
     local cfg = config:load('general')

@@ -14,7 +14,7 @@ function translations:load(category, module)
     local fLangPath = ('modules/%s/%s/translations/%s.json'):format(category, module, fLang)
     local langList, fLangList, finalList = {}, {}, {}
 
-    debug:info('translations', ("Loading translations(~x~%s~s~/~x~%s~s~) for module '~x~%s~s~'"):format(lang, fLang, module))
+    debugger:info('translations', ("Loading translations(~x~%s~s~/~x~%s~s~) for module '~x~%s~s~'"):format(lang, fLang, module))
 
     if (cache:exists(langKey)) then
         langList = ensure(cache:read(langKey), {})

@@ -1,6 +1,6 @@
 {
     "version": "1.0.0",
-    "description": "FiveUX account module",
+    "description": "FiveUX events module",
     "authors": [
         {
             "name": "Thymon Arens",
@@ -10,6 +10,10 @@
         }
     ],
     "client": [],
-    "server": [],
-    "shared": []
+    "server": [
+        "server/main.lua"
+    ],
+    "shared": [
+        "shared/events.lua"
+    ]
 }

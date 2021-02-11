@@ -1,7 +1,9 @@
 local _print = print
+local _boot = boot
 local _json = json
 local _config = config
 local _debug = debug
+local _debugger = debugger
 local _modules = modules
 local _translations = translations
 local _AddEventHandler = AddEventHandler
@@ -105,7 +107,7 @@ function environment:create(category, module, directory)
     env.debug = function(...)
         local name = ensure(module, env.__NAME__)
 
-        return _debug:info(name, ...)
+        return _debugger:info(name, ...)
     end
 
     env.m = function(name, ...)
@@ -139,6 +141,16 @@ function environment:create(category, module, directory)
         end)
     end
 
+    env.PublicEventHandler = function(name)
+        local envType = ensure(env.ENVIRONMENT, 'client')
+
+        if (envType == 'client') then
+            RegisterNetEvent(name)
+        elseif (envType == 'server') then
+            RegisterServerEvent(name)
+        end
+    end
+
     env._ = function(key, ...)
         key = ensure(key, 'unknown')
 
@@ -146,6 +158,65 @@ function environment:create(category, module, directory)
         local translation = ensure(trans[key], ('missing(translation/%s)'):format(key))
 
         return translation:format(...)
+    end
+
+    env.getInvokingResources = function()
+        _boot = _boot or boot
+
+        local modules = _boot:getModules()
+        local index, current_debug, invkoing_modules = 0, nil, {}
+
+        while (index <= 0 or current_debug ~= nil) do
+            index = index + 1
+
+            current_debug = _debug.getinfo(index)
+
+            if (current_debug ~= nil) then
+                local s = current_debug.source ~= nil and ensure(current_debug.source, 'unknown')
+
+                if (s ~= 'unknown') then
+                    while (s:sub(1, 1) == '@') do
+                        s = s:sub(2)
+                    end
+
+                    local prefix = ('%s:'):format(RESOURCE_NAME)
+
+                    if (s:sub(1, #prefix) == prefix) then
+                        local module = s:sub(#prefix + 1)
+
+                        for k, v in pairs(modules) do
+                            local startStr = ('%s:%s'):format(ensure(v, 'global'), ensure(k, 'global'))
+
+                            if (module:startsWith(startStr)) then
+                                table.insert(invkoing_modules, ensure(k, 'global'))
+                            end
+                        end
+                    end
+                end
+            end
+
+            if (#invkoing_modules >= 2) then
+                return invkoing_modules
+            end
+        end
+
+        return invkoing_modules
+    end
+
+    env.getInvokingModule = function()
+        local invoking_modules = ensure(env.getInvokingResources(), {})
+
+        if (#invoking_modules > 0) then
+            local idx = 1
+
+            if (#invoking_modules >= 2) then idx = 2 end
+
+            local invoking_module = invoking_modules[idx]
+
+            return ensure(invoking_module, 'global')
+        end
+
+        return 'global'
     end
 
     env.json = _json

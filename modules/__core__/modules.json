@@ -1,6 +1,7 @@
 [
     "db",
     "player",
-    "account",
-    "presentcard"
+    "presentcard",
+    "events",
+    "account"
 ]

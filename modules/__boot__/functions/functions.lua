@@ -150,6 +150,32 @@ ensure = function(input, default, ignoreDefault)
         return (not ignoreDefault and default or nil)
     end
 
+    if (output_type == 'table') then
+		if (input_type == 'string') then
+			if ((input:startsWith('{') and input:endsWith('}')) or (input:startsWith('[') and input:endsWith(']'))) then
+				return json.decode(input) or (not ignoreDefault and default or nil)
+			end
+
+			return { input } or (not ignoreDefault and default or nil)
+		end
+
+		if (input_type == 'vector2') then
+			return { ensure(input.x, 0), ensure(input.y, 0) } or (not ignoreDefault and default or nil)
+		end
+
+		if (input_type == 'vector3') then
+			return { ensure(input.x, 0), ensure(input.y, 0), ensure(input.z, 0) } or (not ignoreDefault and default or nil)
+		end
+
+		if (input_type == 'vector4') then
+			return { ensure(input.x, 0), ensure(input.y, 0), ensure(input.z, 0), ensure(input.w, 0) } or (not ignoreDefault and default or nil)
+		end
+
+		if (input_type == 'boolean' or input_type == 'number') then
+			return { input } or (not ignoreDefault and default or nil)
+		end
+	end
+
     return (not ignoreDefault and default or nil)
 end
 

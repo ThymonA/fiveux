@@ -32,7 +32,8 @@ local setmetatable = setmetatable
 local GetResourceState = GetResourceState
 local CreateThread = Citizen.CreateThread
 local Wait = Citizen.Wait
-local mysql = setmetatable({
+
+mysql = setmetatable({
     resource_name = 'fivem-mysql',
     current_resource_name = RESOURCE_NAME
 }, {})

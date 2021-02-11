@@ -35,7 +35,7 @@ function boot:load()
         end
     end
 
-    debug:info(__NAME__, 'Framework loaded!')
+    debugger:info(__NAME__, 'Framework loaded!')
     cache:write('boot:loaded', true, true)
 end
 
@@ -79,6 +79,28 @@ function boot:getCategoryModules(category)
     return data
 end
 
+function boot:getModules()
+    local key, list = 'boot:modules', {}
+    
+    if (cache:exists(key)) then
+        return ensure(cache:read(key), {})
+    end
+
+    local categories = self:getCategories()
+
+    for k, v in pairs(categories) do
+        local modules = self:getCategoryModules(v)
+
+        for k2, v2 in pairs(modules) do
+            list[ensure(v2, 'unknown')] = ensure(v, 'unknown')
+        end
+    end
+
+    cache:write(key, list, true)
+
+    return list
+end
+
 function boot:getModuleInfo(category, module)
     category = ensure(category, 'unknown')
     module = ensure(module, 'unknown')
@@ -109,7 +131,7 @@ function boot:startModule(category, module)
     category = ensure(category, 'unknown')
     module = ensure(module, 'unknown')
 
-    debug:info(__NAME__, ("Starting module '~x~%s~s~'"):format(module))
+    debugger:info(__NAME__, ("Starting module '~x~%s~s~'"):format(module))
 
     try(function()
         local env = environment:create(category, module, ('modules/%s/%s'):format(category, module))
@@ -144,7 +166,7 @@ function boot:executeFile(category, module, file, env)
 
     if (file_data == nil) then return false end
 
-    debug:info(module, ("Executing file '~x~%s~s~'"):format(file))
+    debugger:info(module, ("Executing file '~x~%s~s~'"):format(file))
 
     local fn = load(file_data, ('@%s:%s:%s/%s'):format(RESOURCE_NAME, category, module, file), 't', env)
 
@@ -173,6 +195,6 @@ function boot:executeFile(category, module, file, env)
 end
 
 Citizen.CreateThread(function()
-    debug:info(__NAME__, 'Starting FiveUX Framework....')
+    debugger:info(__NAME__, 'Starting FiveUX Framework....')
     boot:load()
 end)

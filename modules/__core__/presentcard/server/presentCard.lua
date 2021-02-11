@@ -96,6 +96,4 @@ function presentCard:init(deferrals, title, description, banner)
     return self
 end
 
-debug(_('connecting_title', 'test'))
-
 register('presentCard', presentCard)
