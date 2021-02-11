@@ -15,6 +15,8 @@ function debug:info(module, ...)
     end
 
     message = ('%s^7'):format(message)
+    message = message:gsub('%~x~', '^6')
+    message = message:gsub('%~s~', '^7')
 
     print(message)
 end

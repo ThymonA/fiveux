@@ -262,6 +262,8 @@ print_error = function(msg, module)
 	end
 
     error_message = ('%s^7'):format(error_message)
+    error_message = error_message:gsub('%~x~', '^1')
+    error_message = error_message:gsub('%~s~', '^7')
 
 	print(error_message)
 end

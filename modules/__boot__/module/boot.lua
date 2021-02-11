@@ -109,7 +109,7 @@ function boot:startModule(category, module)
     category = ensure(category, 'unknown')
     module = ensure(module, 'unknown')
 
-    debug:info(__NAME__, ("Starting module '%s'"):format(module))
+    debug:info(__NAME__, ("Starting module '~x~%s~s~'"):format(module))
 
     try(function()
         local env = environment:create(category, module, ('modules/%s/%s'):format(category, module))
@@ -144,28 +144,28 @@ function boot:executeFile(category, module, file, env)
 
     if (file_data == nil) then return false end
 
-    debug:info(module, ("Executing file '%s'"):format(file))
+    debug:info(module, ("Executing file '~x~%s~s~'"):format(file))
 
     local fn = load(file_data, ('@%s:%s:%s/%s'):format(RESOURCE_NAME, category, module, file), 't', env)
 
     if (fn) then
         local ok = xpcall(fn, function(err)
             error_printed = true
-            print_error(("Failed to load file '%s': %s"):format(file, err), module)
+            print_error(("Failed to load file '~x~%s~s~': %s"):format(file, err), module)
         end)
 
         if (ok) then
             return true
         else
             if (not error_printed) then
-                print_error(("Failed to load file '%s'"):format(file), module)
+                print_error(("Failed to load file '~x~%s~s~'"):format(file), module)
             end
 
             return false
         end
     else
         if (not error_printed) then
-            print_error(("Failed to load file '%s'"):format(file), module)
+            print_error(("Failed to load file '~x~%s~s~'"):format(file), module)
         end
 
         return false

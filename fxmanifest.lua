@@ -15,6 +15,7 @@ server_scripts {
 	'modules/__boot__/module/cache.lua',
     'modules/__boot__/module/config.lua',
     'modules/__boot__/module/debug.lua',
+    'modules/__boot__/module/translations.lua',
     'modules/__boot__/module/modules.lua',
     'modules/__boot__/module/env.lua',
     'modules/__boot__/module/boot.lua'
@@ -27,6 +28,7 @@ client_scripts {
 	'modules/__boot__/module/cache.lua',
     'modules/__boot__/module/config.lua',
     'modules/__boot__/module/debug.lua',
+    'modules/__boot__/module/translations.lua',
     'modules/__boot__/module/modules.lua',
     'modules/__boot__/module/env.lua',
     'modules/__boot__/module/boot.lua'
@@ -39,7 +41,8 @@ files {
     'modules/**/modules.json',
     'modules/**/**/module.json',
     'modules/**/shared/*.lua',
-    'modules/**/client/*.lua'
+    'modules/**/client/*.lua',
+    'modules/**/translations/*.json'
 }
 
 dependencies {
