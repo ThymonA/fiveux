@@ -293,3 +293,15 @@ print_error = function(msg, module)
 
 	print(error_message)
 end
+
+sizeof = function(input)
+    input = ensure(input, {})
+
+    local count = 0
+
+    for _, _ in pairs(input) do
+        count = count + 1
+    end
+
+    return count
+end

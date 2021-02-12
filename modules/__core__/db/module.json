@@ -11,7 +11,8 @@
     ],
     "client": [],
     "server": [
-        "server/database.lua"
+        "server/database.lua",
+        "server/migrations.lua"
     ],
     "shared": []
 }

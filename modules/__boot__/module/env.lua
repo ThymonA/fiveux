@@ -160,7 +160,7 @@ function environment:create(category, module, directory)
         return translation:format(...)
     end
 
-    env.getInvokingResources = function()
+    env.getInvokingModules = function()
         _boot = _boot or boot
 
         local modules = _boot:getModules()
@@ -204,7 +204,7 @@ function environment:create(category, module, directory)
     end
 
     env.getInvokingModule = function()
-        local invoking_modules = ensure(env.getInvokingResources(), {})
+        local invoking_modules = ensure(env.getInvokingModules(), {})
 
         if (#invoking_modules > 0) then
             local idx = 1
