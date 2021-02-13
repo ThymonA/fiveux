@@ -15,11 +15,9 @@ function string:split(delim)
 
     local t = {}
 
-    for substr in self:gmatch('[^' .. delim .. '^]') do
-        substr = ensure(substr, '')
-
-        if (#substr > 0) then
-            table.insert(t, substr)
+    for substr in self:gmatch("[^".. delim.. "]*") do
+        if substr ~= nil and string.len(substr) > 0 then
+            table.insert(t,substr)
         end
     end
 

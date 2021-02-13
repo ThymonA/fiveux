@@ -60,7 +60,7 @@ end
 
 function presentCard:generate()
     local config = ensure(config('general'), {})
-    local cfgBanner = ensure(config.bannerUrl, 'https://i.imgur.com/Rw4P2BM.gif')
+    local cfgBanner = ensure(config.bannerUrl, 'https://i.imgur.com/C7iadzZ.png')
     local serverName = ensure(config.serverName, 'FiveUX Framework')
     local _tit = _('connecting_title', serverName)
     local _desc = _('connecting_description', serverName)

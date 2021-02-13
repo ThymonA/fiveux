@@ -7,7 +7,6 @@ function players:load(source)
 
     if (source < 0) then return nil end
 
-    local cfg = config('general')
     local key = ('players:source:%s'):format(source)
 
     if (cache:exists(key)) then

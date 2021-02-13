@@ -1,4 +1,8 @@
 --
+-- EXAMPLE MIGRATION
+--
+
+--
 -- Load global configuration
 --
 local generalCfg = config('general')
@@ -15,7 +19,7 @@ migration.requirements = {}
 --
 -- This query will be executed in your database
 --
-migration.query = "CREATE DATABASE IF NOT EXISTS :database"
+migration.query = "CREATE DATABASE IF NOT EXISTS `:database`"
 
 --
 -- Migration paramaters to execute on query

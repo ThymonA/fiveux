@@ -3,5 +3,6 @@
     "player",
     "presentcard",
     "events",
-    "account"
+    "account",
+    "logs"
 ]

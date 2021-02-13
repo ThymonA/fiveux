@@ -219,8 +219,50 @@ function environment:create(category, module, directory)
         return 'global'
     end
 
-    env.json = _json
-    env.json.encode = encode
+    env.getWebhooks = function(action, fallback)
+        local results = {}
+        local webhooksCfg = ensure(_config:load('webhooks'), {})
+        local cfgFallback = ensure(webhooksCfg.fallback, {})
+
+        action = ensure(action, 'unknown')
+        fallback = ensure(fallback, cfgFallback)
+
+        if (webhooksCfg[action] ~= nil) then
+            local webhooksList = ensureStringList(ensure(webhooksCfg[action], {}))
+
+            for k, v in pairs(webhooksList) do
+                if (v:startsWith('https://') or v:startsWith('http://')) then
+                    table.insert(results, v)
+                end
+            end
+    
+            return results
+        end
+
+        local actionParts = ensure(action:split('.'), {})
+
+        if (#actionParts > 2) then
+            local newAction = ensure(actionParts[1], 'unknown')
+
+            for i = 2, (#actionParts - 1), 1 do
+                newAction = ('%s%s%s'):format(newAction, (i == 2 and '' or '.'), ensure(actionParts[i], 'unknown'))
+            end
+
+            return env.getWebhooks(newAction, fallback)
+        elseif (#actionParts == 2) then
+            return env.getWebhooks(ensure(actionParts[1], 'unknown'), fallback)
+        end
+
+        local fallbackList = ensureStringList(fallback)
+
+        for k, v in pairs(fallbackList) do
+            if (v:startsWith('https://') or v:startsWith('http://')) then
+                table.insert(results, v)
+            end
+        end
+
+        return results
+    end
 
     data[key] = env
 

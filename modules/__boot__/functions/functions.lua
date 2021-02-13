@@ -243,6 +243,8 @@ encode = function(input)
 			elseif (valueType == 'number') then
 				finalValue = hasIndex and ('%.2f'):format(v) or ('"%s": %.2f'):format(k, v)
 			elseif (valueType == 'string') then
+                v = v:gsub("\"", "\\\"")
+
 				finalValue = hasIndex and ('"%s"'):format(v) or ('"%s": "%s"'):format(k, v)
 			elseif (valueType == 'boolean') then
 				finalValue = hasIndex and ('%s'):format(v and 'true' or 'false') or ('"%s": %s'):format(k, v and 'true' or 'false')
@@ -262,7 +264,12 @@ encode = function(input)
 		end
     end
 
-    return hasKey and ('{%s}'):format(innerTable) or ('[%s]'):format(innerTable)
+    local final = hasKey and ('{%s}'):format(innerTable) or ('[%s]'):format(innerTable)
+
+    final = final:gsub('\n', '\\n')
+    final = final:gsub('\t', '\\t')
+
+    return final
 end
 
 print_error = function(msg, module)
@@ -274,7 +281,7 @@ print_error = function(msg, module)
 	local start_index, end_index = msg:find(':%d+:')
 
 	if (start_index and end_index) then
-		msg = ('%s^7 line^1:^7%s^7\n\n^1%s\n'):format(
+		msg = ('%s^7 line:%s\n\n%s\n'):format(
 			msg:sub(1, start_index - 1),
 			msg:sub(start_index + 1, end_index - 1),
 			msg:sub(end_index + 1)
@@ -304,4 +311,71 @@ sizeof = function(input)
     end
 
     return count
+end
+
+dateTimeString = function()
+    if (os == nil) then return '<<time>>' end
+
+    local str = ''
+    local date = ensure(os.date('*t'), {})
+    local hour, min, sec = ensure(date.hour, 0), ensure(date.min, 0), ensure(date.sec, 0)
+    local year, month, day = ensure(date.year, 0), ensure(date.month, 0), ensure(date.day, 0)
+
+    str = ('%s'):format(year < 10 and ('0' .. year) or year)
+    str = ('%s-%s'):format(str, month < 10 and ('0' .. month) or month)
+    str = ('%s-%s'):format(str, day < 10 and ('0' .. day) or day)
+    str = ('%s %s'):format(str, hour < 10 and ('0' .. hour) or hour)
+    str = ('%s:%s'):format(str, min < 10 and ('0' .. min) or min)
+    str = ('%s:%s'):format(str, sec < 10 and ('0' .. sec) or sec)
+
+    return str
+end
+
+ensureStringList = function(t)
+    t = ensure(t, {})
+
+    local raw = {}
+
+    for _, v in pairs(t) do
+        v = ensure(v, 'unknown')
+
+        if (v ~= 'unknown') then
+            table.insert(raw, v)
+        end
+    end
+
+    return raw
+end
+
+logToDiscord = function(username, title, message, footer, webhooks, color, avatar)
+    username = ensure(username, 'FiveUX Framework')
+    title = ensure(title, '')
+    message = ensure(message, '')
+    footer = ensure(footer, '')
+    color = ensure(color, 9807270)
+    avatar = ensure(avatar, '')
+
+    if (typeof(webhooks) == 'table') then
+        for k, v in pairs(webhooks) do
+            logToDiscord(username, title, message, footer, v, color, avatar)
+        end
+        return
+    end
+
+    local webhook = ensure(webhooks, 'unknown')
+
+    if (webhook == 'unknown' or not (webhook:startsWith('https://') or webhook:startsWith('http://'))) then
+        return
+    end
+
+    local request = {
+        ['color'] = color,
+        ['type'] = 'rich'
+    }
+
+    if (title ~= '') then request['title'] = title end
+    if (message ~= '') then request['description'] = message end
+    if (footer ~= '') then request['footer'] = { ['text'] = footer } end
+
+    PerformHttpRequest(webhook, function(error, text, headers) end, 'POST', encode({ username = username, embeds = { request }, avatar_url = avatar }), { ['Content-Type'] = 'application/json' })
 end

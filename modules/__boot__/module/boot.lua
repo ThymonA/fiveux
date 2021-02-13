@@ -168,26 +168,26 @@ function boot:executeFile(category, module, file, env)
 
     debugger:info(module, ("Executing file '~x~%s~s~'"):format(file))
 
-    local fn = load(file_data, ('@%s:%s:%s/%s'):format(RESOURCE_NAME, category, module, file), 't', env)
+    local fn, load_err = load(file_data, ('@%s:%s:%s/%s'):format(RESOURCE_NAME, category, module, file), 't', env)
 
     if (fn) then
-        local ok = xpcall(fn, function(err)
+        local ok, xpcall_err = xpcall(fn, function(fn_err)
             error_printed = true
-            print_error(("Failed to load file '~x~%s~s~': %s"):format(file, err), module)
+            print_error(("Failed to load file '~x~%s~s~': %s"):format(file, fn_err), module)
         end)
 
         if (ok) then
             return true
         else
             if (not error_printed) then
-                print_error(("Failed to load file '~x~%s~s~'"):format(file), module)
+                print_error(("Failed to load file '~x~%s~s~': %s"):format(file, xpcall_err), module)
             end
 
             return false
         end
     else
         if (not error_printed) then
-            print_error(("Failed to load file '~x~%s~s~'"):format(file), module)
+            print_error(("Failed to load file '~x~%s~s~': %s"):format(file, load_err), module)
         end
 
         return false

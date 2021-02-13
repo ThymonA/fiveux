@@ -13,7 +13,12 @@ config.primaryIdentifier = 'license'
 --
 -- This banner is used on the card shown on player connecting
 --
-config.bannerUrl = 'https://i.imgur.com/Rw4P2BM.gif'
+config.bannerUrl = 'https://i.imgur.com/C7iadzZ.png'
+
+--
+-- This avatar is used for general discord logs and as logo on some places
+--
+config.avatarUrl = 'https://i.imgur.com/xa7JN6h.png'
 
 --
 -- Name of your server, to match your server name
