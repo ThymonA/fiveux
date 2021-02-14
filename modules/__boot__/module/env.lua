@@ -151,11 +151,15 @@ function environment:create(category, module, directory)
         end
     end
 
-    env._ = function(key, ...)
+    env.T = function(key, ...)
         key = ensure(key, 'unknown')
 
         local trans = ensure(env.__TRANSLATIONS__, {})
         local translation = ensure(trans[key], ('missing(translation/%s)'):format(key))
+
+        if (translation:len() <= 0) then
+            translation = ('missing(translation/%s)'):format(key)
+        end
 
         return translation:format(...)
     end

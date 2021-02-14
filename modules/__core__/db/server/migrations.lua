@@ -55,7 +55,7 @@ local function executeMigration()
         local numberOfModules = sizeof(modules)
         local numberOfMigrationsDone = 0
 
-        print(_('datebase_updating'))
+        print(T('datebase_updating'))
 
         for key, value in pairs(modules) do
             Citizen.CreateThread(function()
@@ -113,7 +113,7 @@ local function executeMigration()
                                         sqlVersion = ensure(sqlVersion, 0)
 
                                         if (dependencyModule == 'unknown') then
-                                            print_error(_('migration_failed', key, fileName))
+                                            print_error(T('migration_failed', key, fileName))
                                             return
                                         end
 
@@ -124,7 +124,7 @@ local function executeMigration()
                                     local sqlParams = ensure(env.migration.params, {})
 
                                     if (sqlQuery == 'unknown') then
-                                        print_error(_('migration_failed', key, fileName))
+                                        print_error(T('migration_failed', key, fileName))
                                         return
                                     end
 
@@ -137,11 +137,11 @@ local function executeMigration()
                                         end)
                                     end)
                                 else
-                                    print_error(_('migration_failed', key, fileName))
+                                    print_error(T('migration_failed', key, fileName))
                                     return
                                 end
                             else
-                                print_error(_('migration_failed', key, fileName))
+                                print_error(T('migration_failed', key, fileName))
                                 return
                             end
 
@@ -156,7 +156,7 @@ local function executeMigration()
                     Citizen.Wait(0)
 
                     if (not hasMigration and hasAnyMigration) then
-                        print_success(_('migration_success', key, (index - 1)))
+                        print_success(T('migration_success', key, (index - 2)))
                     end
                 end
 
