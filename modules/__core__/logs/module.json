@@ -1,0 +1,18 @@
+{
+    "version": "1.0.0",
+    "description": "FiveUX logging module",
+    "authors": [
+        {
+            "name": "Thymon Arens",
+            "github": "ThymonA",
+            "discord": "Tigo#9999",
+            "email": "thymon@arensmail.nl"
+        }
+    ],
+    "client": [],
+    "server": [
+        "server/logs.lua",
+        "server/main.lua"
+    ],
+    "shared": []
+}

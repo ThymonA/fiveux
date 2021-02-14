@@ -1,0 +1,5 @@
+{
+    "player_connecting_message": "**Info:**\nPlayer: `{name}`\nIdentifier: `{identifier}`\nIP: `{identifier:ip}`",
+    "player_connecting_title": "{name} is now connecting",
+    "unknown_error": "An unknown error occur in module 'logs', please try again or contact the server owners."
+}
