@@ -6,7 +6,6 @@ local _debug = debug
 local _debugger = debugger
 local _modules = modules
 local _translations = translations
-local _AddEventHandler = AddEventHandler
 local data = {}
 
 environment = {}
@@ -118,29 +117,6 @@ function environment:create(category, module, directory)
         return _modules:register(name, input)
     end
 
-    env.AddEventHandler = function(name, callback)
-        name = ensure(name, 'unknown')
-
-        if (name == 'unknown') then return end
-
-        return _AddEventHandler(name, function(...)
-            local cb = ensure(callback, function() end)
-            local playerSource = ensure(source, -1)
-            local playersModule = _modules:get('players')
-
-            if (playersModule == nil) then
-                error("'players' module is missing")
-                return
-            end
-
-            local playerData = playersModule:load(playerSource)
-
-            env.source = playerSource
-
-            cb(playerData or playerSource, ...)
-        end)
-    end
-
     env.PublicEventHandler = function(name)
         local envType = ensure(env.ENVIRONMENT, 'client')
 
@@ -162,6 +138,25 @@ function environment:create(category, module, directory)
         end
 
         return translation:format(...)
+    end
+
+    env.serverMessage = function(message, footer)
+        message = ensure(message, '')
+        footer = ensure(footer, '')
+    
+        local cfg = env.config('general')
+        local name = ensure(cfg.serverName, 'FiveUX')
+        local template = '\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n%s\n\n%s\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n%s'
+    
+        if (footer:len() <= 0) then
+            local discordUrl = ensure(cfg.discordUrl, '...')
+    
+            footer = env.T('default_footer', discordUrl)
+        end
+    
+        name = boldText(name)
+    
+        return template:format(name, message, footer)
     end
 
     env.getInvokingModules = function()

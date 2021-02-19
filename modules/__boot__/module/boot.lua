@@ -195,6 +195,6 @@ function boot:executeFile(category, module, file, env)
 end
 
 Citizen.CreateThread(function()
-    debugger:info(__NAME__, 'Starting FiveUX Framework....')
+    debugger:info(__NAME__, 'Starting Dobberdam Framework....')
     boot:load()
 end)

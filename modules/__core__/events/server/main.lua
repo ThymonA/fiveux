@@ -1,91 +1,34 @@
 m('presentCard')
 m('db')
+m('sqlquery')
+m('players')
 
-local function generateSelectQuery(player)
-    local queryParams = {}
-    local selectQuery = 'SELECT COUNT(*) FROM `identifiers` WHERE'
+local whitelistedIps = nil
 
-    if (player.identifiers.steam) then
-        queryParams['steam'] = player.identifiers.steam
-        selectQuery = ('%s `steam` = :steam AND'):format(selectQuery)
-    else
-        selectQuery = ('%s `steam` IS NULL AND'):format(selectQuery)
-    end
-
-    if (player.identifiers.license) then
-        queryParams['license'] = player.identifiers.license
-        selectQuery = ('%s `license` = :license AND'):format(selectQuery)
-    else
-        selectQuery = ('%s `license` IS NULL AND'):format(selectQuery)
-    end
-
-    if (player.identifiers.license2) then
-        queryParams['license2'] = player.identifiers.license2
-        selectQuery = ('%s `license2` = :license2 AND'):format(selectQuery)
-    else
-        selectQuery = ('%s `license2` IS NULL AND'):format(selectQuery)
-    end
-
-    if (player.identifiers.xbl) then
-        queryParams['xbl'] = player.identifiers.xbl
-        selectQuery = ('%s `xbl` = :xbl AND'):format(selectQuery)
-    else
-        selectQuery = ('%s `xbl` IS NULL AND'):format(selectQuery)
-    end
-
-    if (player.identifiers.live) then
-        queryParams['live'] = player.identifiers.live
-        selectQuery = ('%s `live` = :live AND'):format(selectQuery)
-    else
-        selectQuery = ('%s `live` IS NULL AND'):format(selectQuery)
-    end
-
-    if (player.identifiers.discord) then
-        queryParams['discord'] = player.identifiers.discord
-        selectQuery = ('%s `discord` = :discord AND'):format(selectQuery)
-    else
-        selectQuery = ('%s `discord` IS NULL AND'):format(selectQuery)
-    end
-
-    if (player.identifiers.fivem) then
-        queryParams['fivem'] = player.identifiers.fivem
-        selectQuery = ('%s `fivem` = :fivem AND'):format(selectQuery)
-    else
-        selectQuery = ('%s `fivem` IS NULL AND'):format(selectQuery)
-    end
-
-    if (player.identifiers.ip) then
-        queryParams['ip'] = player.identifiers.ip
-        selectQuery = ('%s `ip` = :ip'):format(selectQuery)
-    else
-        selectQuery = ('%s `ip` IS NULL'):format(selectQuery)
-    end
-
-    return selectQuery, queryParams
-end
-
-AddEventHandler('playerConnecting', function(player, _, _, deferrals)
+AddEventHandler('playerConnecting', function(_, _, deferrals)
     deferrals.defer()
 
+    local playerSrc = ensure(source, 0)
+    local card = presentCard:create(deferrals)
+    local player = players:load(playerSrc)
+
     if (player == nil or player.identifier == nil) then
-        deferrals.done(T(('identifier_%s_required'):format(__PRIMARY__:lower())))
+        local message = T(('identifier_%s_required'):format(__PRIMARY__:lower()))
+
+        deferrals.done(serverMessage(message))
         return
     end
 
     local registered_events = events:getEventRegistered('playerConnecting')
-    local card = presentCard:init(deferrals)
-
-    card:update()
-
-    local query, params = generateSelectQuery(player)
+    local query, params = sqlquery.events:select(player.identifiers)
     local identifierCount = db:fetchScalar(query, params)
 
     identifierCount = ensure(identifierCount, 0)
 
     if (identifierCount == 0) then
         db:insert([[
-            INSERT INTO `identifiers` (`steam`, `license`, `license2`, `xbl`, `live`, `discord`, `fivem`, `ip`)
-            VALUES (:steam, :license, :license2, :xbl, :live, :discord, :fivem, :ip)
+            INSERT INTO `identifiers` (`steam`, `license`, `license2`, `xbl`, `live`, `discord`, `fivem`)
+            VALUES (:steam, :license, :license2, :xbl, :live, :discord, :fivem)
         ]], {
             ['steam'] = player.identifiers.steam,
             ['license'] = player.identifiers.license,
@@ -93,9 +36,56 @@ AddEventHandler('playerConnecting', function(player, _, _, deferrals)
             ['xbl'] = player.identifiers.xbl,
             ['live'] = player.identifiers.live,
             ['discord'] = player.identifiers.discord,
-            ['fivem'] = player.identifiers.fivem,
-            ['ip'] = player.identifiers.ip
+            ['fivem'] = player.identifiers.fivem
         })
+    end
+
+    local cfg = config('general')
+    local vpnEnabled = ensure(cfg.vpnEnabled, true)
+    local dateTimeFormat = ensure(cfg.dateTimeFormat, '%Y-%m-%d %H:%M:%S')
+    local allowedCountries = ensure(cfg.allowedCountries, {})
+
+    if (vpnEnabled) then
+        local allowedToConnect = false
+        local playerIP = ensure(player.identifiers.ip, '127.0.0.1')
+
+        whitelistedIps = ensure(whitelistedIps or readData('whitelist_ips.json'), {})
+
+        for k, whitelistedIp in pairs(whitelistedIps) do
+            if (whitelistedIp == playerIP) then
+                allowedToConnect = true
+            end
+        end
+
+        if (not allowedToConnect) then
+            local code, country = getIPHubInfo(playerIP)
+
+            if (code == 1) then
+                local message = T('connecting_vpn_block', playerIP, country)
+
+                deferrals.done(serverMessage(message))
+				return
+            end
+
+            if (not any(country, allowedCountries, 'value')) then
+                local message = T('connecting_country_block', playerIP, country)
+
+                deferrals.done(serverMessage(message))
+				return
+            end
+        end
+    end
+
+    if (player.banned) then
+        local banInfo = ensure(player.banInfo, {})
+        local reason = ensure(banInfo.reason, T('default_ban_reason'))
+        local expire = ensure(banInfo.expire, T('unknown'))
+        local expireTime = dateTimeToTime(expire)
+        local expireFormatted = os.date(dateTimeFormat, expireTime)
+        local message = T('connecting_banned', reason, expireFormatted, player.citizen)
+
+        deferrals.done(serverMessage(message))
+        return
     end
 
     if (#registered_events <= 0) then

@@ -11,8 +11,6 @@ migration.query = [[
         `live` VARCHAR(255) NULL DEFAULT NULL,
         `discord` VARCHAR(255) NULL DEFAULT NULL,
         `fivem` VARCHAR(255) NULL DEFAULT NULL,
-        `ip` VARCHAR(255) NULL DEFAULT NULL,
-
         PRIMARY KEY (`id`)
     );
 ]]

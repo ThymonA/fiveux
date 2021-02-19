@@ -1,8 +1,10 @@
 [
     "db",
+    "sqlquery",
+    "bans",
     "player",
     "presentcard",
     "events",
-    "account",
-    "logs"
+    "logs",
+    "commands"
 ]

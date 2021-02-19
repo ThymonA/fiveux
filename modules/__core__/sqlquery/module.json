@@ -1,6 +1,6 @@
 {
     "version": "1.0.0",
-    "description": "Dobberdam database module",
+    "description": "Dobberdam sqlquery module",
     "authors": [
         {
             "name": "Thymon Arens",
@@ -11,8 +11,10 @@
     ],
     "client": [],
     "server": [
-        "server/database.lua",
-        "server/migrations.lua"
+        "server/start.lua",
+        "server/bans.lua",
+        "server/events.lua",
+        "server/end.lua"
     ],
     "shared": []
 }

@@ -7,5 +7,8 @@
     "identifier_live_required": "You must have an Microsoft account linked to your pc in order to join this server.",
     "identifier_discord_required": "You must have an Discord account linked to your FiveM in order to join this server.",
     "identifier_fivem_required":  "You must have an FiveM Forum account linked to your FiveM in order to join this server.",
-    "identifier_ip_required": "You must have an valid IP in order to join this server."
+    "identifier_ip_required": "You must have an valid IP in order to join this server.",
+    "connecting_vpn_block": "Your IP has been used in suspicious activities or has been flagged as a VPN.\n\n𝗜𝗣: %s\n𝗖𝗼𝘂𝗻𝘁𝗿𝘆 𝗰𝗼𝗱𝗲: %s",
+    "connecting_country_block": "Your IP is not allowed to connect from.\n\n𝗜𝗣: %s\n𝗖𝗼𝘂𝗻𝘁𝗿𝘆 𝗰𝗼𝗱𝗲: %s",
+    "connecting_banned": "You are banned from this server!\n\n𝗥𝗲𝗮𝘀𝗼𝗻: %s\n𝗘𝘅𝗽𝗶𝗿𝗲𝘀: %s\n𝗜𝗗:%s"
 }

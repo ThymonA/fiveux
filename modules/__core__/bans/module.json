@@ -1,6 +1,6 @@
 {
     "version": "1.0.0",
-    "description": "Dobberdam database module",
+    "description": "Dobberdam ban module",
     "authors": [
         {
             "name": "Thymon Arens",
@@ -11,8 +11,7 @@
     ],
     "client": [],
     "server": [
-        "server/database.lua",
-        "server/migrations.lua"
+        "server/bans.lua"
     ],
     "shared": []
 }

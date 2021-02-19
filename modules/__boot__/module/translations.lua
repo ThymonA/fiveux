@@ -8,11 +8,16 @@ function translations:load(category, module)
 
     if (category == 'unknown' or module == 'unknown') then return {} end
 
+    local pathTemp = 'modules/%s/%s/translations/%s.json'
+    local corePathTemp = 'modules/__boot__/translations/%s.json'
     local lang, fLang = self:getPrimaryLanguage(), self:getFallbackLanguage()
     local langKey, fLangKey = ('translations:%s:%s'):format(lang, module), ('translations:%s:%s'):format(fLang, module)
-    local langPath = ('modules/%s/%s/translations/%s.json'):format(category, module, lang)
-    local fLangPath = ('modules/%s/%s/translations/%s.json'):format(category, module, fLang)
-    local langList, fLangList, finalList = {}, {}, {}
+    local coreLangKey, fCoreLangKey = ('translations:%s:core'):format(lang), ('translations:%s:core'):format(fLang)
+    local langPath = pathTemp:format(category, module, lang)
+    local fLangPath = pathTemp:format(category, module, fLang)
+    local coreLangPath = corePathTemp:format(lang)
+    local fCoreLangPath = corePathTemp:format(fLang)
+    local langList, fLangList, coreLangList, fCoreLangList, finalList = {}, {}, {}
 
     debugger:info('translations', ("Loading translations(~x~%s~s~/~x~%s~s~) for module '~x~%s~s~'"):format(lang, fLang, module))
 
@@ -32,11 +37,27 @@ function translations:load(category, module)
         cache:write(fLangKey, fLangList)
     end
 
-    finalList = ensure(fLangList, {})
-
-    for k, v in pairs(langList) do
-        finalList[k] = v
+    if (cache:exists(coreLangKey)) then
+        coreLangList = ensure(cache:read(coreLangKey), {})
+    else
+        coreLangList = translations:readJson(coreLangPath)
+        
+        cache:write(coreLangKey, coreLangList)
     end
+
+    if (cache:exists(fCoreLangKey)) then
+        fCoreLangList = ensure(cache:read(fCoreLangKey), {})
+    else
+        fCoreLangList = translations:readJson(fCoreLangPath)
+        
+        cache:write(fCoreLangKey, fCoreLangList)
+    end
+
+    finalList = ensure(fCoreLangList, {})
+
+    for k, v in pairs(coreLangList) do finalList[k] = v end
+    for k, v in pairs(fLangList) do finalList[k] = v end
+    for k, v in pairs(langList) do finalList[k] = v end
 
     return finalList
 end

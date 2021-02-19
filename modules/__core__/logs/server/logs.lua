@@ -11,12 +11,13 @@ function logging:create(source)
     local logger = {}
     local player = players:load(source)
     local identifier = ensure(player.identifier, 'unknown')
+    local citizen = ensure(player.citizen, 'unknown')
 
-    if (identifier == 'unknown') then
+    if (identifier == 'unknown' or citizen == 'unknown') then
         return nil
     end
 
-    local key = ('logger:player:%s'):format(identifier)
+    local key = ('logger:player:%s'):format(citizen)
 
     if (cache:exists(key)) then
         logger = cache:read(key)
@@ -61,7 +62,7 @@ function logging:create(source)
         local arguments = ensure(object.arguments, {})
         local action = ensure(object.action, 'none')
         local color = ensure(object.color, 9807270)
-        local footer = ensure(object.footer, ("%s | %s | %s"):format(self.user.identifier, action, dateTimeString()))
+        local footer = ensure(object.footer, ("%s | %s | %s"):format(self.user.citizen, action, dateTimeString()))
         local message = ensure(object.message, '')
         local title = ensure(object.title, ('**log(%s)** %s'):format(action, self.user.name))
         local username = ensure(object.username, ('log(%s) %s'):format(action, self.user.name))
@@ -79,8 +80,8 @@ function logging:create(source)
         end
 
         if (logDatabase) then
-            db:insert('INSERT INTO `logs` (`identifier`, `name`, `action`, `arguments`) VALUES (:identifier, :name, :action, :arguments)', {
-                ['identifier'] = self.user.identifier,
+            db:insert('INSERT INTO `logs` (`citizen`, `name`, `action`, `arguments`) VALUES (:citizen, :name, :action, :arguments)', {
+                ['citizen'] = self.user.citizen,
                 ['name'] = self.user.name,
                 ['action'] = action,
                 ['arguments'] = json.encode(arguments)
@@ -95,6 +96,7 @@ function logging:create(source)
             :gsub('{name}', self.user.name)
             :gsub('{action}', action)
             :gsub('{identifier}', self.user.identifier)
+            :gsub('{citizen}', ensure(self.user.identifiers.citizen, 'none'))
             :gsub('{identifier:steam}', ensure(self.user.identifiers.steam, 'none'))
             :gsub('{identifier:license}', ensure(self.user.identifiers.license, 'none'))
             :gsub('{identifier:license2}', ensure(self.user.identifiers.license2, 'none'))
@@ -103,6 +105,7 @@ function logging:create(source)
             :gsub('{identifier:discord}', ensure(self.user.identifiers.discord, 'none'))
             :gsub('{identifier:fivem}', ensure(self.user.identifiers.fivem, 'none'))
             :gsub('{identifier:ip}', ensure(self.user.identifiers.ip, 'none'))
+            :gsub('{identifier:citizen}', ensure(self.user.identifiers.citizen, 'none'))
             :gsub('{source}', self.user.source)
     end
 

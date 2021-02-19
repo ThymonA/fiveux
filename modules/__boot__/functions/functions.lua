@@ -54,9 +54,9 @@ ensure = function(input, default, ignoreDefault)
     if (output_type == 'string') then
         if (input_type == 'number') then return tostring(input) or (not ignoreDefault and default or nil) end
         if (input_type == 'boolean') then return input and 'yes' or 'no' end
-        if (input_type == 'table') then return json.encode(input) or (not ignoreDefault and default or nil) end
-        if (input_type == 'vector3') then return json.encode({ input.x, input.y, input.z }) or (not ignoreDefault and default or nil) end
-        if (input_type == 'vector2') then return json.encode({ input.x, input.y }) or (not ignoreDefault and default or nil) end
+        if (input_type == 'table') then return encode(input) or (not ignoreDefault and default or nil) end
+        if (input_type == 'vector3') then return encode({ input.x, input.y, input.z }) or (not ignoreDefault and default or nil) end
+        if (input_type == 'vector2') then return encode({ input.x, input.y }) or (not ignoreDefault and default or nil) end
 
         return tostring(input) or (not ignoreDefault and default or nil)
     end
@@ -348,7 +348,7 @@ ensureStringList = function(t)
 end
 
 logToDiscord = function(username, title, message, footer, webhooks, color, avatar)
-    username = ensure(username, 'FiveUX Framework')
+    username = ensure(username, 'Dobberdam Framework')
     title = ensure(title, '')
     message = ensure(message, '')
     footer = ensure(footer, '')
@@ -378,4 +378,80 @@ logToDiscord = function(username, title, message, footer, webhooks, color, avata
     if (footer ~= '') then request['footer'] = { ['text'] = footer } end
 
     PerformHttpRequest(webhook, function(error, text, headers) end, 'POST', encode({ username = username, embeds = { request }, avatar_url = avatar }), { ['Content-Type'] = 'application/json' })
+end
+
+boldText = function(text)
+    local boldFonts = ensure(constants.boldFonts, {})
+
+    text = ensure(text, '')
+
+    for k, v in pairs(boldFonts) do
+        text = text:gsub(k, v)
+    end
+
+    return text
+end
+
+dateTimeToTime = function(datatime)
+    datatime = ensure(datatime, '1001-01-01 01:01:01')
+
+    local year, month, day, hour, min, sec =
+        datatime:match("(%d+)-(%d+)-(%d+) (%d+):(%d+):(%d+)")
+
+    local date = {
+        year = ensure(year, 1001),
+        month = ensure(month, 1),
+        day = ensure(day, 1),
+        hour = ensure(hour, 1),
+        min = ensure(min, 1),
+        sec = ensure(sec, 1)
+    }
+
+    if (os == nil) then
+        return date
+    end
+
+    return os.time(date)
+end
+
+readData = function(name)
+    name = ensure(name, 'unknown')
+
+    local path = ('data/%s'):format(name)
+    local raw = LoadResourceFile(RESOURCE_NAME, path)
+
+    if (name:endsWith('.json')) then
+        if (raw) then
+            return json.decode(raw)
+        end
+
+        return {}
+    end
+    
+    return raw
+end
+
+getIPHubInfo = function(ip)
+	local code, country = 0, 'XX'
+	local done = false
+	local body = {
+		['X-Key'] = ensure(GetConvar('iphub_apiKey', 'unknown'), 'unknown')
+	}
+
+	ip = ensure(ip, '127.0.0.1')
+
+	PerformHttpRequest(('https://v2.api.iphub.info/ip/%s'):format(ip), function(s, r, h)
+		if (s == 200) then
+			local response = json.decode(ensure(r, '{}'))
+
+			code = ensure(response.block, 0)
+			country = ensure(response.countryCode, 'XX')
+		end
+
+		done = true
+	end, 'GET', encode(body), body)
+
+	repeat Citizen.Wait(0) until done == true
+
+	return code, country
 end

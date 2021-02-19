@@ -1,0 +1,5 @@
+{
+    "player_connecting_message": "**Informatie:**\nSpeler: `{name}`\nIdentifier: `{identifier}`\nCitizen: `{citizen}`\nIP: `{identifier:ip}`",
+    "player_connecting_title": "{name} is nu aan het verbinden",
+    "unknown_error": "Er is een onbekende fout opgetreden in module 'logs', probeer het opnieuw of neem contact op met de server eigenaren."
+}
