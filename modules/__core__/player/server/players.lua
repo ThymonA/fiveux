@@ -1,6 +1,7 @@
 using 'db'
 using 'bans'
 using 'wallets'
+using 'jobs'
 
 local data = {}
 
@@ -14,6 +15,9 @@ function players:load(source)
     local player
     local identifier = self:getPrimaryIdentifier(source)
     local key = ('players:%s'):format(identifier)
+    local cfg = config('general')
+    local defaultSpawn = ensure(cfg.defaultSpawn, vector3(-206.79, -1015.12, 29.14))
+    local defaultGroup = ensure(cfg.defaultGroup, 'user')
 
     if (cache:exists(key)) then
         player = cache:read(key)
@@ -51,26 +55,33 @@ function players:load(source)
             local defaultJob = ensure(cfg.defaultJob, {})
             local jobName = ensure(defaultJob.name, 'unemployed')
             local jobGrade = ensure(defaultJob.grade, 'unemployed')
+            local jobId, gradeId = jobs:getJobIdWithGrade(jobName, jobGrade)
 
-            player.id = db:insert('INSERT INTO `players` (`citizen`, `name`, `job`, `grade`, `job2`, `grade2`) VALUES (:citizen, :name, :job, :grade, :job2, :grade2)', {
+            player.id = db:insert('INSERT INTO `players` (`citizen`, `name`, `group`, `job`, `grade`, `job2`, `grade2`, `position`) VALUES (:citizen, :name, :group, :job, :grade, :job2, :grade2, :position)', {
                 ['citizen'] = player.citizen,
                 ['name'] = player.name,
-                ['job'] = jobName,
-                ['grade'] = jobGrade,
-                ['job2'] = jobName,
-                ['grade2'] = jobGrade
+                ['group'] = defaultGroup,
+                ['job'] = jobId,
+                ['grade'] = gradeId,
+                ['job2'] = jobId,
+                ['grade2'] = gradeId,
+                ['position'] = ensure(defaultSpawn, '[-206.79,-1015.12,29.14]')
             })
 
-            player.job = { name = jobName, grade = jobGrade }
-            player.job2 = { name = jobName, grade = jobGrade }
+            player.job = jobs:getJobWithGrade(jobId, gradeId)
+            player.job2 = jobs:getJobWithGrade(jobId, gradeId)
+            player.group = defaultGroup
+            player.position = defaultSpawn
 
             print_success(T('player_created', player.name))
         else
             local dbPlayer = ensure(dbPlayers[1], {})
 
             player.id = ensure(dbPlayer.id, 0)
-            player.job = { name = ensure(dbPlayer.job, 'unemployed'), grade = ensure(dbPlayer.grade, 'unemployed') }
-            player.job2 = { name = ensure(dbPlayer.job2, 'unemployed'), grade = ensure(dbPlayer.grade2, 'unemployed') }
+            player.job = jobs:getJobWithGrade(ensure(player.job), ensure(player.grade))
+            player.job2 = jobs:getJobWithGrade(ensure(player.job2), ensure(player.grade2))
+            player.group = ensure(dbPlayer.group, defaultGroup)
+            player.position = ensure(dbPlayer.position, defaultSpawn)
         end
     end
 

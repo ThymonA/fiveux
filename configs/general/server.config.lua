@@ -26,6 +26,11 @@ config.allowedCountries = {
 }
 
 --
+-- Default player group
+--
+config.defaultGroup = 'user'
+
+--
 -- Default job for both (1st and 2de)
 --
 config.defaultJob = {

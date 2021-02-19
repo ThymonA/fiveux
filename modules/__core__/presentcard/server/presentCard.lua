@@ -29,6 +29,15 @@ function pc:create(deferrals, title, description, banner)
                 { type = "TextBlock", size = "Medium", weight = "Bolder", text = _title, horizontalAlignment = "Center" },
                 { type = "TextBlock", text = _description, wrap = true, horizontalAlignment = "Center" }
             },
+            ['actions'] = {
+                {
+                    type = "Action.OpenUrl",
+                    title = T('join_discord'),
+                    url = ensure(cfg.discordUrl, 'https://github.com/ThymonA/fiveux'),
+                    iconUrl = "https://i.imgur.com/kI5A9ES.png",
+                    style = "default"
+                }
+            },
             ['$schema'] = "http://adaptivecards.io/schemas/adaptive-card.json",
             ['version'] = "1.3"
         }

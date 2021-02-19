@@ -1,11 +1,13 @@
 [
     "db",
     "sqlquery",
+    "presentcard",
+    "events",
     "bans",
     "jobs",
     "player",
-    "presentcard",
-    "events",
+    "locations",
+    "weapons",
     "logs",
     "commands"
 ]

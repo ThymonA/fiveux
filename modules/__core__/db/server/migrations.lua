@@ -62,6 +62,7 @@ local function executeMigration()
                 local index, hasMigration, hasAnyMigration = 0, true, false
 
                 while (hasMigration) do
+                    local lua_exists = false
                     local fileName = ('%s.lua'):format(index)
                     local migrationPath, fileExists = ('modules/%s/%s/migrations/%s'):format(value, key, fileName)
 

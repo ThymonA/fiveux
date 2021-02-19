@@ -44,3 +44,8 @@ config.fallbackLanguage = 'en'
 -- Date time format
 --
 config.dateTimeFormat = '%d-%m-%Y %H:%M:%S'
+
+--
+-- Default player spawn
+--
+config.defaultSpawn = vector3(-206.79, -1015.12, 29.14)
