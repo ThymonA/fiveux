@@ -1,0 +1,17 @@
+{
+    "version": "1.0.0",
+    "description": "Dobberdam job module",
+    "authors": [
+        {
+            "name": "Thymon Arens",
+            "github": "ThymonA",
+            "discord": "Tigo#9999",
+            "email": "thymon@arensmail.nl"
+        }
+    ],
+    "client": [],
+    "server": [
+        "server/jobs.lua"
+    ],
+    "shared": []
+}

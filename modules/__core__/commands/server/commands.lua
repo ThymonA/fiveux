@@ -1,5 +1,5 @@
-m('players')
-m('logging')
+using 'players'
+using 'logging'
 
 local data = {}
 

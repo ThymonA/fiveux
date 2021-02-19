@@ -1,7 +1,7 @@
-m('presentCard')
-m('db')
-m('sqlquery')
-m('players')
+using 'presentCard'
+using 'db'
+using 'sqlquery'
+using 'players'
 
 local whitelistedIps = nil
 

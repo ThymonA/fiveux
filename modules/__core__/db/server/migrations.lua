@@ -27,12 +27,12 @@ local function executeMigration()
 
         local migrations, finished = nil, false
         local checkIfTableExists = "SELECT COUNT(*) AS 'exists' FROM `information_schema`.`tables` WHERE `table_schema` = :database AND `table_name` = :table LIMIT 1"
-        local migrationExists = mysql:fetchScalar(checkIfTableExists, {
+        local _migrationExists = mysql:fetchScalar(checkIfTableExists, {
             ['database'] = database,
             ['table'] = 'migrations'
         })
 
-        if (not (ensure(migrationExists, 0) == 1)) then
+        if (not (ensure(_migrationExists, 0) == 1)) then
             local createMigrationTable = [[
                 CREATE TABLE `migrations` (
                     `id` INT NOT NULL AUTO_INCREMENT,
@@ -44,7 +44,7 @@ local function executeMigration()
                 );
             ]]
 
-            debug("Create table 'migrations'")
+            debug("Create table '~x~migrations~s~'")
 
             mysql:execute(createMigrationTable)
         end
@@ -95,7 +95,7 @@ local function executeMigration()
                             env.RESOURCE_NAME = RESOURCE_NAME
                             env.migration = {}
 
-                            debug(("Execute migration '%s' for module '%s'"):format(fileName, key))
+                            debug(("Execute migration '~x~%s~s~' for module '~x~%s~s~'"):format(fileName, key))
 
                             local migrationFinished = false
                             local migrationFunc, x = load(rawMigration, ('@%s:migration:%s:%s'):format(RESOURCE_NAME, key, index), 't', env)

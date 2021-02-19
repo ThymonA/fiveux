@@ -1,5 +1,5 @@
-m('db')
-m('sqlquery')
+using 'db'
+using 'sqlquery'
 
 local data = {}
 

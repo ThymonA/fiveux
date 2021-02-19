@@ -24,3 +24,20 @@ config.banNewIdentifiers = true
 config.allowedCountries = {
     'NL', 'BE', 'DE', 'LU', 'GB'
 }
+
+--
+-- Default job for both (1st and 2de)
+--
+config.defaultJob = {
+    name = 'unemployed',
+    grade = 'unemployed'
+}
+
+--
+-- Available wallets and default saldo
+--
+config.wallets = {
+    bank = 12500,
+    cash = 500,
+    crime = 0
+}

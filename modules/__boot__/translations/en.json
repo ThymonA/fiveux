@@ -1,4 +1,9 @@
 {
     "default_footer": "Join our discord on %s",
-    "unknown": "Unknown"
+    "unknown": "Unknown",
+    "job_unemployed": "Unemployed",
+    "grade_unemployed": "Unemployed",
+    "wallet_bank": "Bank",
+    "wallet_cash": "Cash",
+    "wallet_crime": "Black Money"
 }

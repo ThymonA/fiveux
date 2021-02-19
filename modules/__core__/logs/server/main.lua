@@ -1,4 +1,4 @@
-m('events')
+using 'events'
 
 events:on('playerConnecting', function(player, doneCallback, card)
     local logger = logging:create(player.source)

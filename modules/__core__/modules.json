@@ -2,6 +2,7 @@
     "db",
     "sqlquery",
     "bans",
+    "jobs",
     "player",
     "presentcard",
     "events",

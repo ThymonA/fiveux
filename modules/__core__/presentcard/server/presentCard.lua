@@ -15,12 +15,12 @@ function pc:create(deferrals, title, description, banner)
     function presentCard:generate()
         local cfg = config('general')
         local serverName = ensure(cfg.serverName, 'FiveUX Framework')
-        local serverBanner = ensure(cfg.bannerUrl, 'https://i.imgur.com/C7iadzZ.png')
+        local _ban = ensure(cfg.bannerUrl, 'https://i.imgur.com/C7iadzZ.png')
         local _tit = T('connecting_title', serverName)
         local _desc = T('connecting_description', serverName)
         local _title = ensure(self.title, _tit)
         local _description = ensure(self.description, _desc)
-        local _banner = ensure(self.banner, 'https://i.imgur.com/C7iadzZ.png')
+        local _banner = ensure(self.banner, _ban)
 
         local card = {
             ['type'] = 'AdaptiveCard',

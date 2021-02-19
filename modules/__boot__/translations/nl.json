@@ -1,4 +1,9 @@
 {
     "default_footer": "Join onze discord via %s",
-    "unknown": "Onbekend"
+    "unknown": "Onbekend",
+    "job_unemployed": "Werkloos",
+    "grade_unemployed": "Werkloos",
+    "wallet_bank": "Bank",
+    "wallet_cash": "Contant",
+    "wallet_crime": "Zwartgeld"
 }

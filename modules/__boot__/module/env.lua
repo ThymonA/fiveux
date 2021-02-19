@@ -109,7 +109,7 @@ function environment:create(category, module, directory)
         return _debugger:info(name, ...)
     end
 
-    env.m = function(name, ...)
+    env.using = function(name, ...)
         return _modules:load(name, env, ...)
     end
 

@@ -1,4 +1,6 @@
-m('bans')
+using 'db'
+using 'bans'
+using 'wallets'
 
 local data = {}
 
@@ -20,6 +22,7 @@ function players:load(source)
         player.tokens = self:getPlayerTokens(source)
     else
         player = {
+            id = 0,
             source = source,
             name = ensure(GetPlayerName(source), 'Unknown'),
             citizen = self:generateCitizenId(identifier),
@@ -27,17 +30,52 @@ function players:load(source)
             identifiers = self:getPlayerIdentifiers(source),
             tokens = self:getPlayerTokens(source),
             banned = false,
-            banInfo = {}
+            banInfo = {},
+            wallets = {}
         }
-    end
 
-    if (identifier == nil) then
-        player.banned = true
-        
-        return player
+        if (identifier == nil) then
+            player.banned = true
+            
+            return player
+        end
+
+        local dbPlayers = db:fetchAll('SELECT * FROM `players` WHERE `citizen` = :citizen LIMIT 1', {
+            ['citizen'] = player.citizen
+        })
+
+        dbPlayers = ensure(dbPlayers, {})
+
+        if (#dbPlayers <= 0) then
+            local cfg = config('general')
+            local defaultJob = ensure(cfg.defaultJob, {})
+            local jobName = ensure(defaultJob.name, 'unemployed')
+            local jobGrade = ensure(defaultJob.grade, 'unemployed')
+
+            player.id = db:insert('INSERT INTO `players` (`citizen`, `name`, `job`, `grade`, `job2`, `grade2`) VALUES (:citizen, :name, :job, :grade, :job2, :grade2)', {
+                ['citizen'] = player.citizen,
+                ['name'] = player.name,
+                ['job'] = jobName,
+                ['grade'] = jobGrade,
+                ['job2'] = jobName,
+                ['grade2'] = jobGrade
+            })
+
+            player.job = { name = jobName, grade = jobGrade }
+            player.job2 = { name = jobName, grade = jobGrade }
+
+            print_success(T('player_created', player.name))
+        else
+            local dbPlayer = ensure(dbPlayers[1], {})
+
+            player.id = ensure(dbPlayer.id, 0)
+            player.job = { name = ensure(dbPlayer.job, 'unemployed'), grade = ensure(dbPlayer.grade, 'unemployed') }
+            player.job2 = { name = ensure(dbPlayer.job2, 'unemployed'), grade = ensure(dbPlayer.grade2, 'unemployed') }
+        end
     end
 
     player.banned, player.banInfo = bans:updateBanStatus(player.identifiers, player.name)
+    player.wallets = wallets:getPlayerWallets(player.id)
 
     cache:write(key, player)
 

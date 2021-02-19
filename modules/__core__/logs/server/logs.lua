@@ -1,5 +1,5 @@
-m('players')
-m('db')
+using 'players'
+using 'db'
 
 local data = {}
 
