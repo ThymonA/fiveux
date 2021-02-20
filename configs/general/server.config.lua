@@ -46,3 +46,21 @@ config.wallets = {
     cash = 500,
     crime = 0
 }
+
+--
+-- Available locations
+--
+config.defaultLocations = {
+    inventory = {
+        constants.types.player
+    },
+    safe = {
+        constants.types.player,
+        constants.types.jobs
+    }
+}
+
+--
+-- Number of clips on create
+--
+config.numberOfClips = 2

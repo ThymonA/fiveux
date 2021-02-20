@@ -13,7 +13,7 @@ migration.query = [[
         `id` INT(11) NOT NULL AUTO_INCREMENT,
         `uuid` BINARY(16) NOT NULL,
         `location_id` INT DEFAULT NULL,
-        `model` VARCHAR(50) NOT NULL DEFAULT 'unknown',
+        `name` VARCHAR(50) NOT NULL DEFAULT 'unknown',
         `bullets` INT NOT NULL DEFAULT 50,
         `components` LONGTEXT NOT NULL,
 

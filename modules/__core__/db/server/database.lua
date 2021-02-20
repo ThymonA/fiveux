@@ -33,12 +33,12 @@ local GetResourceState = GetResourceState
 local CreateThread = Citizen.CreateThread
 local Wait = Citizen.Wait
 
-mysql = setmetatable({
+db = setmetatable({
     resource_name = 'fivem-mysql',
     current_resource_name = RESOURCE_NAME
 }, {})
 
-function mysql:typeof(input)
+function db:typeof(input)
     if (input == nil) then
         return 'nil';
     end
@@ -61,7 +61,7 @@ function mysql:typeof(input)
     return t;
 end
 
-function mysql:safeParams(params)
+function db:safeParams(params)
     if (self:typeof(params) == 'nil') then params = {} end
     if (self:typeof(params) ~= 'table') then params = {} end
     if (next(params) == nil) then params = {} end
@@ -69,7 +69,7 @@ function mysql:safeParams(params)
     return params
 end
 
-function mysql:execute(query, params)
+function db:execute(query, params)
     params = params or {}
 
     local res, finished = nil, false
@@ -84,7 +84,7 @@ function mysql:execute(query, params)
     return res
 end
 
-function mysql:insert(query, params)
+function db:insert(query, params)
     params = params or {}
 
     local res, finished = nil, false
@@ -99,7 +99,7 @@ function mysql:insert(query, params)
     return res
 end
 
-function mysql:fetchAll(query, params)
+function db:fetchAll(query, params)
     params = params or {}
 
     local res, finished = nil, false
@@ -114,7 +114,7 @@ function mysql:fetchAll(query, params)
     return res
 end
 
-function mysql:fetchScalar(query, params)
+function db:fetchScalar(query, params)
     params = params or {}
 
     local res, finished = nil, false
@@ -129,7 +129,7 @@ function mysql:fetchScalar(query, params)
     return res
 end
 
-function mysql:fetchFirst(query, params)
+function db:fetchFirst(query, params)
     params = params or {}
 
     local res, finished = nil, false
@@ -144,7 +144,7 @@ function mysql:fetchFirst(query, params)
     return res
 end
 
-function mysql:executeAsync(query, params, callback)
+function db:executeAsync(query, params, callback)
     params = params or {}
 
     assert(self:typeof(query) == 'string', 'SQL query must be a string')
@@ -156,7 +156,7 @@ function mysql:executeAsync(query, params, callback)
     exports[self.resource_name]:executeAsync(query, params, callback, self.current_resource_name)
 end
 
-function mysql:insertAsync(query, params, callback)
+function db:insertAsync(query, params, callback)
     params = params or {}
 
     assert(self:typeof(query) == 'string', 'SQL query must be a string')
@@ -168,7 +168,7 @@ function mysql:insertAsync(query, params, callback)
     exports[self.resource_name]:insertAsync(query, params, callback, self.current_resource_name)
 end
 
-function mysql:fetchAllAsync(query, params, callback)
+function db:fetchAllAsync(query, params, callback)
     params = params or {}
 
     assert(self:typeof(query) == 'string', 'SQL query must be a string')
@@ -180,7 +180,7 @@ function mysql:fetchAllAsync(query, params, callback)
     exports[self.resource_name]:fetchAllAsync(query, params, callback, self.current_resource_name)
 end
 
-function mysql:fetchScalarAsync(query, params, callback)
+function db:fetchScalarAsync(query, params, callback)
     params = params or {}
 
     assert(self:typeof(query) == 'string', 'SQL query must be a string')
@@ -192,7 +192,7 @@ function mysql:fetchScalarAsync(query, params, callback)
     exports[self.resource_name]:fetchScalarAsync(query, params, callback, self.current_resource_name)
 end
 
-function mysql:fetchFirstAsync(query, params, callback)
+function db:fetchFirstAsync(query, params, callback)
     params = params or {}
 
     assert(self:typeof(query) == 'string', 'SQL query must be a string')
@@ -204,7 +204,7 @@ function mysql:fetchFirstAsync(query, params, callback)
     exports[self.resource_name]:fetchFirstAsync(query, params, callback, self.current_resource_name)
 end
 
-function mysql:ready(callback)
+function db:ready(callback)
     CreateThread(function()
         local cb = callback or function() end
 
@@ -217,4 +217,4 @@ function mysql:ready(callback)
     end)
 end
 
-register('db', mysql)
+register('db', db)

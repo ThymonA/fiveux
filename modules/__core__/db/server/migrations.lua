@@ -7,7 +7,7 @@ local function migrationExists(module, version)
     version = ensure(version, 0)
 
     local checkMigrationExists = "SELECT COUNT(*) AS 'exists' FROM `migrations` WHERE `module` = :module AND `name` = :name LIMIT 1"
-    local result = mysql:fetchScalar(checkMigrationExists, {
+    local result = db:fetchScalar(checkMigrationExists, {
         ['module'] = module,
         ['name'] = ('%s.lua'):format(version)
     })
@@ -22,12 +22,12 @@ local function executeMigration()
     local generalCfg = config('general')
     local database = ensure(generalCfg.databaseName, 'dobberdam')
 
-    mysql:ready(function()
+    db:ready(function()
         hasMigration = true
 
         local migrations, finished = nil, false
         local checkIfTableExists = "SELECT COUNT(*) AS 'exists' FROM `information_schema`.`tables` WHERE `table_schema` = :database AND `table_name` = :table LIMIT 1"
-        local _migrationExists = mysql:fetchScalar(checkIfTableExists, {
+        local _migrationExists = db:fetchScalar(checkIfTableExists, {
             ['database'] = database,
             ['table'] = 'migrations'
         })
@@ -46,10 +46,10 @@ local function executeMigration()
 
             debug("Create table '~x~migrations~s~'")
 
-            mysql:execute(createMigrationTable)
+            db:execute(createMigrationTable)
         end
 
-        migrations = mysql:fetchAll('SELECT * FROM `migrations`')
+        migrations = db:fetchAll('SELECT * FROM `migrations`')
         migrations = ensure(migrations, {})
 
         local numberOfModules = sizeof(modules)
@@ -129,8 +129,8 @@ local function executeMigration()
                                         return
                                     end
 
-                                    mysql:executeAsync(sqlQuery, sqlParams, function()
-                                        mysql:insertAsync('INSERT INTO `migrations` (`module`, `name`) VALUES (:module, :name)', {
+                                    db:executeAsync(sqlQuery, sqlParams, function()
+                                        db:insertAsync('INSERT INTO `migrations` (`module`, `name`) VALUES (:module, :name)', {
                                             ['module'] = key,
                                             ['name'] = fileName
                                         }, function()

@@ -2,6 +2,7 @@ using 'db'
 using 'bans'
 using 'wallets'
 using 'jobs'
+using 'locations'
 
 local data = {}
 
@@ -35,7 +36,8 @@ function players:load(source)
             tokens = self:getPlayerTokens(source),
             banned = false,
             banInfo = {},
-            wallets = {}
+            wallets = {},
+            locations = {}
         }
 
         if (identifier == nil) then
@@ -83,10 +85,12 @@ function players:load(source)
             player.group = ensure(dbPlayer.group, defaultGroup)
             player.position = ensure(dbPlayer.position, defaultSpawn)
         end
+
+        player.wallets = wallets:getPlayerWallets(player.id)
+        player.locations = locations:getPlayerLocations(player.citizen)
     end
 
     player.banned, player.banInfo = bans:updateBanStatus(player.identifiers, player.name)
-    player.wallets = wallets:getPlayerWallets(player.id)
 
     cache:write(key, player)
 

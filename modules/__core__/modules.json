@@ -6,8 +6,8 @@
     "bans",
     "jobs",
     "player",
-    "locations",
     "weapons",
+    "locations",
     "logs",
     "commands"
 ]

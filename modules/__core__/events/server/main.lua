@@ -80,9 +80,12 @@ AddEventHandler('playerConnecting', function(_, _, deferrals)
         local banInfo = ensure(player.banInfo, {})
         local reason = ensure(banInfo.reason, T('default_ban_reason'))
         local expire = ensure(banInfo.expire, T('unknown'))
+        local now = os ~= nil and os.time() or 0
         local expireTime = dateTimeToTime(expire)
         local expireFormatted = os.date(dateTimeFormat, expireTime)
-        local message = T('connecting_banned', reason, expireFormatted, player.citizen)
+        local remain, label = timeToString(expireTime - now)
+        local remainLabel = boldText(('%s %s'):format(remain, T(label)))
+        local message = T('connecting_banned', reason, expireFormatted, remainLabel, player.citizen)
 
         deferrals.done(serverMessage(message))
         return

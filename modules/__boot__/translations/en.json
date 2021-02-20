@@ -5,5 +5,14 @@
     "grade_unemployed": "Unemployed",
     "wallet_bank": "Bank",
     "wallet_cash": "Cash",
-    "wallet_crime": "Black Money"
+    "wallet_crime": "Black Money",
+    "none": "None",
+    "second": "Second",
+    "seconds": "Seconds",
+    "minute": "Minute",
+    "minutes": "Minutes",
+    "hour": "Hour",
+    "hours": "Hours",
+    "day": "Day",
+    "days": "Days"
 }

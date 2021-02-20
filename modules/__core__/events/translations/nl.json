@@ -10,5 +10,5 @@
     "identifier_ip_required": "Je moet een geldige IP hebben om deze server te kunnen joinen.",
     "connecting_vpn_block": "Uw IP is gebruikt bij verdachte activiteiten of is aangemerkt als VPN.\n\n𝗜𝗣: %s\n𝗟𝗮𝗻𝗱𝗰𝗼𝗱𝗲: %s",
     "connecting_country_block": "Uw IP is afkomstig vanuit een land dat niet is toegestaan om vanuit te verbinden.\n\n𝗜𝗣: %s\n𝗟𝗮𝗻𝗱𝗰𝗼𝗱𝗲: %s",
-    "connecting_banned": "U bent verbannen van deze server!\n\n𝗥𝗲𝗱𝗲𝗻: %s\n𝗩𝗲𝗿𝗹𝗼𝗼𝗽𝘁 𝗼𝗽: %s\n𝗜𝗗:%s"
+    "connecting_banned": "U bent verbannen van deze server!\n\n𝗥𝗲𝗱𝗲𝗻: %s\n𝗩𝗲𝗿𝗹𝗼𝗼𝗽𝘁 𝗼𝗽: %s (± %s)\n𝗜𝗗: %s"
 }

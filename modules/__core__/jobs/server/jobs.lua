@@ -84,6 +84,20 @@ function jobs:getJobIdWithGrade(job, grade)
     return nil, nil
 end
 
+function jobs:getJobId(job)
+    job = ensure(job, 'unemployed')
+
+    if (not loaded) then
+        repeat Citizen.Wait(0) until loaded == true
+    end
+
+    if (data[job]) then        
+        return ensure(ensure(data[job], {}).id, 0)
+    end
+
+    return nil
+end
+
 function jobs:getJobWithGrade(jobId, gradeId)
     jobId = ensure(jobId, 0)
     gradeId = ensure(gradeId, 0)
@@ -111,6 +125,10 @@ function jobs:getJobWithGrade(jobId, gradeId)
     end
 
     return nil
+end
+
+function jobs:getAll()
+    return ensure(data, {})
 end
 
 jobs:load()

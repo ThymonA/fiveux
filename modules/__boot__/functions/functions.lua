@@ -455,3 +455,23 @@ getIPHubInfo = function(ip)
 
 	return code, country
 end
+
+timeToString = function(time)
+    time = ensure(time, 0)
+
+    if (time <= 0) then
+        return 0, 'none'
+    elseif (time < 60) then
+        local remain = math.floor(math.modf(time,60))
+        return remain, remain <= 0 and 'second' or 'seconds'
+    elseif (time < 3600) then
+        local remain = math.floor(math.modf(time, 3600) / 60)
+        return remain, remain <= 0 and 'minute' or 'minutes'
+    elseif (time < 86400) then
+        local remain = math.floor(math.modf(time, 86400)/ 3600)
+        return remain, remain <= 0 and 'hour' or 'hours'
+    end
+
+    local remain = math.floor(time / 86400)
+    return remain, remain <= 0 and 'day' or 'days'
+end

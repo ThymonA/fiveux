@@ -5,5 +5,14 @@
     "grade_unemployed": "Werkloos",
     "wallet_bank": "Bank",
     "wallet_cash": "Contant",
-    "wallet_crime": "Zwartgeld"
+    "wallet_crime": "Zwartgeld",
+    "none": "Geen",
+    "second": "Seconde",
+    "seconds": "Seconden",
+    "minute": "Minuut",
+    "minutes": "Minuten",
+    "hour": "Uur",
+    "hours": "Uren",
+    "day": "Dag",
+    "days": "Dagen"
 }

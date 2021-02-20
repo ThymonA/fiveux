@@ -13,5 +13,7 @@
     "server": [
         "server/weapons.lua"
     ],
-    "shared": []
+    "shared": [
+        "shared/main.lua"
+    ]
 }
