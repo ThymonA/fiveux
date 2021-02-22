@@ -14,8 +14,6 @@ function modules:register(name, input)
     else
         data[name] = function() return input end
     end
-
-    debugger:info(__NAME__, ("Module '~x~%s~s~' has been registered"):format(name))
 end
 
 function modules:load(name, env, ...)

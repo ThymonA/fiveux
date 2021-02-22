@@ -15,5 +15,6 @@
     ],
     "shared": [
         "shared/events.lua"
-    ]
+    ],
+    "files": []
 }

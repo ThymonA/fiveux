@@ -13,5 +13,6 @@
     "server": [
         "server/wallets.lua"
     ],
-    "shared": []
+    "shared": [],
+    "files": []
 }

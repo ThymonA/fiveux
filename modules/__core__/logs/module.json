@@ -14,5 +14,6 @@
         "server/logs.lua",
         "server/main.lua"
     ],
-    "shared": []
+    "shared": [],
+    "files": []
 }

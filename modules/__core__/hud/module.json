@@ -1,6 +1,6 @@
 {
     "version": "1.0.0",
-    "description": "Dobberdam player module",
+    "description": "Dobberdam hud module",
     "authors": [
         {
             "name": "Thymon Arens",
@@ -11,8 +11,9 @@
     ],
     "client": [],
     "server": [
-        "server/players.lua"
+        "server/jobs.lua"
     ],
     "shared": [],
-    "files": []
+    "files": [],
+    "ui_page": "html/index.html"
 }

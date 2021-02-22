@@ -6,6 +6,7 @@ local _debug = debug
 local _debugger = debugger
 local _modules = modules
 local _translations = translations
+local _ui = ui
 local data = {}
 
 environment = {}
@@ -261,6 +262,13 @@ function environment:create(category, module, directory)
         end
 
         return results
+    end
+
+    env.RegisterNUICallback = function(name, callback)
+        name = ensure(name, 'unknown')
+        callback = ensure(callback, function(_, cb) cb() end)
+
+        _ui:registerNuiCallback(env.__NAME__, name, callback)
     end
 
     data[key] = env

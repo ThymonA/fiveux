@@ -14,5 +14,6 @@
         "server/database.lua",
         "server/migrations.lua"
     ],
-    "shared": []
+    "shared": [],
+    "files": []
 }

@@ -9,5 +9,6 @@
     "weapons",
     "locations",
     "logs",
-    "commands"
+    "commands",
+    "hud"
 ]

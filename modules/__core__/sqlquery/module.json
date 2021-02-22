@@ -16,5 +16,6 @@
         "server/events.lua",
         "server/end.lua"
     ],
-    "shared": []
+    "shared": [],
+    "files": []
 }

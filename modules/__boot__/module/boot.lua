@@ -138,6 +138,8 @@ function boot:startModule(category, module)
         local moduleInfo = self:getModuleInfo(category, module)
         local sharedFiles = ensure(moduleInfo.shared, {})
         local envFiles = ensure(moduleInfo[ENVIRONMENT], {})
+        local ui_page = ensure(moduleInfo.ui_page, 'unknown')
+        local hasUI = ui_page ~= 'unknown'
 
         for k, v in pairs(sharedFiles) do
             self:executeFile(category, module, v, env)
@@ -145,6 +147,10 @@ function boot:startModule(category, module)
 
         for k, v in pairs(envFiles) do
             self:executeFile(category, module, v, env)
+        end
+
+        if (hasUI and ENVIRONMENT == 'client') then
+            ui:create(category, module, ui_page, true)
         end
     end, function(e)
         print_error(e, module)

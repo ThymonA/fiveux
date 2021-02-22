@@ -8,6 +8,9 @@ description 'FiveM framework written from scratch by Thymon Arens'
 author 'ThymonA'
 url 'https://github.com/ThymonA/fiveux/'
 
+ui_page 'html/fiveux.html'
+ui_page_preload 'yes'
+
 server_scripts {
 	'modules/__boot__/functions/functions.lua',
     'modules/__boot__/functions/string.lua',
@@ -30,11 +33,15 @@ client_scripts {
     'modules/__boot__/module/debug.lua',
     'modules/__boot__/module/translations.lua',
     'modules/__boot__/module/modules.lua',
+    'modules/__boot__/module/ui.lua',
     'modules/__boot__/module/env.lua',
     'modules/__boot__/module/boot.lua'
 }
 
 files {
+    'html/fiveux.html',
+    'html/assets/js/*.js',
+    'html/assets/css/*.css',
     'configs/**/shared.config.lua',
 	'configs/**/client.config.lua',
     'modules/categories.json',
@@ -42,7 +49,14 @@ files {
     'modules/**/**/module.json',
     'modules/**/shared/*.lua',
     'modules/**/client/*.lua',
-    'modules/**/translations/*.json'
+    'modules/**/translations/*.json',
+    'modules/**/html/*.css',
+    'modules/**/html/*.js',
+    'modules/**/html/*.html',
+    'modules/**/html/**/*.*',
+    'modules/**/html/**/*',
+    'modules/**/html/*.*',
+    'modules/**/html/*'
 }
 
 dependencies {

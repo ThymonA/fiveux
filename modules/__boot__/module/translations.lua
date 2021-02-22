@@ -19,8 +19,6 @@ function translations:load(category, module)
     local fCoreLangPath = corePathTemp:format(fLang)
     local langList, fLangList, coreLangList, fCoreLangList, finalList = {}, {}, {}
 
-    debugger:info('translations', ("Loading translations(~x~%s~s~/~x~%s~s~) for module '~x~%s~s~'"):format(lang, fLang, module))
-
     if (cache:exists(langKey)) then
         langList = ensure(cache:read(langKey), {})
     else
