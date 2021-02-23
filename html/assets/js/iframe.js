@@ -8,15 +8,18 @@
             this.__PRIMARY__ = 'global';
 
             window.addEventListener('message', e => {
-                for(const name in this.frames) {
-                    if(this.frames[name].iframe.contentWindow === e.source) {
-                        this.postFrameMessage(name, e.data);
+                const data = e.data || e.detail || null;
+
+                for (const name in this.frames) {
+                    if (name === data.source) {
+                        this.frames[name].iframe.contentWindow.postMessage(data, `nui://${this.RESOURCE_NAME}`);
                         return;
                     }
                 }
 
-                this.onMessage(e.data);
+                this.onMessage(data);
             });
+
 
             this.NUICallback('nui_ready');
         }
@@ -51,6 +54,7 @@
             document.querySelector('#fiveux-frames').appendChild(container);
 
             const rframe = iFrameResize({
+                log: false,
                 autoResize: true,
                 checkOrigin: false,
                 heightCalculationMethod: 'bodyOffset',
@@ -61,7 +65,6 @@
             }, iframe);
 
             this.frames[name] = { frame: $(container), iframe: iframe, rframe: rframe, jFrame: jFrame };
-            this.frames[name].iframe.addEventListener('message', e => this.onFrameMessage(name, e.data));
             this.frames[name].frame.css('pointerEvents', 'none');
 
             if(!visible) { this.hideFrame(name); }
@@ -108,10 +111,6 @@
                     default: break;
                 }
             }
-        }
-    
-        postFrameMessage(name, msg) {
-            this.NUICallback('frame_message', {name, msg})
         }
     }
     

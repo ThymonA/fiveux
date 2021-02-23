@@ -9,10 +9,10 @@
             "email": "thymon@arensmail.nl"
         }
     ],
-    "client": [],
-    "server": [
-        "server/jobs.lua"
+    "client": [
+        "client/main.lua"
     ],
+    "server": [],
     "shared": [],
     "files": [],
     "ui_page": "html/index.html"

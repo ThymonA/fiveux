@@ -41,6 +41,11 @@ config.language = 'nl'
 config.fallbackLanguage = 'en'
 
 --
+-- Locale used in javascript
+--
+config.locale = 'nl-NL'
+
+--
 -- Date time format
 --
 config.dateTimeFormat = '%d-%m-%Y %H:%M:%S'

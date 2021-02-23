@@ -1,0 +1,259 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+@import url('https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.min.css');
+@import url('https://cdn.jsdelivr.net/npm/line-awesome@1.3.0/dist/line-awesome/css/line-awesome.min.css');
+@import url('https://cdn.jsdelivr.net/npm/rpg-awesome@0.2.0/css/rpg-awesome.min.css');
+
+.fiveux-stats {
+    position: fixed;
+    bottom: 17.5em;
+    left: 2em;
+    zoom: 0.8;
+}
+
+.fiveux-stats-row2 {
+    left: 12.5em;
+}
+
+.fiveux-hud {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.fiveux-stat {
+    display: flex;
+    align-items: center;
+}
+
+.fiveux-stat .fiveux-stat-icon i {
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 0.15em 0.5em;
+}
+
+.fiveux-stat[name="health"] .fiveux-stat-inner {
+    background-color: rgba(239, 35, 60, 1);
+}
+
+.fiveux-stat[name="health"] .fiveux-stat-icon i {
+    color: rgba(239, 35, 60, 1);
+    border-left: 2px solid rgba(239, 35, 60, 1);
+}
+
+.fiveux-stat[name="armor"] .fiveux-stat-inner {
+    background-color: rgb(35, 181, 239);
+}
+
+.fiveux-stat[name="armor"] .fiveux-stat-icon i {
+    color: rgb(35, 181, 239);
+    border-left: 2px solid rgba(35, 181, 239, 1);
+}
+
+.fiveux-stat[name="thirst"] .fiveux-stat-inner {
+    background-color: rgb(35, 100, 239);
+}
+
+.fiveux-stat[name="thirst"] .fiveux-stat-icon i {
+    color: rgba(35, 100, 239, 1);
+    border-left: 2px solid rgba(35, 100, 239, 1);
+}
+
+.fiveux-stat[name="hunger"] .fiveux-stat-inner {
+    background-color: rgba(255, 180, 110, 1);
+}
+
+.fiveux-stat[name="hunger"] .fiveux-stat-icon i {
+    color: rgba(255, 180, 110, 1);
+    border-left: 2px solid rgba(255, 180, 110, 1);
+}
+
+.fiveux-stat[name="stamina"] .fiveux-stat-inner {
+    background-color: rgb(239, 200, 35);
+}
+
+.fiveux-stat[name="stamina"] .fiveux-stat-icon i {
+    color: rgba(239, 200, 35, 1);
+    border-left: 2px solid rgba(239, 200, 35, 1);
+}
+
+.fiveux-stat[name="stressed"] .fiveux-stat-inner {
+    background-color: rgb(205, 35, 239);
+}
+
+.fiveux-stat[name="stressed"] .fiveux-stat-icon i {
+    color: rgba(205, 35, 239, 1);
+    border-left: 2px solid rgba(205, 35, 239, 1);
+}
+
+.fiveux-stats .fiveux-label {
+    font-weight: bold;
+    color: white;
+    margin-left: 0.65em;
+    margin-top: 0.25em;
+    padding: 0.5em 0.5em;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.fiveux-stat-icon {
+    font-size: 1.5em;
+    height: 1.5em;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    position: relative;
+    padding-left: 0.25em;
+    padding-right: 0;
+    cursor: pointer;
+    box-sizing: border-box;
+    border-radius: var(--radius);
+    transition: all var(--cubic);
+    flex-flow: wrap-reverse;
+    color: var(--aic);
+}
+
+.fiveux-stat-label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.25em;
+    font-weight: bold;
+    padding-left: 0.4em;
+    line-height: 1.65em;
+}
+
+.fiveux-stat-inner {
+    content: '';
+    height: 2em;
+    margin-top: -2em;
+    background-color: white;
+}
+
+.fiveux-stat-bar {
+    width: 7.25em;
+    height: 2em;
+    background-color: rgba(25, 25, 25, 0.75);
+    font-weight: bold;
+}
+
+.fiveux-info {
+    position: fixed;
+    top: 1em;
+    right: 1em;
+    zoom: 0.8;
+}
+
+.fiveux-info .fiveux-label {
+    font-weight: bold;
+    color: white;
+    margin-left: 0.65em;
+    margin-top: 0.25em;
+    padding: 0.5em 0.5em;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.fiveux-wallet {
+    display: flex;
+    align-items: center;
+}
+
+.fiveux-wallet-icon {
+    font-size: 1.5em;
+    height: 1.5em;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    position: relative;
+    padding-left: 0.5em;
+    padding-right: 0;
+    cursor: pointer;
+    box-sizing: border-box;
+    border-radius: var(--radius);
+    transition: all var(--cubic);
+    flex-flow: wrap-reverse;
+    color: var(--aic);
+}
+
+.fiveux-wallet-icon i {
+    color: rgba(239, 85, 60, 1);
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 0.15em 0.5em;
+}
+
+.fiveux-wallet .fiveux-wallet-icon i {
+    color: rgba(239, 85, 60, 1);
+    border-left: 2px solid rgba(239, 85, 60, 1);
+}
+
+.fiveux-wallet .fiveux-wallet-balance strong {
+    color: rgba(239, 85, 60, 1);
+    margin-right: 0.25em;
+}
+
+.fiveux-wallet-balance {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1em;
+    font-weight: normal;
+    text-align: left;
+    width: 11em;
+    height: 2.15em;
+    color: rgba(255, 255, 255, 1);
+    background-color: rgba(25, 25, 25, 0.75);
+    line-height: 2.15em;
+    padding-left: 0.5em;
+    padding-right: 1em;
+}
+
+.fiveux-job {
+    display: flex;
+    align-items: center;
+}
+
+.fiveux-job-icon {
+    font-size: 1.5em;
+    height: 1.5em;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    position: relative;
+    padding-left: 0.5em;
+    padding-right: 0;
+    cursor: pointer;
+    box-sizing: border-box;
+    border-radius: var(--radius);
+    transition: all var(--cubic);
+    flex-flow: wrap-reverse;
+    color: var(--aic);
+}
+
+.fiveux-job-icon i {
+    color: rgba(239, 85, 60, 1);
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 0.15em 0.5em;
+}
+
+.fiveux-job .fiveux-job-icon i {
+    color: rgba(239, 85, 60, 1);
+    border-left: 2px solid rgba(239, 85, 60, 1);
+}
+
+.fiveux-job .fiveux-job-label strong {
+    color: rgba(239, 85, 60, 1);
+    margin-right: 0.25em;
+}
+
+.fiveux-job-label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9em;
+    font-weight: normal;
+    text-align: left;
+    width: 12.4em;
+    height: 2.25em;
+    color: rgba(255, 255, 255, 1);
+    background-color: rgba(25, 25, 25, 0.75);
+    line-height: 3.25em;
+    padding-left: 0.5em;
+    padding-right: 1em;
+}
+
+.fiveux-job-label span {
+    color: rgba(239, 85, 60, 1);
+    position: absolute;
+    margin-top: 0.125em;
+    line-height: normal;
+    font-size: 0.8em;
+}

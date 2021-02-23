@@ -271,6 +271,12 @@ function environment:create(category, module, directory)
         _ui:registerNuiCallback(env.__NAME__, name, callback)
     end
 
+    env.SendNUIMessage = function(info)
+        info = ensure(info, 'global')
+
+        _ui:sendNuiMessage(env.__NAME__, info)
+    end
+
     data[key] = env
 
     return env

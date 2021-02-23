@@ -47,6 +47,17 @@ function ui:registerNuiCallback(module, name, callback)
     if (callbacks[module] == nil) then callbacks[module] = {} end
 
     callbacks[module][name] = callback
+
+    RegisterNUICallback(('%s:%s'):format(module, name), callbacks[module][name])
+end
+
+function ui:sendNuiMessage(module, info)
+    module = ensure(module, 'global')
+
+    info = ensure(info, {})
+    info.source = module
+
+    SendNUIMessage(info)
 end
 
 RegisterNUICallback('nui_ready', function(_, cb)
