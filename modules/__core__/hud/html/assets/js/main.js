@@ -76,6 +76,23 @@ window.FIVEUX_HUD = {
             number = typeof number == 'number' ? number : Number(number);
 
             return number.toLocaleString(this.locale, { minimumFractionDigits: 0 });
+        },
+        UPDATE_STATS({ updates }) {
+            updates = typeof updates == 'object' ? updates : {};
+
+            const health = typeof updates.health == 'undefined' ? this.health : (typeof updates.health == 'number' ? updates.health : Number(updates.health));
+            const armor = typeof updates.armor == 'undefined' ? this.armor : (typeof updates.armor == 'number' ? updates.armor : Number(updates.armor));
+            const stamina = typeof updates.stamina == 'undefined' ? this.stamina : (typeof updates.stamina == 'number' ? updates.stamina : Number(updates.stamina));
+            const thirst = typeof updates.thirst == 'undefined' ? this.thirst : (typeof updates.thirst == 'number' ? updates.thirst : Number(updates.thirst));
+            const hunger = typeof updates.hunger == 'undefined' ? this.hunger : (typeof updates.hunger == 'number' ? updates.hunger : Number(updates.hunger));
+            const stressed = typeof updates.stressed == 'undefined' ? this.stressed : (typeof updates.stressed == 'number' ? updates.stressed : Number(updates.stressed));
+        
+            this.health = health <= 0 ? 0 : (health >= 100 ? 100 : health)
+            this.armor = armor <= 0 ? 0 : (armor >= 100 ? 100 : armor)
+            this.stamina = stamina <= 0 ? 0 : (stamina >= 100 ? 100 : stamina)
+            this.thirst = thirst <= 0 ? 0 : (thirst >= 100 ? 100 : thirst)
+            this.hunger = hunger <= 0 ? 0 : (hunger >= 100 ? 100 : hunger)
+            this.stressed = stressed <= 0 ? 0 : (stressed >= 100 ? 100 : stressed)
         }
     }
 }

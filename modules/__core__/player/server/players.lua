@@ -80,8 +80,8 @@ function players:load(source)
             local dbPlayer = ensure(dbPlayers[1], {})
 
             player.id = ensure(dbPlayer.id, 0)
-            player.job = jobs:getJobWithGrade(ensure(player.job), ensure(player.grade))
-            player.job2 = jobs:getJobWithGrade(ensure(player.job2), ensure(player.grade2))
+            player.job = jobs:getJobWithGrade(ensure(dbPlayer.job, 0), ensure(dbPlayer.grade, 0))
+            player.job2 = jobs:getJobWithGrade(ensure(dbPlayer.job2, 0), ensure(dbPlayer.grade2, 0))
             player.group = ensure(dbPlayer.group, defaultGroup)
             player.position = ensure(dbPlayer.position, defaultSpawn)
         end

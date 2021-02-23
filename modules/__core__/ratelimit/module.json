@@ -1,6 +1,6 @@
 {
     "version": "1.0.0",
-    "description": "Dobberdam player module",
+    "description": "Dobberdam ratelimit module",
     "authors": [
         {
             "name": "Thymon Arens",
@@ -10,10 +10,9 @@
         }
     ],
     "client": [],
-    "server": [
-        "server/players.lua",
-        "server/main.lua"
+    "server": [],
+    "shared": [
+        "shared/main.lua"
     ],
-    "shared": [],
     "files": []
 }

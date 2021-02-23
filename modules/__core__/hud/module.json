@@ -12,7 +12,9 @@
     "client": [
         "client/main.lua"
     ],
-    "server": [],
+    "server": [
+        "server/main.lua"
+    ],
     "shared": [],
     "files": [],
     "ui_page": "html/index.html"

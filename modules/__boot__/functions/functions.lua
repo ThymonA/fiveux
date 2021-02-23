@@ -475,3 +475,12 @@ timeToString = function(time)
     local remain = math.floor(time / 86400)
     return remain, remain <= 0 and 'day' or 'days'
 end
+
+round = function(value, numDecimalPlaces)
+    if (numDecimalPlaces) then
+        local power = 10 ^ numDecimalPlaces
+        return math.floor((value * power) + 0.5) / (power)
+    end
+
+    return math.floor(value + 0.5)
+end

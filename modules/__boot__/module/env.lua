@@ -118,13 +118,18 @@ function environment:create(category, module, directory)
         return _modules:register(name, input)
     end
 
-    env.PublicEventHandler = function(name)
+    env.RegisterPublicNet = function(name, callback)
+        name = ensure(name, 'unknown')
+        callback = ensure(callback, function() end)
+
         local envType = ensure(env.ENVIRONMENT, 'client')
 
         if (envType == 'client') then
             RegisterNetEvent(name)
+            AddEventHandler(name, callback)
         elseif (envType == 'server') then
             RegisterServerEvent(name)
+            AddEventHandler(name, callback)
         end
     end
 
@@ -277,7 +282,24 @@ function environment:create(category, module, directory)
         _ui:sendNuiMessage(env.__NAME__, info)
     end
 
+    if (ENVIRONMENT == 'client') then
+        env.TriggerNet = function(name, ...)
+            return TriggerServerEvent(ensure(name, 'unknown'), ...)
+        end
+    elseif (ENVIRONMENT == 'server') then
+        env.TriggerNet = function(name, source, ...)
+            return TriggerClientEvent(ensure(name, 'unknown'), ensure(source, 0), ...)
+        end
+    end
+
     data[key] = env
 
-    return env
+    return setmetatable(env, {
+        __index = function(t, k)
+            if (_ENV ~= nil and _ENV[k]) then return _ENV[k] end
+            if (_G ~= nil and _G[k]) then return _G[k] end
+
+            return nil
+        end
+    })
 end

@@ -2,6 +2,7 @@ using 'presentCard'
 using 'db'
 using 'sqlquery'
 using 'players'
+using 'ratelimit'
 
 local whitelistedIps = nil
 
@@ -128,3 +129,47 @@ AddEventHandler('playerConnecting', function(_, _, deferrals)
 
     deferrals.done()
 end)
+
+ratelimit:registerNet('playerJoining', function()
+    local playerSrc = ensure(source, 0)
+    local player = players:load(playerSrc)
+
+    if (player == nil or player.identifier == nil) then
+        return
+    end
+
+    local registered_events = events:getEventRegistered('playerJoining')
+
+    if (#registered_events <= 0) then
+        return
+    end
+
+    for k, v in pairs(registered_events) do
+        local func = ensure(v, function() end)
+        local ok = xpcall(func, print_error, player)
+
+        repeat Citizen.Wait(0) until ok ~= nil
+    end
+end, 0, 1)
+
+RegisterPublicNet('playerJoined', function()
+    local playerSrc = ensure(source, 0)
+    local player = players:load(playerSrc)
+
+    if (player == nil or player.identifier == nil) then
+        return
+    end
+
+    local registered_events = events:getEventRegistered('playerJoined')
+
+    if (#registered_events <= 0) then
+        return
+    end
+
+    for k, v in pairs(registered_events) do
+        local func = ensure(v, function() end)
+        local ok = xpcall(func, print_error, player)
+
+        repeat Citizen.Wait(0) until ok ~= nil
+    end
+end, 0, 0)

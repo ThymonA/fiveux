@@ -1,4 +1,6 @@
 [
+    "threads",
+    "ratelimit",
     "db",
     "sqlquery",
     "presentcard",
