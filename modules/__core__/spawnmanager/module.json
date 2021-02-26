@@ -1,6 +1,6 @@
 {
     "version": "1.0.0",
-    "description": "Dobberdam player module",
+    "description": "Dobberdam spawnmanager module",
     "authors": [
         {
             "name": "Thymon Arens",
@@ -12,10 +12,7 @@
     "client": [
         "client/main.lua"
     ],
-    "server": [
-        "server/players.lua",
-        "server/main.lua"
-    ],
+    "server": [],
     "shared": [],
     "files": []
 }

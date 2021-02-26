@@ -54,3 +54,8 @@ config.dateTimeFormat = '%d-%m-%Y %H:%M:%S'
 -- Default player spawn
 --
 config.defaultSpawn = vector3(-206.79, -1015.12, 29.14)
+
+--
+-- Player's inventory weight
+--
+config.playerInventoryWeight = 25.0

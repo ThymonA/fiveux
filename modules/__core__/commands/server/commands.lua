@@ -45,7 +45,7 @@ function commands:register(name, whitelist, callback)
         
         if (data[name]) then
             local cmd = ensure(data[name], {})
-            local player = players:load(source)
+            local player = players:get(source)
 
             if (source == 0 and not console) then
                 print_error(T('console_not_allowed', name))

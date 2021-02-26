@@ -1,6 +1,11 @@
 local data = {}
+local global, global_loaded = {}, false
 
 translations = {}
+
+function translations:getGlobalTranslations()
+    return ensure(global, {})
+end
 
 function translations:load(category, module)
     category = ensure(category, 'unknown')
@@ -35,6 +40,14 @@ function translations:load(category, module)
         cache:write(fLangKey, fLangList)
     end
 
+    if (cache:exists(fCoreLangKey)) then
+        fCoreLangList = ensure(cache:read(fCoreLangKey), {})
+    else
+        fCoreLangList = translations:readJson(fCoreLangPath)
+        
+        cache:write(fCoreLangKey, fCoreLangList)
+    end
+
     if (cache:exists(coreLangKey)) then
         coreLangList = ensure(cache:read(coreLangKey), {})
     else
@@ -43,12 +56,11 @@ function translations:load(category, module)
         cache:write(coreLangKey, coreLangList)
     end
 
-    if (cache:exists(fCoreLangKey)) then
-        fCoreLangList = ensure(cache:read(fCoreLangKey), {})
-    else
-        fCoreLangList = translations:readJson(fCoreLangPath)
-        
-        cache:write(fCoreLangKey, fCoreLangList)
+    if (not global_loaded) then
+        for k, v in pairs(fCoreLangList) do global[k] = v end
+        for k, v in pairs(coreLangList) do global[k] = v end
+
+        global_loaded = true
     end
 
     finalList = ensure(fCoreLangList, {})

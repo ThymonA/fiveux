@@ -35,5 +35,35 @@ constants.boldFonts = {
 
 constants.types = {
     player = 'player',
-    jobs = 'jobs'
+    jobs = 'jobs',
+    item = 'item',
+    weapon = 'weapon'
+}
+
+constants.itemTypes = {
+    food = 'food',
+    drink = 'drink',
+    weapon = 'weapon',
+    cloth = 'cloth',
+    key = 'key',
+    document = 'document',
+    attachment = 'attachment',
+    cash = 'cash',
+    wallet = 'wallet'
+}
+
+constants.gunWeights = {
+    shotgun = 8.0,
+    melee = 1.5,
+    rifle = 10.0,
+    smg = 7.5,
+    heavy = 15.0,
+    pistol = 5.0,
+    mg = 12.5,
+    unarmed = 0.5,
+    sniper = 10.0,
+    thrown = 1.0,
+    petrolcan = 1.5,
+    parachute = 0.5,
+    fireextinguisher = 1.0
 }

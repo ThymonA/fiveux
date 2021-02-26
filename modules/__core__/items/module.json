@@ -1,6 +1,6 @@
 {
     "version": "1.0.0",
-    "description": "Dobberdam player module",
+    "description": "Dobberdam items module",
     "authors": [
         {
             "name": "Thymon Arens",
@@ -9,11 +9,9 @@
             "email": "thymon@arensmail.nl"
         }
     ],
-    "client": [
-        "client/main.lua"
-    ],
+    "client": [],
     "server": [
-        "server/players.lua",
+        "shared/main.lua",
         "server/main.lua"
     ],
     "shared": [],

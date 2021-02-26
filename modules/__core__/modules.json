@@ -1,4 +1,5 @@
 [
+    "spawnmanager",
     "threads",
     "ratelimit",
     "db",
@@ -12,5 +13,6 @@
     "locations",
     "logs",
     "commands",
-    "hud"
+    "hud",
+    "items"
 ]

@@ -48,6 +48,24 @@ function config:createEnvironment()
     for k, v in pairs(_ENV) do env[k] = v end
 
     env.config = {}
+    env.__TRANSLATIONS__ = translations ~= nil and translations:getGlobalTranslations() or {}
+    env.T = function(key, ...)
+        key = ensure(key, 'unknown')
+
+        local trans = ensure(env.__TRANSLATIONS__, {})
+        local translation = ensure(trans[key], ('missing(translation/%s)'):format(key))
+
+        if (translation:len() <= 0) then
+            translation = ('missing(translation/%s)'):format(key)
+        end
+
+        return translation:format(...)
+    end
+    env.load = function(name)
+        name = ensure(name, 'unknown')
+        
+        return config:load(name)
+    end
 
     return env
 end

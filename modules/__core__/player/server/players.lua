@@ -3,10 +3,21 @@ using 'bans'
 using 'wallets'
 using 'jobs'
 using 'locations'
+using 'events'
+using 'threads'
+using 'items'
 
 local data = {}
 
 players = {}
+
+function players:get(source)
+    source = ensure(source, 0)
+
+    if (source < 0) then return nil end
+
+    return data[source]
+end
 
 function players:load(source)
     source = ensure(source, -1)
@@ -26,6 +37,11 @@ function players:load(source)
         player.identifiers = self:getPlayerIdentifiers(source)
         player.tokens = self:getPlayerTokens(source)
     else
+        if (wallets == nil) then using 'wallets' end
+        if (locations == nil) then using 'locations' end
+        if (jobs == nil) then using 'jobs' end
+        if (items == nil) then using 'items' end
+
         player = {
             id = 0,
             source = source,
@@ -74,6 +90,7 @@ function players:load(source)
             player.job2 = jobs:getJobWithGrade(jobId, gradeId)
             player.group = defaultGroup
             player.position = defaultSpawn
+            player.stats = { health = 100, armor = 0, stamina = 100, thirst = 100, hunger = 100 }
 
             print_success(T('player_created', player.name))
         else
@@ -84,15 +101,76 @@ function players:load(source)
             player.job2 = jobs:getJobWithGrade(ensure(dbPlayer.job2, 0), ensure(dbPlayer.grade2, 0))
             player.group = ensure(dbPlayer.group, defaultGroup)
             player.position = ensure(dbPlayer.position, defaultSpawn)
+            player.stats = ensure(dbPlayer.stats, { health = 100, armor = 0, stamina = 100, thirst = 100, hunger = 100 })
         end
 
         player.wallets = wallets:getPlayerWallets(player.id)
         player.locations = locations:getPlayerLocations(player.citizen)
+        player.items = items:getPlayerItems(player.id)
     end
 
     player.banned, player.banInfo = bans:updateBanStatus(player.identifiers, player.name)
 
     cache:write(key, player)
+
+    function player:save()
+        local playerId = ensure(self.id, 0)
+        local job = ensure(self.job, {})
+        local job_grade = ensure(job.grade, {})
+        local job2 = ensure(self.job2, {})
+        local job2_grade = ensure(job.grade, {})
+
+        db:execute([[
+            UPDATE `players` SET `name` = :name, `group` = :group, `job` = :job, `grade` = :grade, `job2` = :job2, `grade2` = :grade2, `stats` = :stats, `position` = :position
+            WHERE `id` = :id
+        ]], {
+            ['name'] = ensure(self.name, 'Unknown'),
+            ['group'] = ensure(self.group, 'user'),
+            ['job'] = ensure(job.id, 0),
+            ['grade'] = ensure(job_grade.grade, 0),
+            ['job2'] = ensure(job2.id, 0),
+            ['grade2'] = ensure(job2_grade.grade, 0),
+            ['stats'] = encode(ensure(self.stats, {})),
+            ['position'] = encode(ensure(self.position, vector3(-206.79, -1015.12, 29.14))),
+            ['id'] = playerId
+        })
+
+        local wallets = ensure(self.wallets, {})
+
+        for name, balance in pairs(wallets) do
+            name = ensure(name, 'unknown')
+            balance = ensure(balance, 0)
+
+            db:execute("UPDATE `player_wallets` SET `balance` = :balance WHERE `name` = :name AND `player_id` = :id", {
+                ['balance'] = balance,
+                ['name'] = name,
+                ['id'] = playerId
+            })
+        end
+
+        local item_info = ensure(items:getInfo(), {})
+        local items = ensure(self.items, {})
+
+        for name, amount in pairs(items) do
+            name = ensure(name, 'unknown')
+            amount = ensure(amount, 0)
+
+            local itemInfo = ensure(item_info[name], {})
+            local savable = ensure(itemInfo.savable, true)
+
+            if (savable) then
+                db:execute("UPDATE `player_items` SET `amount` = :amount WHERE `name` = :name AND `player_id` = :id", {
+                    ['amount'] = amount,
+                    ['name'] = name,
+                    ['id'] = playerId
+                })
+            end
+        end
+
+        print_success(T('player_saved', ensure(self.name, 'Unknown')))
+    end
+
+    data[player.source] = player
 
     return player
 end
@@ -220,5 +298,14 @@ function players:generateCitizenId(identifier)
 
 	return 'unknown'
 end
+
+events:on('playerDropped', function(player)
+    if (player == nil or player.source == nil or player.source > 65535 or data[player.source] == nil) then
+        return
+    end
+
+    data[player.source]:save()
+    data[player.source] = nil
+end)
 
 register('players', players)

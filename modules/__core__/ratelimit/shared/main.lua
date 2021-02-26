@@ -93,7 +93,7 @@ Citizen.CreateThread(function()
         local addTime = round((timer - currentTime) / 1.25, 2)
 
         currentTick = currentTick + addTime
-        currentTick = currentTick <= 65565 and currentTick or 0
+        currentTick = currentTick <= 65535 and currentTick or 0
         currentTimer = timer
 
         Citizen.Wait(5)

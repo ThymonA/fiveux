@@ -9,7 +9,7 @@ function logging:create(source)
     source = ensure(source, 0)
 
     local logger = {}
-    local player = players:load(source)
+    local player = players:get(source)
     local identifier = ensure(player.identifier, 'unknown')
     local citizen = ensure(player.citizen, 'unknown')
 
