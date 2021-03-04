@@ -148,7 +148,7 @@ AddEventHandler('playerDropped', function(reason)
 
     for k, v in pairs(registered_events) do
         local func = ensure(v, function() end)
-        local ok = xpcall(func, print_error, player)
+        local ok = xpcall(func, print_error, player, reason)
 
         repeat Citizen.Wait(0) until ok ~= nil
     end

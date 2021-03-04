@@ -6,6 +6,7 @@ using 'locations'
 using 'events'
 using 'threads'
 using 'items'
+using 'object'
 
 local data = {}
 
@@ -30,8 +31,23 @@ function players:load(source)
     local cfg = config('general')
     local defaultSpawn = ensure(cfg.defaultSpawn, vector3(-206.79, -1015.12, 29.14))
     local defaultGroup = ensure(cfg.defaultGroup, 'user')
-
-    if (cache:exists(key)) then
+    
+    if (source == 0) then
+        player = {
+            id = 0,
+            source = 0,
+            name = 'Console',
+            citizen = 'system',
+            identifier = 'console',
+            identifiers = self:getPlayerIdentifiers(source),
+            tokens = self:getPlayerTokens(source),
+            banned = false,
+            banInfo = {},
+            wallets = {},
+            locations = {},
+            items = {}
+        }
+    elseif (cache:exists(key)) then
         player = cache:read(key)
         player.source = source
         player.identifiers = self:getPlayerIdentifiers(source)
@@ -53,7 +69,8 @@ function players:load(source)
             banned = false,
             banInfo = {},
             wallets = {},
-            locations = {}
+            locations = {},
+            items = {}
         }
 
         if (identifier == nil) then
@@ -107,13 +124,48 @@ function players:load(source)
         player.wallets = wallets:getPlayerWallets(player.id)
         player.locations = locations:getPlayerLocations(player.citizen)
         player.items = items:getPlayerItems(player.id)
+
+        ExecuteCommand(('add_principal identifier.citizen:%s group.%s'):format(player.citizen, player.group))
+        ExecuteCommand(('add_principal identifier.%s:%s group.%s'):format(__PRIMARY__, player.identifier, player.group))
+        ExecuteCommand(('add_principal identifier.citizen:%s job.%s'):format(player.identifier, ensure(ensure(self.job, {}).name, 'unemployed')))
+        ExecuteCommand(('add_principal identifier.citizen:%s job.%s'):format(player.identifier, ensure(ensure(self.job2, {}).name, 'unemployed')))
+        ExecuteCommand(('add_principal identifier.%s:%s job.%s'):format(__PRIMARY__, player.identifier, ensure(ensure(self.job, {}).name, 'unemployed')))
+        ExecuteCommand(('add_principal identifier.%s:%s job.%s'):format(__PRIMARY__, player.identifier, ensure(ensure(self.job2, {}).name, 'unemployed')))
     end
 
-    player.banned, player.banInfo = bans:updateBanStatus(player.identifiers, player.name)
+    if (source > 0) then
+        player.banned, player.banInfo = bans:updateBanStatus(player.identifiers, player.name)
+    end
 
     cache:write(key, player)
 
+    function player:kick(msg)
+        if (ensure(self.citizen, 'unknown') == 'system') then return end
+
+        msg = encode(msg, true)
+
+        local source = ensure(self.source, 0)
+
+        if (source > 0) then
+            DropPlayer(source, msg)
+        end
+    end
+
+    function player:triggerEvent(event, ...)
+        if (ensure(self.citizen, 'unknown') == 'system') then return end
+
+        event = ensure(event, 'unknown')
+
+        local source = ensure(self.source, 0)
+
+        if (source > 0) then
+            TriggerNet(event, source, ...)
+        end
+    end
+
     function player:save()
+        if (ensure(self.citizen, 'unknown') == 'system') then return end
+
         local playerId = ensure(self.id, 0)
         local job = ensure(self.job, {})
         local job_grade = ensure(job.grade, {})
@@ -135,6 +187,16 @@ function players:load(source)
             ['id'] = playerId
         })
 
+        self:saveWallets()
+        self:saveItems()
+
+        print_success(T('player_saved', ensure(self.name, 'Unknown')))
+    end
+
+    function player:saveWallets()
+        if (ensure(self.citizen, 'unknown') == 'system') then return end
+
+        local playerId = ensure(self.id, 0)
         local wallets = ensure(self.wallets, {})
 
         for name, balance in pairs(wallets) do
@@ -147,7 +209,12 @@ function players:load(source)
                 ['id'] = playerId
             })
         end
+    end
 
+    function player:saveItems()
+        if (ensure(self.citizen, 'unknown') == 'system') then return end
+
+        local playerId = ensure(self.id, 0)
         local item_info = ensure(items:getInfo(), {})
         local items = ensure(self.items, {})
 
@@ -166,8 +233,146 @@ function players:load(source)
                 })
             end
         end
+    end
 
-        print_success(T('player_saved', ensure(self.name, 'Unknown')))
+    function player:setWallet(name, amount)
+        if (ensure(self.citizen, 'unknown') == 'system') then return end
+
+        name = ensure(name, 'unknown')
+        amount = ensure(amount, 0)
+
+        if (self.wallets and self.wallets[name]) then
+            local prevBalance = ensure(self.wallets[name], 0)
+            local newBalance = amount
+
+            self.wallets[name] = newBalance
+            self:triggerEvent('update:wallet', name, newBalance, prevBalance)
+        end
+    end
+
+    function player:addWallet(name, amount)
+        if (ensure(self.citizen, 'unknown') == 'system') then return end
+
+        name = ensure(name, 'unknown')
+        amount = ensure(amount, 0)
+
+        if (self.wallets and self.wallets[name] and amount >= 0) then
+            local prevBalance = ensure(self.wallets[name], 0)
+            local newBalance = prevBalance + amount
+
+            self.wallets[name] = balance
+            self:triggerEvent('update:wallet', name, newBalance, prevBalance)
+        end
+    end
+
+    function player:removeWallet(name, amount)
+        if (ensure(self.citizen, 'unknown') == 'system') then return end
+
+        name = ensure(name, 'unknown')
+        amount = ensure(amount, 0)
+
+        if (self.wallets and self.wallets[name] and amount >= 0) then
+            local prevBalance = ensure(self.wallets[name], 0)
+            local newBalance = prevBalance - amount
+
+            self.wallets[name] = newBalance
+            self:triggerEvent('update:wallet', name, newBalance, prevBalance)
+        end
+    end
+
+    function player:setGroup(group)
+        if (ensure(self.citizen, 'unknown') == 'system') then return end
+
+        local oldGroup = ensure(self.group, 'user')
+        local newGroup = ensure(group, 'user')
+
+        ExecuteCommand(('remove_principal identifier.citizen:%s group.%s'):format(self.citizen, oldGroup))
+        ExecuteCommand(('remove_principal identifier.%s:%s group.%s'):format(__PRIMARY__, self.identifier, oldGroup))
+        ExecuteCommand(('add_principal identifier.citizen:%s group.%s'):format(self.citizen, newGroup))
+        ExecuteCommand(('add_principal identifier.%s:%s group.%s'):format(__PRIMARY__, self.identifier, newGroup))
+
+        self.group = newGroup;
+        self:triggerEvent('update:group', newGroup, oldGroup)
+    end
+
+    function player:setJob(name, grade)
+        if (ensure(self.citizen, 'unknown') == 'system') then return end
+
+        name = ensure(name, 'unemployed')
+        grade = ensure(grade, 0)
+
+        local jobId, gradeId = jobs:getJobIdWithGrade(name, grade)
+
+        if (jobId ~= nil and gradeId ~= nil) then
+            local prevJob = ensure(self.job, {})
+            local newJob = jobs:getJobWithGrade(jobId, gradeId)
+
+            if (job ~= nil) then
+                ExecuteCommand(('remove_principal identifier.citizen:%s job.%s'):format(player.citizen, ensure(ensure(prevJob, {}).name, 'unemployed')))
+                ExecuteCommand(('remove_principal identifier.%s:%s job.%s'):format(__PRIMARY__, player.identifier, ensure(ensure(prevJob, {}).name, 'unemployed')))
+                ExecuteCommand(('add_principal identifier.citizen:%s job.%s'):format(player.citizen, ensure(ensure(newJob, {}).name, 'unemployed')))
+                ExecuteCommand(('add_principal identifier.%s:%s job.%s'):format(__PRIMARY__, player.identifier, ensure(ensure(newJob, {}).name, 'unemployed')))
+
+                self.job = newJob
+                self:triggerEvent('update:job', object:convert('job', newJob),  object:convert('job', prevJob))
+            end
+        end
+    end
+
+    function player:setJob2(name, grade)
+        if (ensure(self.citizen, 'unknown') == 'system') then return end
+
+        name = ensure(name, 'unemployed')
+        grade = ensure(grade, 0)
+
+        local jobId, gradeId = jobs:getJobIdWithGrade(name, grade)
+
+        if (jobId ~= nil and gradeId ~= nil) then
+            local prevJob = ensure(self.job2, {})
+            local newJob = jobs:getJobWithGrade(jobId, gradeId)
+
+            if (job ~= nil) then
+                ExecuteCommand(('remove_principal identifier.citizen:%s job.%s'):format(player.citizen, ensure(ensure(prevJob, {}).name, 'unemployed')))
+                ExecuteCommand(('remove_principal identifier.%s:%s job.%s'):format(__PRIMARY__, player.identifier, ensure(ensure(prevJob, {}).name, 'unemployed')))
+                ExecuteCommand(('add_principal identifier.citizen:%s job.%s'):format(player.citizen, ensure(ensure(newJob, {}).name, 'unemployed')))
+                ExecuteCommand(('add_principal identifier.%s:%s job.%s'):format(__PRIMARY__, player.identifier, ensure(ensure(newJob, {}).name, 'unemployed')))
+
+                self.job2 = newJob
+                self:triggerEvent('update:job2', object:convert('job', newJob),  object:convert('job', prevJob))
+            end
+        end
+    end
+
+    function player:error(...)
+        if (ensure(self.citizen, 'unknown') == 'system') then print_error(...) return end
+    end
+
+    function player:allowed(ace)
+        if (ensure(self.citizen, 'unknown') == 'system') then return true end
+
+        ace = ensure(ace, 'unknown')
+
+        local source = ensure(self.source, 0)
+        local playerAllowed = IsPlayerAceAllowed(source, ace)
+
+        if (playerAllowed) then return true end
+
+        local group = ensure(self.group, 'user')
+        local groupAllowed = IsPrincipalAceAllowed(('group.%s'):format(group), ace)
+
+        if (groupAllowed) then return true end
+
+        local job = ensure(ensure(self.job, {}).name, 'unemployed')
+        local jobAllowed = IsPrincipalAceAllowed(('job.%s'):format(job), ace)
+
+        if (jobAllowed) then return true end
+
+        local job2 = ensure(ensure(self.job2, {}).name, 'unemployed')
+        local job2Allowed = IsPrincipalAceAllowed(('job.%s'):format(job2), ace)
+
+        if (job2Allowed) then return true end
+
+        return false
     end
 
     data[player.source] = player
@@ -304,8 +509,19 @@ events:on('playerDropped', function(player)
         return
     end
 
-    data[player.source]:save()
-    data[player.source] = nil
+    local src = ensure(player.source, 0)
+    local identifier = ensure(player.identifier, 'unknown')
+    local key = ('players:%s'):format(identifier)
+
+    data[src]:save()
+    data[src] = nil
+
+    player.source = nil
+
+    cache:setProp(key, 'source', nil)
 end)
+
+--- Load `console` as player
+players:load(0)
 
 register('players', players)

@@ -1,6 +1,6 @@
 {
     "version": "1.0.0",
-    "description": "Dobberdam commands module",
+    "description": "Dobberdam object module",
     "authors": [
         {
             "name": "Thymon Arens",
@@ -10,10 +10,10 @@
         }
     ],
     "client": [],
-    "server": [
-        "server/commands.lua",
-        "commands/players.lua"
+    "server": [],
+    "shared": [
+        "shared/object.lua",
+        "shared/parsers.lua"
     ],
-    "shared": [],
     "files": []
 }

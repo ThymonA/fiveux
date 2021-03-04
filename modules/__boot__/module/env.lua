@@ -43,7 +43,7 @@ function environment:create(category, module, directory)
         local message = ('^1> ^4info^7(^4%s^7/^4%s^7):'):format(envType, module)
 
         for i = 1, #args, 1 do
-            message = ('%s %s'):format(message, ensure(args[i], typeof(args[i])))
+            message = ('%s %s'):format(message, encode(args[i], true))
         end
 
         message = ('%s^7'):format(message)
@@ -58,7 +58,7 @@ function environment:create(category, module, directory)
         local message = ('^1> ^2success^7(^2%s^7/^2%s^7):'):format(envType, module)
 
         for i = 1, #args, 1 do
-            message = ('%s %s'):format(message, ensure(args[i], typeof(args[i])))
+            message = ('%s %s'):format(message, encode(args[i], true))
         end
 
         message = ('%s^7'):format(message)
@@ -73,7 +73,7 @@ function environment:create(category, module, directory)
         local message = ('^1> ^3warning^7(^3%s^7/^3%s^7):'):format(envType, module)
 
         for i = 1, #args, 1 do
-            message = ('%s %s'):format(message, ensure(args[i], typeof(args[i])))
+            message = ('%s %s'):format(message, encode(args[i], true))
         end
 
         message = ('%s^7'):format(message)
@@ -88,7 +88,7 @@ function environment:create(category, module, directory)
         local message = ('^1> ^1error^7(^1%s^7/^1%s^7):'):format(envType, module)
 
         for i = 1, #args, 1 do
-            message = ('%s %s'):format(message, ensure(args[i], typeof(args[i])))
+            message = ('%s %s'):format(message, encode(args[i], true))
         end
 
         message = ('%s^7'):format(message)
@@ -143,7 +143,13 @@ function environment:create(category, module, directory)
             translation = ('missing(translation/%s)'):format(key)
         end
 
-        return translation:format(...)
+        local arguments = { ... }
+        
+        for i = 1, #arguments, 1 do
+            arguments[i] = encode(arguments[i], true)
+        end
+
+        return translation:format(table.unpack(arguments))
     end
 
     env.serverMessage = function(message, footer)

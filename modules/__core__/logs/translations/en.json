@@ -1,5 +1,9 @@
 {
-    "player_connecting_message": "**Info:**\nPlayer: `{name}`\nIdentifier: `{identifier}`\nIP: `{identifier:ip}`",
+    "player_connecting_message": "**Info:**\nPlayer: `{name}`\nIdentifier: `{identifier}`\nCitizen: `{citizen}`\nIP: `{identifier:ip}`",
     "player_connecting_title": "{name} is now connecting",
+    "player_joined_message": "**Info:**\nPlayer: `{name}`\nIdentifier: `{identifier}`\nCitizen: `{citizen}`\nID: `{source}`",
+    "player_joined_title": "{name} is now connected",
+    "player_disconnect_message": "**Info:**\nPlayer: `{name}`\nIdentifier: `{identifier}`\nCitizen: `{citizen}`\nReason: `%s`",
+    "player_disconnect_title": "{name} disconnected",
     "unknown_error": "An unknown error occur in module 'logs', please try again or contact the server owners."
 }

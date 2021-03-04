@@ -1,5 +1,6 @@
 [
     "spawnmanager",
+    "object",
     "threads",
     "ratelimit",
     "db",

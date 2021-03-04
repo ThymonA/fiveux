@@ -236,11 +236,12 @@ try = function(func, catch_func)
     end
 end
 
-encode = function(input)
+encode = function(input, ignoreJson)
     local innerTable = ''
     local hasKey = false
 
     input = ensure(input, {})
+    ignoreJson = ensure(ignoreJson, false)
 
     for k, v in pairs(input) do
         local keyType = typeof(k) or 'nil'
@@ -256,13 +257,15 @@ encode = function(input)
             end
 
             if (valueType == 'table') then
-				finalValue = hasIndex and encode(v) or ('"%s": %s'):format(k, encode(v))
+				finalValue = hasIndex and encode(v, ignoreJson) or ('"%s": %s'):format(k, encode(v, ignoreJson))
 			elseif (valueType == 'number') then
 				finalValue = hasIndex and ('%.2f'):format(v) or ('"%s": %.2f'):format(k, v)
 			elseif (valueType == 'string') then
-                v = v:gsub("\"", "\\\"")
+                if (not ignoreJson) then
+                    v = v:gsub("\"", "\\\"")
+                end
 
-				finalValue = hasIndex and ('"%s"'):format(v) or ('"%s": "%s"'):format(k, v)
+				finalValue = hasIndex and ('%s'):format((ignoreJson and v or '"' .. v .. '"')) or ('"%s": %s'):format(k, (ignoreJson and v or '"' .. v .. '"'))
 			elseif (valueType == 'boolean') then
 				finalValue = hasIndex and ('%s'):format(v and 'true' or 'false') or ('"%s": %s'):format(k, v and 'true' or 'false')
 			elseif (valueType == 'vector2') then
@@ -271,7 +274,9 @@ encode = function(input)
 				finalValue = hasIndex and ('[%.2f,%.2f,%.2f]'):format(v.x, v.y, v.z) or ('"%s": [%.2f,%.2f,%.2f]'):format(k, v.x, v.y, v.z)
 			elseif (valueType == 'vector4') then
 				finalValue = hasIndex and ('[%.2f,%.2f,%.2f,%.2f]'):format(v.x, v.y, v.z, v.w) or ('"%s": [%.2f,%.2f,%.2f,%.2f]'):format(k, v.x, v.y, v.z, v.w)
-			end
+            elseif (valueType == 'nil' or valueType == 'null') then
+                finalValue = hasIndex and (ignoreJson and 'nil' or "nil") or ('"%s": %s'):format(k, (ignoreJson and 'nil' or "nil"))
+            end
         end
 
         if (innerTable == nil or string.len(innerTable) == 0) then
@@ -279,6 +284,10 @@ encode = function(input)
 		else
 			innerTable = ('%s,%s'):format(innerTable, finalValue)
 		end
+    end
+
+    if (ignoreJson) then
+        return innerTable
     end
 
     local final = hasKey and ('{%s}'):format(innerTable) or ('[%s]'):format(innerTable)

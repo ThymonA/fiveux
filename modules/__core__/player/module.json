@@ -10,11 +10,13 @@
         }
     ],
     "client": [
-        "client/main.lua"
+        "client/main.lua",
+        "client/data.lua"
     ],
     "server": [
         "server/players.lua",
-        "server/main.lua"
+        "server/main.lua",
+        "server/commands.lua"
     ],
     "shared": [],
     "files": []

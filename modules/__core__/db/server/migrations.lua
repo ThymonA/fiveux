@@ -157,7 +157,7 @@ local function executeMigration()
                     Citizen.Wait(0)
 
                     if (not hasMigration and hasAnyMigration) then
-                        print_success(T('migration_success', key, (index - 2)))
+                        print_success(T('migration_success', key))
                     end
                 end
 

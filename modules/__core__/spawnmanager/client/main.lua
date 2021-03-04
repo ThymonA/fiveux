@@ -1,6 +1,6 @@
 local playerData = {}
 
-RegisterPublicNet('fiveux:playerData', function(data)
+RegisterPublicNet('update:playerData', function(data)
     playerData = ensure(data, {})
 
     Citizen.CreateThread(function()

@@ -5,6 +5,28 @@ local data = {}
 
 logging = {}
 
+function logging:get(player)
+    player = ensure(player, {})
+
+    local citizen = ensure(player.citizen, 'unknown')
+
+    if (citizen == 'unknown') then
+        return nil
+    end
+
+    local key = ('logger:player:%s'):format(citizen)
+
+    if (cache:exists(key)) then
+        local logger = cache:read(key)
+
+        logger.user = player
+
+        return logger
+    end
+
+    return nil
+end
+
 function logging:create(source)
     source = ensure(source, 0)
 
@@ -93,9 +115,9 @@ function logging:create(source)
         action = ensure(action, 'none')
 
         return ensure(str, '')
-            :gsub('{name}', self.user.name)
+            :gsub('{name}', ensure(self.user.name, 'Unknown'))
             :gsub('{action}', action)
-            :gsub('{identifier}', self.user.identifier)
+            :gsub('{identifier}', ensure(self.user.identifier, 'unknown'))
             :gsub('{citizen}', ensure(self.user.identifiers.citizen, 'none'))
             :gsub('{identifier:steam}', ensure(self.user.identifiers.steam, 'none'))
             :gsub('{identifier:license}', ensure(self.user.identifiers.license, 'none'))
@@ -106,7 +128,7 @@ function logging:create(source)
             :gsub('{identifier:fivem}', ensure(self.user.identifiers.fivem, 'none'))
             :gsub('{identifier:ip}', ensure(self.user.identifiers.ip, 'none'))
             :gsub('{identifier:citizen}', ensure(self.user.identifiers.citizen, 'none'))
-            :gsub('{source}', self.user.source)
+            :gsub('{source}', ensure(self.user.source, 'none'))
     end
 
     cache:write(key, logger)

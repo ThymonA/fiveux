@@ -41,6 +41,18 @@ function cache:exists(key)
     return false
 end
 
+function cache:setProp(key, name, value)
+    key = ensure(key, 'unknown'):lower()
+    name = ensure(name, 'unknown')
+
+    if (key == 'unknown') then return nil end
+    if (data == nil) then data = { protected = {}, public = {} } end
+    if (data.protected[key] ~= nil) then return end
+    if (data.public[key] ~= nil) then
+        data.public[key][name] = value
+    end
+end
+
 function cache:delete(key)
     key = ensure(key, 'unknown'):lower()
 

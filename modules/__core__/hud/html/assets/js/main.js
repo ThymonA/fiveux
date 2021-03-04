@@ -93,6 +93,21 @@ window.FIVEUX_HUD = {
             this.thirst = thirst <= 0 ? 0 : (thirst >= 100 ? 100 : thirst)
             this.hunger = hunger <= 0 ? 0 : (hunger >= 100 ? 100 : hunger)
             this.stressed = stressed <= 0 ? 0 : (stressed >= 100 ? 100 : stressed)
+        },
+        UPDATE_JOB({ name, grade }) {
+            this.job_label = name || 'Unknown';
+            this.grade_label = grade || 'Unknown';
+        },
+        UPDATE_JOB2({ name, grade }) {
+            this.job2_label = name || 'Unknown';
+            this.grade2_label = grade || 'Unknown';
+        },
+        UPDATE_WALLET({ name, balance }) {
+            if (name === 'cash') {
+                this.cash = typeof balance == 'number' ? balance : Number(balance);
+            } else if (name === 'crime') {
+                this.crime = typeof balance == 'number' ? balance : Number(balance);
+            }
         }
     }
 }
