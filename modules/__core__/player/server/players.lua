@@ -127,8 +127,8 @@ function players:load(source)
 
         ExecuteCommand(('add_principal identifier.citizen:%s group.%s'):format(player.citizen, player.group))
         ExecuteCommand(('add_principal identifier.%s:%s group.%s'):format(__PRIMARY__, player.identifier, player.group))
-        ExecuteCommand(('add_principal identifier.citizen:%s job.%s'):format(player.identifier, ensure(ensure(self.job, {}).name, 'unemployed')))
-        ExecuteCommand(('add_principal identifier.citizen:%s job.%s'):format(player.identifier, ensure(ensure(self.job2, {}).name, 'unemployed')))
+        ExecuteCommand(('add_principal identifier.citizen:%s job.%s'):format(player.citizen, ensure(ensure(self.job, {}).name, 'unemployed')))
+        ExecuteCommand(('add_principal identifier.citizen:%s job.%s'):format(player.citizen, ensure(ensure(self.job2, {}).name, 'unemployed')))
         ExecuteCommand(('add_principal identifier.%s:%s job.%s'):format(__PRIMARY__, player.identifier, ensure(ensure(self.job, {}).name, 'unemployed')))
         ExecuteCommand(('add_principal identifier.%s:%s job.%s'):format(__PRIMARY__, player.identifier, ensure(ensure(self.job2, {}).name, 'unemployed')))
     end

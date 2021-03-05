@@ -67,11 +67,11 @@ function commands:register(name, whitelist, callback)
         local groups = ensure(data[name].groups, {})
 
         for i = 1, #jobs, 1 do
-            ExecuteCommand(('remove_principal job.%s cmd.%s'):format(ensure(jobs[i], 'unemployed'), name))
+            ExecuteCommand(('remove_ace job.%s cmd.%s allow'):format(ensure(jobs[i], 'unemployed'), name))
         end
 
         for i = 1, #groups, 1 do
-            ExecuteCommand(('remove_principal group.%s cmd.%s'):format(ensure(groups[i], 'user'), name))
+            ExecuteCommand(('remove_ace group.%s cmd.%s allow'):format(ensure(groups[i], 'user'), name))
         end
     end
 
@@ -89,11 +89,11 @@ function commands:register(name, whitelist, callback)
     local ace = ('cmd.%s'):format(name)
 
     for i = 1, #command.jobs, 1 do
-        ExecuteCommand(('add_principal job.%s cmd.%s'):format(ensure(command.jobs[i], 'unemployed'), name))
+        ExecuteCommand(('add_ace job.%s cmd.%s allow'):format(ensure(command.jobs[i], 'unemployed'), name))
     end
 
     for i = 1, #command.groups, 1 do
-        ExecuteCommand(('add_principal group.%s cmd.%s'):format(ensure(command.groups[i], 'user'), name))
+        ExecuteCommand(('add_ace group.%s cmd.%s allow'):format(ensure(command.groups[i], 'user'), name))
     end
 
     debug(("Register command '~x~%s~s~' for module '~x~%s~s~'"):format(command.name, command.module))
