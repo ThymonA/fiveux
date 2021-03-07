@@ -114,6 +114,10 @@ function environment:create(category, module, directory)
         return _modules:load(name, env, ...)
     end
 
+    env.get = function(name, ...)
+        return _modules:load(name, env, ...)
+    end
+
     env.register = function(name, input)
         return _modules:register(name, input)
     end
@@ -296,6 +300,17 @@ function environment:create(category, module, directory)
         env.TriggerNet = function(name, source, ...)
             return TriggerClientEvent(ensure(name, 'unknown'), ensure(source, 0), ...)
         end
+    end
+
+    env.TriggerLocal = function(name, ...)
+        return TriggerEvent(ensure(name, 'unknown'), ...)
+    end
+
+    env.RegisterLocalEvent = function(name, callback)
+        name = ensure(name, 'unknown')
+        callback = ensure(callback, function() end)
+
+        return AddEventHandler(name, callback)
     end
 
     data[key] = env

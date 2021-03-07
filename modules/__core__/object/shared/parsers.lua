@@ -11,3 +11,31 @@ object:register('job', function(input)
         grade_permissions = ensure(job_grade.permissions, {})
     }
 end)
+
+object:register('weapon', function(input)
+    local weapon = ensure(input, {})
+
+    return {
+        name = ensure(weapon.name, 'weapon_unknown'),
+        hash = ensure(weapon.hash, -1),
+        uuid = ensure(weapon.uuid, 'unknown'),
+        bullets = ensure(weapon.bullets, 0),
+        attachments = ensure(weapon.attachments, {})
+    }
+end)
+
+object:register('location', function(input)
+    local location = ensure(input, {})
+    local weapons = {}
+
+    for uuid, data in pairs(ensure(input.weapons, {})) do
+        data = ensure(data, {})
+
+        weapons[ensure(data.name, 'weapon_unknown')] = object:convert('weapon', data)
+    end
+
+    return {
+        name = ensure(location.name, 'unknown'),
+        weapons = weapons
+    }
+end)

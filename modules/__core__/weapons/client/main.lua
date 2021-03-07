@@ -1,0 +1,1 @@
+register('weapons', weapons)

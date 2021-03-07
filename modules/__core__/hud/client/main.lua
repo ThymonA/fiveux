@@ -59,47 +59,8 @@ threads:addTask(function()
     end
 end, 25)
 
-RegisterPublicNet('update:playerData', function(data)
-    playerData = ensure(data, {})
+RegisterLocalEvent('update:player', function(data)
+    playerData = data
 
-    UpdatePlayerData()
-end)
-
-RegisterPublicNet('update:job', function(job)
-    playerData.job = job
-
-    SendNUIMessage({
-        action = 'UPDATE_JOB',
-        name = ensure(job.label, 'Unemployed'),
-        grade = ensure(job.grade_label, 'Unemployed')
-    })
-end)
-
-RegisterPublicNet('update:job2', function(job2)
-    playerData.job2 = job2
-
-    SendNUIMessage({
-        action = 'UPDATE_JOB2',
-        name = ensure(job2.label, 'Unemployed'),
-        grade = ensure(job2.grade_label, 'Unemployed')
-    })
-end)
-
-RegisterPublicNet('update:group', function(group)
-    playerData.group = group
-end)
-
-RegisterPublicNet('update:wallet', function(name, balance)
-    name = ensure(name, 'unknown')
-    balance = ensure(balance, 0)
-
-    if (playerData.wallets and playerData.wallets[name]) then
-        playerData.wallets[name] = balance
-
-        SendNUIMessage({
-            action = 'UPDATE_WALLET',
-            name = name,
-            balance = balance
-        })
-    end
+    UpdatePlayerData(true)
 end)

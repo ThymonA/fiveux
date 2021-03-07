@@ -83,6 +83,7 @@ function locations:getPlayerLocations(citizen)
     
             data.players[citizen][name] = {
                 id = ensure(v.id, 0),
+                name = name,
                 weapons = weapons:getAllWeapons(ensure(v.id, 0))
             }
         end
@@ -100,6 +101,7 @@ function locations:getPlayerLocations(citizen)
                             ['citizen'] = citizen,
                             ['name'] = name
                         }),
+                        name = name,
                         weapons = {}
                     }
                 end

@@ -50,6 +50,9 @@ RegisterPublicNet('update:playerData', function(data)
     
                 SetEntityCoords(ped, position.x, position.y, position.z, false, false, false, true)
                 FreezeEntityPosition(ped, false)
+
+                TriggerLocal('player:spawned', ped, position)
+                TriggerNet('player:spawned', position)
     
                 return
             end

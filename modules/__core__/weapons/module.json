@@ -9,7 +9,9 @@
             "email": "thymon@arensmail.nl"
         }
     ],
-    "client": [],
+    "client": [
+        "client/main.lua"
+    ],
     "server": [
         "server/weapons.lua"
     ],

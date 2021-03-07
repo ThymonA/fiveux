@@ -64,3 +64,8 @@ config.defaultLocations = {
 -- Number of clips on create
 --
 config.numberOfClips = 2
+
+--
+-- Save player data every x time
+--
+config.saveInterval = (60 * 1000) * 2.5 -- every 2.5 minutes

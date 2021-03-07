@@ -197,3 +197,27 @@ RegisterPublicNet('playerJoined', function()
         repeat Citizen.Wait(0) until ok ~= nil
     end
 end, 0, 0)
+
+RegisterPublicNet('player:spawned', function(position)
+    local playerSrc = ensure(source, 0)
+    local player = players:get(playerSrc)
+
+    if (player == nil or player.identifier == nil) then
+        return
+    end
+
+    local registered_events = events:getEventRegistered('playerSpawned')
+
+    if (#registered_events <= 0) then
+        return
+    end
+
+    local playerPed = GetPlayerPed(playerSrc)
+
+    for k, v in pairs(registered_events) do
+        local func = ensure(v, function() end)
+        local ok = xpcall(func, print_error, player, playerPed, position)
+
+        repeat Citizen.Wait(0) until ok ~= nil
+    end
+end)
