@@ -1,5 +1,4 @@
 [
-    "markers",
     "spawnmanager",
     "object",
     "threads",
@@ -8,6 +7,7 @@
     "sqlquery",
     "presentcard",
     "events",
+    "markers",
     "bans",
     "jobs",
     "player",

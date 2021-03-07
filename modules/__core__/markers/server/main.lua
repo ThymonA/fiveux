@@ -1,3 +1,6 @@
+using 'events'
+using 'object'
+
 local data = {}
 
 marker = function(name)
@@ -13,10 +16,11 @@ marker = function(name)
         rotation = vec(0, 0, 0),
         direction = vec(0, 0, 0),
         faceCamera = false,
-        textureDict = 'mpmissmarkers256',
-        textureName = 'custom_icon',
+        textureDict = 'unknown',
+        textureName = 'unknown',
         activationRange = 1.0,
-        hide = false
+        hide = false,
+        addon_data = {}
     }
 
     local mt = setmetatable(m, {
@@ -47,6 +51,7 @@ marker = function(name)
                 data[n].textureName = ensure(options.textureName, data[n].textureName)
                 data[n].activationRange = ensure(options.activationRange, data[n].activationRange)
                 data[n].hide = ensure(options.hide, data[n].hide)
+                data[n].addon_data = ensure(options.addon_data, {})
 
                 for i = 1, #currentWhitelist.jobs, 1 do ExecuteCommand(('remove_ace job.%s marker.%s allow'):format(ensure(currentWhitelist.jobs[i], 'unemployed'), n)) end
                 for i = 1, #currentWhitelist.groups, 1 do ExecuteCommand(('remove_ace group.%s marker.%s allow'):format(ensure(currentWhitelist.groups[i], 'user'), n)) end
@@ -66,6 +71,30 @@ markers = {}
 function markers:getAll()
     return ensure(data, {})
 end
+
+local function reloadMarkers(player)
+    if (player == nil or player.source == nil or player.source <= 0 or player.source >= 65536) then
+        return
+    end
+
+    local playerMarkers = {}
+
+    for _, m in pairs(ensure(data, {})) do
+        local name = ensure(m.name, 'unknown')
+
+        if (player:allowed(('marker.%s'):format(name))) then
+            playerMarkers[name] = object:convert('marker', m)
+        end
+    end
+
+    player:triggerEvent('update:markers', playerMarkers)
+end
+
+events:on('playerJoined', reloadMarkers)
+
+RegisterLocalEvent('update:group', reloadMarkers)
+RegisterLocalEvent('update:job', reloadMarkers)
+RegisterLocalEvent('update:job2', reloadMarkers)
 
 register('marker', marker, true)
 register('markers', markers)

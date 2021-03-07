@@ -39,3 +39,25 @@ object:register('location', function(input)
         weapons = weapons
     }
 end)
+
+object:register('marker', function(input)
+    local marker = ensure(input, {})
+
+    return {
+        name = ensure(marker.name, 'unknown'),
+        type = ensure(marker.type, 1),
+        position = ensure(marker.position, vec(0, 0, 0)),
+        rgba = ensure(marker.rgba, vec(255, 255, 255, 100)),
+        rangeToShow = ensure(marker.rangeToShow, 25.0),
+        bobUpAndDown = ensure(marker.bobUpAndDown, false),
+        scale = ensure(marker.scale, vec(1, 1, 0.8)),
+        rotation = ensure(marker.rotation, vec(0, 0, 0)),
+        direction = ensure(marker.direction, vec(0, 0, 0)),
+        faceCamera = ensure(marker.faceCamera, false),
+        textureDict = ensure(marker.textureDict, 'unknown'),
+        textureName = ensure(marker.textureName, 'unknown'),
+        activationRange = ensure(marker.activationRange, 1.0),
+        hide = ensure(marker.hide, false),
+        addon_data = ensure(marker.addon_data, {})
+    }
+end)

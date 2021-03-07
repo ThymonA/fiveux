@@ -20,6 +20,20 @@ function players:get(source)
     return data[source]
 end
 
+function players:getById(playerId)
+    playerId = ensure(playerId, 0)
+
+    if (playerId <= 0) then return nil end
+
+    for k, v in pairs(ensure(data, {})) do
+        if (ensure(v.id, 0) == playerId) then
+            return v
+        end
+    end
+
+    return nil
+end
+
 function players:load(source)
     source = ensure(source, -1)
 
@@ -167,6 +181,12 @@ function players:load(source)
         end
     end
 
+    function player:triggerLocal(event, ...)
+        event = ensure(event, 'unknown')
+
+        TriggerLocal(event, self, ...)
+    end
+
     function player:save()
         if (ensure(self.citizen, 'unknown') == 'system') then return end
 
@@ -251,6 +271,7 @@ function players:load(source)
 
             self.wallets[name] = newBalance
             self:triggerEvent('update:wallet', name, newBalance, prevBalance)
+            self:triggerLocal('update:wallet', name, newBalance, prevBalance)
             self:log({
                 action = 'wallet.set',
                 arguments = { newBalance = newBalance, prevBalance = prevBalance, name = name },
@@ -271,6 +292,7 @@ function players:load(source)
 
             self.wallets[name] = newBalance
             self:triggerEvent('update:wallet', name, newBalance, prevBalance)
+            self:triggerLocal('update:wallet', name, newBalance, prevBalance)
             self:log({
                 action = 'wallet.add',
                 arguments = { newBalance = newBalance, prevBalance = prevBalance, name = name },
@@ -291,6 +313,7 @@ function players:load(source)
 
             self.wallets[name] = newBalance
             self:triggerEvent('update:wallet', name, newBalance, prevBalance)
+            self:triggerLocal('update:wallet', name, newBalance, prevBalance)
             self:log({
                 action = 'wallet.remove',
                 arguments = { newBalance = newBalance, prevBalance = prevBalance, name = name },
@@ -316,6 +339,7 @@ function players:load(source)
 
         self.group = newGroup;
         self:triggerEvent('update:group', newGroup, oldGroup)
+        self:triggerLocal('update:group', newGroup, oldGroup)
         self:log({
             action = 'group.set',
             arguments = { oldGroup = oldGroup, newGroup = newGroup },
@@ -343,6 +367,7 @@ function players:load(source)
 
                 self.job = newJob
                 self:triggerEvent('update:job', object:convert('job', newJob),  object:convert('job', prevJob))
+                self:triggerLocal('update:job', object:convert('job', newJob),  object:convert('job', prevJob))
                 self:log({
                     action = 'job.set',
                     arguments = { prevJob = prevJob.name, newJob = newJob.name },
@@ -372,6 +397,7 @@ function players:load(source)
 
                 self.job2 = newJob
                 self:triggerEvent('update:job2', object:convert('job', newJob),  object:convert('job', prevJob))
+                self:triggerLocal('update:job2', object:convert('job', newJob),  object:convert('job', prevJob))
                 self:log({
                     action = 'job2.set',
                     arguments = { prevJob = prevJob.name, newJob = newJob.name },

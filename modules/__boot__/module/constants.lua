@@ -61,6 +61,12 @@ constants.itemTypes = {
     wallet = 'wallet'
 }
 
+constants.vehicleTypes = {
+    car = 'car',
+    aircraft = 'aircraft',
+    boat = 'boat'
+}
+
 constants.gunWeights = {
     shotgun = 8.0,
     melee = 1.5,

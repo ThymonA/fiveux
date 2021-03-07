@@ -1,4 +1,5 @@
 [
     "__core__",
-    "__player__"
+    "__players__",
+    "__vehicles__"
 ]

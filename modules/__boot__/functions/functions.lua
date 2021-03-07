@@ -287,8 +287,9 @@ encode = function(input, ignoreJson)
     end
 
     if (ignoreJson) then
-        if (innerTable:startsWith('"')) then innerTable = innerTable:sub(2) end
-        if (innerTable:endsWith('"')) then innerTable = innerTable:sub(1, (#innerTable - 1)) end
+        if (innerTable:startsWith('"') and innerTable:endsWith('"')) then
+            innerTable = innerTable:sub(2, (#innerTable - 1))
+        end
 
         return innerTable
     end
