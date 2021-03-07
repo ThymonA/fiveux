@@ -2,7 +2,7 @@
 -- Enable global debug, this will print all
 -- handlings done by this framework
 --
-config.debugEnabled = true
+config.debugEnabled = false
 
 --
 -- Primary identifier, like:

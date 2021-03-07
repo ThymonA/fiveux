@@ -8,7 +8,7 @@ events:on('playerJoined', function(player)
         name = ensure(player.name, 'Unknown'),
         wallets = ensure(player.wallets, {}),
         items = ensure(player.items, {}),
-        position = ensure(player.position, vector3(-206.79, -1015.12, 29.14)),
+        position = ensure(player.position, vec(-206.79, -1015.12, 29.14)),
         group = ensure(player.group, 'user'),
         job = object:convert('job', player.job),
         job2 = object:convert('job', player.job2),
@@ -40,7 +40,7 @@ end)
 
 ratelimit:registerNet('players:position', function(src, position)
     src = ensure(src, 0)
-    position = ensure(position, vector3(-206.79, -1015.12, 29.14))
+    position = ensure(position, vec(-206.79, -1015.12, 29.14))
 
     local player = players:get(src)
 

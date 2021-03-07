@@ -257,7 +257,7 @@ encode = function(input, ignoreJson)
             end
 
             if (valueType == 'table') then
-				finalValue = hasIndex and encode(v, ignoreJson) or ('"%s": %s'):format(k, encode(v, ignoreJson))
+				finalValue = hasIndex and encode(v) or ('"%s": %s'):format(k, encode(v))
 			elseif (valueType == 'number') then
 				finalValue = hasIndex and ('%.2f'):format(v) or ('"%s": %.2f'):format(k, v)
 			elseif (valueType == 'string') then
@@ -265,7 +265,7 @@ encode = function(input, ignoreJson)
                     v = v:gsub("\"", "\\\"")
                 end
 
-				finalValue = hasIndex and ('%s'):format((ignoreJson and v or '"' .. v .. '"')) or ('"%s": %s'):format(k, (ignoreJson and v or '"' .. v .. '"'))
+				finalValue = hasIndex and ('%s'):format('"' .. v .. '"') or ('"%s": %s'):format(k, '"' .. v .. '"')
 			elseif (valueType == 'boolean') then
 				finalValue = hasIndex and ('%s'):format(v and 'true' or 'false') or ('"%s": %s'):format(k, v and 'true' or 'false')
 			elseif (valueType == 'vector2') then
@@ -275,7 +275,7 @@ encode = function(input, ignoreJson)
 			elseif (valueType == 'vector4') then
 				finalValue = hasIndex and ('[%.2f,%.2f,%.2f,%.2f]'):format(v.x, v.y, v.z, v.w) or ('"%s": [%.2f,%.2f,%.2f,%.2f]'):format(k, v.x, v.y, v.z, v.w)
             elseif (valueType == 'nil' or valueType == 'null') then
-                finalValue = hasIndex and (ignoreJson and 'nil' or "nil") or ('"%s": %s'):format(k, (ignoreJson and 'nil' or "nil"))
+                finalValue = hasIndex and "nil" or ('"%s": %s'):format(k, "nil")
             end
         end
 
@@ -287,6 +287,9 @@ encode = function(input, ignoreJson)
     end
 
     if (ignoreJson) then
+        if (innerTable:startsWith('"')) then innerTable = innerTable:sub(2) end
+        if (innerTable:endsWith('"')) then innerTable = innerTable:sub(1, (#innerTable - 1)) end
+
         return innerTable
     end
 

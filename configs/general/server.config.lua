@@ -60,6 +60,36 @@ config.defaultLocations = {
     }
 }
 
+config.inheritGroupList = {
+    [constants.groups.superadmin] = {
+        constants.groups.admin,
+        constants.groups.supermod,
+        constants.groups.mod,
+        constants.groups.superuser,
+        constants.groups.user
+    },
+    [constants.groups.admin] = {
+        constants.groups.supermod,
+        constants.groups.mod,
+        constants.groups.superuser,
+        constants.groups.user
+    },
+    [constants.groups.supermod] = {
+        constants.groups.mod,
+        constants.groups.superuser,
+        constants.groups.user
+    },
+    [constants.groups.mod] = {
+        constants.groups.superuser,
+        constants.groups.user
+    },
+    [constants.groups.superuser] = {
+        constants.groups.user
+    },
+    [constants.groups.user] = {
+    }
+}
+
 --
 -- Number of clips on create
 --

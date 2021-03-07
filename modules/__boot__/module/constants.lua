@@ -11,6 +11,15 @@ constants.identifierTypes = {
     'ip'
 }
 
+constants.groups = {
+    superadmin = 'superadmin',
+    admin = 'admin',
+    supermod = 'supermod',
+    mod = 'mod',
+    superuser = 'superuser',
+    user = 'user'
+}
+
 constants.colors = {
     green = 3066993,
     grey = 9807270,

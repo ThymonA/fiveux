@@ -29,7 +29,7 @@ function players:load(source)
     local identifier = self:getPrimaryIdentifier(source)
     local key = ('players:%s'):format(identifier)
     local cfg = config('general')
-    local defaultSpawn = ensure(cfg.defaultSpawn, vector3(-206.79, -1015.12, 29.14))
+    local defaultSpawn = ensure(cfg.defaultSpawn, vec(-206.79, -1015.12, 29.14))
     local defaultGroup = ensure(cfg.defaultGroup, 'user')
     
     if (source == 0) then
@@ -139,6 +139,10 @@ function players:load(source)
 
     cache:write(key, player)
 
+    function player:log(object)
+        return log_queue(ensure(self.source, 0))(object)
+    end
+
     function player:kick(msg)
         if (ensure(self.citizen, 'unknown') == 'system') then return end
 
@@ -183,7 +187,7 @@ function players:load(source)
             ['job2'] = ensure(job2.id, 0),
             ['grade2'] = ensure(job2_grade.grade, 0),
             ['stats'] = encode(ensure(self.stats, {})),
-            ['position'] = encode(ensure(self.position, vector3(-206.79, -1015.12, 29.14))),
+            ['position'] = encode(ensure(self.position, vec(-206.79, -1015.12, 29.14))),
             ['id'] = playerId
         })
 
@@ -247,6 +251,11 @@ function players:load(source)
 
             self.wallets[name] = newBalance
             self:triggerEvent('update:wallet', name, newBalance, prevBalance)
+            self:log({
+                action = 'wallet.set',
+                arguments = { newBalance = newBalance, prevBalance = prevBalance, name = name },
+                discord = false
+            })
         end
     end
 
@@ -260,8 +269,13 @@ function players:load(source)
             local prevBalance = ensure(self.wallets[name], 0)
             local newBalance = prevBalance + amount
 
-            self.wallets[name] = balance
+            self.wallets[name] = newBalance
             self:triggerEvent('update:wallet', name, newBalance, prevBalance)
+            self:log({
+                action = 'wallet.add',
+                arguments = { newBalance = newBalance, prevBalance = prevBalance, name = name },
+                discord = false
+            })
         end
     end
 
@@ -277,6 +291,11 @@ function players:load(source)
 
             self.wallets[name] = newBalance
             self:triggerEvent('update:wallet', name, newBalance, prevBalance)
+            self:log({
+                action = 'wallet.remove',
+                arguments = { newBalance = newBalance, prevBalance = prevBalance, name = name },
+                discord = false
+            })
         end
     end
 
@@ -286,6 +305,10 @@ function players:load(source)
         local oldGroup = ensure(self.group, 'user')
         local newGroup = ensure(group, 'user')
 
+        if (not any(newGroup, constants.groups, 'value')) then
+            return
+        end
+
         ExecuteCommand(('remove_principal identifier.citizen:%s group.%s'):format(self.citizen, oldGroup))
         ExecuteCommand(('remove_principal identifier.%s:%s group.%s'):format(__PRIMARY__, self.identifier, oldGroup))
         ExecuteCommand(('add_principal identifier.citizen:%s group.%s'):format(self.citizen, newGroup))
@@ -293,6 +316,11 @@ function players:load(source)
 
         self.group = newGroup;
         self:triggerEvent('update:group', newGroup, oldGroup)
+        self:log({
+            action = 'group.set',
+            arguments = { oldGroup = oldGroup, newGroup = newGroup },
+            discord = false
+        })
     end
 
     function player:setJob(name, grade)
@@ -315,6 +343,11 @@ function players:load(source)
 
                 self.job = newJob
                 self:triggerEvent('update:job', object:convert('job', newJob),  object:convert('job', prevJob))
+                self:log({
+                    action = 'job.set',
+                    arguments = { prevJob = prevJob.name, newJob = newJob.name },
+                    discord = false
+                })
             end
         end
     end
@@ -339,6 +372,11 @@ function players:load(source)
 
                 self.job2 = newJob
                 self:triggerEvent('update:job2', object:convert('job', newJob),  object:convert('job', prevJob))
+                self:log({
+                    action = 'job2.set',
+                    arguments = { prevJob = prevJob.name, newJob = newJob.name },
+                    discord = false
+                })
             end
         end
     end

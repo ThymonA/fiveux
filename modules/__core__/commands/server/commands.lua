@@ -4,6 +4,7 @@ using 'logging'
 local data = {}
 
 commands = {}
+permissions = config('permissions')
 
 local function getCommand(raw)
     while (raw:startsWith('/')) do

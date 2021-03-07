@@ -7,7 +7,7 @@ RegisterPublicNet('update:playerData', function(data)
         while true do
             if (NetworkIsPlayerActive(PlayerId())) then
                 local model = `s_m_y_blackops_01`
-                local position = ensure(playerData.position, vector3(-206.79, -1015.12, 29.14))
+                local position = ensure(playerData.position, vec(-206.79, -1015.12, 29.14))
     
                 if (GetEntityModel(PlayerPedId()) == model) then
                     return

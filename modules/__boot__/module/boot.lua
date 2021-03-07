@@ -200,7 +200,25 @@ function boot:executeFile(category, module, file, env)
     end
 end
 
+function boot:setGroupPermissions()
+    local cfg = config:load('general')
+    local inheritGroupList = ensure(cfg.inheritGroupList, {})
+
+    for parent, childs in pairs(inheritGroupList) do
+        parent = ensure(parent, 'user')
+        childs = ensure(childs, {})
+
+        for _, child in pairs(childs) do
+            child = ensure(child, 'user')
+
+            ExecuteCommand(('add_principal group.%s group.%s'):format(parent, child))
+        end
+    end
+end
+
 Citizen.CreateThread(function()
     debugger:info(__NAME__, 'Starting Dobberdam Framework....')
+
+    boot:setGroupPermissions()
     boot:load()
 end)

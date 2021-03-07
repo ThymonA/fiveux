@@ -27,6 +27,7 @@ function environment:create(category, module, directory)
     local envType = IsDuplicityVersion() and 'server' or 'client'
 
     for k, v in pairs(_ENV) do env[k] = v end
+    for k, v in pairs(_modules:getAllGlobals()) do env[k] = v end
 
     env.__CATEGORY__ = category
     env.__NAME__ = module
@@ -118,8 +119,8 @@ function environment:create(category, module, directory)
         return _modules:load(name, env, ...)
     end
 
-    env.register = function(name, input)
-        return _modules:register(name, input)
+    env.register = function(name, input, global)
+        return _modules:register(name, input, global)
     end
 
     env.RegisterPublicNet = function(name, callback)
@@ -277,6 +278,24 @@ function environment:create(category, module, directory)
         end
 
         return results
+    end
+
+    env.vec = function(...)
+        local arguments = { ... }
+
+        if (#arguments == 0) then
+            return nil
+        elseif (#arguments == 1) then
+            return vector(ensure(arguments[1], 0))
+        elseif (#arguments == 2) then
+            return vector2(ensure(arguments[1], 0), ensure(arguments[2], 0))
+        elseif (#arguments == 3) then
+            return vector3(ensure(arguments[1], 0), ensure(arguments[2], 0), ensure(arguments[3], 0))
+        elseif (#arguments >= 4) then
+            return vector4(ensure(arguments[1], 0), ensure(arguments[2], 0), ensure(arguments[3], 0), ensure(arguments[4], 0))
+        end
+
+        return nil
     end
 
     env.RegisterNUICallback = function(name, callback)

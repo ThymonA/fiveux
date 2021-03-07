@@ -1,19 +1,28 @@
 local data = {}
+local defaultGlobals = {}
 
 modules = {}
 
-function modules:register(name, input)
+function modules:register(name, input, global)
     name = ensure(name, 'unknown'):lower()
-    env = ensure(env, {})
+    global = ensure(global, false)
 
     if (name == 'unknown') then return end
     if (data == nil) then data = {} end
 
-    if (typeof(input) == 'function') then
-        data[name] = ensure(input, function() return nil end)
+    if (global) then
+        defaultGlobals[name] = input
     else
-        data[name] = function() return input end
+        if (typeof(input) == 'function') then
+            data[name] = ensure(input, function() return nil end)
+        else
+            data[name] = function() return input end
+        end
     end
+end
+
+function modules:getAllGlobals()
+    return defaultGlobals
 end
 
 function modules:load(name, env, ...)

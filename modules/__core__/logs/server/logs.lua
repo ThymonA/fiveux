@@ -39,6 +39,12 @@ function logging:create(source)
         return nil
     end
 
+    if (data[tostring(source)]) then
+        data[tostring(source)].user = player
+
+        return data[tostring(source)]
+    end
+
     local key = ('logger:player:%s'):format(citizen)
 
     if (cache:exists(key)) then
@@ -133,9 +139,40 @@ function logging:create(source)
 
     cache:write(key, logger)
 
-    return logger
+    data[tostring(source)] = logger
+
+    return data[tostring(source)]
 end
 
+log_queue = function(source)
+    source = ensure(source, 0)
+
+    local m = { source = source }
+    local mt = setmetatable(m, {
+        __call = function(t, object)
+            Citizen.CreateThread(function()
+                t = ensure(t, {})
+                object = ensure(object, {})
+
+                local s = ensure(t.source, 0)
+
+                if (data[tostring(s)]) then
+                    return data[tostring(s)]:log(object)
+                end
+
+                data[tostring(s)] = logging:create(s)
+
+                if (data[tostring(s)]) then
+                    return data[tostring(s)]:log(object)
+                end
+            end)
+        end
+    })
+
+    return mt
+end
+
+register('log_queue', log_queue, true)
 register('logging', logging)
 register('logger', function(source)
     return logging:create(ensure(source, 0))

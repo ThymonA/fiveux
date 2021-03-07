@@ -1,6 +1,6 @@
 using 'players'
 
-commands:register('wallet', { groups = { 'superadmin' } }, function(player, action, target, name, amount)
+commands:register('wallet', permissions.commands.wallet, function(player, action, target, name, amount)
     action = ensure(action, 'unknown')
     target = ensure(target, 0)
     name = ensure(name, 'unknown')
