@@ -572,7 +572,7 @@ local saveInterval = ensure(ensure(config('general'), {}).saveInterval, 60 * 100
 local StartDBSync = function()
     function savePlayers()
         for _, player in pairs(data) do
-            if (player ~= nil and player.source > 1 and player.source <= 65535) then
+            if (player ~= nil and player.source ~= nil and player.source > 1 and player.source <= 65535) then
                 player:save()
             end
         end
