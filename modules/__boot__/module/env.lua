@@ -116,7 +116,7 @@ function environment:create(category, module, directory)
     end
 
     env.get = function(name, ...)
-        return _modules:load(name, env, ...)
+        return _modules:get(name, ...)
     end
 
     env.register = function(name, input, global)

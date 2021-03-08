@@ -10,9 +10,14 @@ local drawMarkers = {}
 local waitTimers = {
     drawCheck = 750,
     drawMarkers = 1,
-    noDrawMarkers = 250
+    noDrawMarkers = 250,
+    triggerCheck = 25,
+    noTriggerCheck = 250
 }
 
+---
+--- Search for closest markers to draw and put them in the list of `drawMarkers`
+---
 Citizen.CreateThread(function()
     while true do
         local playerPed = PlayerPedId()
@@ -39,6 +44,9 @@ Citizen.CreateThread(function()
     end
 end)
 
+---
+--- Draws all the markers from list `drawMarkers`
+---
 Citizen.CreateThread(function()
     while true do
         anyMarkerDrawed = false
@@ -91,6 +99,71 @@ Citizen.CreateThread(function()
     end
 end)
 
+---
+--- Checks if player is in any of those markers drawned from `drawMarkers`
+---
+Citizen.CreateThread(function()
+    while true do
+        inAnyMarker = false
+
+        if (anyMarkerDrawed and anyMarkerClose) then
+            local playerPed = PlayerPedId()
+            local currentPos = GetEntityCoords(playerPed)
+
+            for _, marker in pairs(drawMarkers) do
+                if (marker ~= nil and marker.position ~= nil and not inAnyMarker) then
+                    local position = ensure(marker.position, vec(0, 0, 0))
+                    local scale = ensure(marker.scale, vec(1, 1, 0.8))
+                    local mustTrigger = currentMarker == nil
+
+                    if (#(position - currentPos) < scale.x) then
+                        inAnyMarker = true
+                        currentMarker = marker
+                        lastMarker = marker
+
+                        if (mustTrigger) then
+                            TriggerLocal('marker:enter', ensure(marker.event, 'unknown'), marker)
+                            TriggerLocal(('marker:%s:enter'):format(ensure(marker.event, 'unknown')), marker)
+                        end
+                    end
+                end
+            end
+        end
+
+        if (not inAnyMarker) then
+            currentMarker = nil
+        end
+
+        if (currentMarker == nil and lastMarker ~= nil) then
+            TriggerLocal('marker:leave', ensure(lastMarker.event, 'unknown'), lastMarker)
+            TriggerLocal(('marker:%s:leave'):format(ensure(lastMarker.event, 'unknown')), lastMarker)
+
+            lastMarker = nil
+        end
+
+        Citizen.Wait((anyMarkerDrawed and anyMarkerClose) and waitTimers.triggerCheck or waitTimers.noTriggerCheck)
+    end
+end)
+
+---
+--- Public thread to update all the markers inside this module
+---
 RegisterPublicNet('update:markers', function(data)
     markers = ensure(data, {})
+end)
+
+register('marker_addon_data', function()
+    if (currentMarker ~= nil) then
+        local marker = ensure(currentMarker, {})
+        
+        return ensure(marker.addon_data, {})
+    end
+
+    if (lastMarker ~= nil) then
+        local marker = ensure(lastMarker, {})
+        
+        return ensure(marker.addon_data, {})
+    end
+
+    return nil
 end)

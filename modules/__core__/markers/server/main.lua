@@ -6,6 +6,7 @@ local data = {}
 marker = function(name)
     local m = {
         name = ensure(name, 'unknown'),
+        event = 'unknown',
         type = 1,
         position = vec(0, 0, 0),
         rgba = vec(255, 255, 255, 100),
@@ -34,6 +35,7 @@ marker = function(name)
                 local whitelist = ensure(options.whitelist, {})
                 local currentWhitelist = ensure(data[n].whitelist, {})
 
+                data[n].event = ensure(options.event, 'unknown')
                 data[n].type = ensure(options.type, data[n].type)
                 data[n].position = ensure(options.position, data[n].position)
                 data[n].rgba = ensure(options.rgba, data[n].rgba)

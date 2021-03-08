@@ -45,6 +45,7 @@ object:register('marker', function(input)
 
     return {
         name = ensure(marker.name, 'unknown'),
+        event = ensure(marker.event, 'unknown'),
         type = ensure(marker.type, 1),
         position = ensure(marker.position, vec(0, 0, 0)),
         rgba = ensure(marker.rgba, vec(255, 255, 255, 100)),

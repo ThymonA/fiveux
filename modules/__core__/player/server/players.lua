@@ -269,6 +269,9 @@ function players:load(source)
             local prevBalance = ensure(self.wallets[name], 0)
             local newBalance = amount
 
+            if (newBalance >= 9999999999) then newBalance = 9999999999 end
+            if (newBalance <= -9999999999) then newBalance = -9999999999 end
+
             self.wallets[name] = newBalance
             self:triggerEvent('update:wallet', name, newBalance, prevBalance)
             self:triggerLocal('update:wallet', name, newBalance, prevBalance)
@@ -290,6 +293,9 @@ function players:load(source)
             local prevBalance = ensure(self.wallets[name], 0)
             local newBalance = prevBalance + amount
 
+            if (newBalance >= 9999999999) then newBalance = 9999999999 end
+            if (newBalance <= -9999999999) then newBalance = -9999999999 end
+
             self.wallets[name] = newBalance
             self:triggerEvent('update:wallet', name, newBalance, prevBalance)
             self:triggerLocal('update:wallet', name, newBalance, prevBalance)
@@ -310,6 +316,9 @@ function players:load(source)
         if (self.wallets and self.wallets[name] and amount >= 0) then
             local prevBalance = ensure(self.wallets[name], 0)
             local newBalance = prevBalance - amount
+
+            if (newBalance >= 9999999999) then newBalance = 9999999999 end
+            if (newBalance <= -9999999999) then newBalance = -9999999999 end
 
             self.wallets[name] = newBalance
             self:triggerEvent('update:wallet', name, newBalance, prevBalance)
@@ -568,6 +577,36 @@ function players:generateCitizenId(identifier)
 	return 'unknown'
 end
 
+--- Load `console` as player
+players:load(0)
+
+--- Register `players` as module
+register('players', players)
+
+--- Interval Time
+local saveInterval = ensure(ensure(config('general'), {}).saveInterval, 60 * 1000)
+
+--- Save all players
+function savePlayers(cb)
+    cb = ensure(cb, function() end)
+
+    for _, player in pairs(data) do
+        if (player ~= nil and player.source ~= nil and player.source > 1 and player.source <= 65535) then
+            player:save()
+        end
+    end
+
+    cb()
+end
+
+--- Execute this func every x time to save all players to the database
+local StartDBSync = function()
+    SetTimeout(saveInterval, function()
+        savePlayers(StartDBSync)
+    end)
+end
+
+--- Will be triggered when a player left the server
 events:on('playerDropped', function(player)
     if (player == nil or player.source == nil or player.source > 65535 or data[player.source] == nil) then
         return
@@ -585,29 +624,14 @@ events:on('playerDropped', function(player)
     cache:setProp(key, 'source', nil)
 end)
 
---- Load `console` as player
-players:load(0)
-
---- Register `players` as module
-register('players', players)
-
---- Interval Time
-local saveInterval = ensure(ensure(config('general'), {}).saveInterval, 60 * 1000)
-
---- Execute this func every x time to save all players to the database
-local StartDBSync = function()
-    function savePlayers()
-        for _, player in pairs(data) do
-            if (player ~= nil and player.source ~= nil and player.source > 1 and player.source <= 65535) then
-                player:save()
-            end
-        end
-
-        SetTimeout(saveInterval, savePlayers)
+--- Will be triggered when any resource stopped
+events:on('onResourceStop', function(resource)
+    if (resource == RESOURCE_NAME) then
+        savePlayers(function()
+            print_success(T('players_saved'))
+        end)
     end
-
-    SetTimeout(saveInterval, savePlayers)
-end
+end)
 
 --- Trigger func to start timeout and auto save
 StartDBSync()

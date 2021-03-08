@@ -81,12 +81,17 @@ for name, data in pairs(locations) do
 
         registeredMarkers[name].spawn = marker(sName) {
             name = sName,
+            event = 'garage_spawn',
             position = data.location,
             whitelist = data.whitelist,
             type = sStyle.type,
             rgba = sStyle.rgba,
             scale = sStyle.scale,
-            rangeToShow = sStyle.rangeToShow
+            rangeToShow = sStyle.rangeToShow,
+            addon_data = {
+                location = ensure(data.spawn, vec(0, 0, 0)),
+                type = ensure(data.garageType, 'car')
+            }
         }
     end
 
@@ -96,12 +101,16 @@ for name, data in pairs(locations) do
 
         registeredMarkers[name].delete = marker(dName) {
             name = dName,
+            event = 'garage_delete',
             position = data.delete,
             whitelist = data.whitelist,
             type = dStyle.type,
             rgba = dStyle.rgba,
             scale = dStyle.scale,
-            rangeToShow = dStyle.rangeToShow
+            rangeToShow = dStyle.rangeToShow,
+            addon_data = {
+                type = ensure(data.garageType, 'car')
+            }
         }
     end
 end

@@ -10,11 +10,11 @@
     "markers",
     "bans",
     "jobs",
+    "items",
     "player",
     "weapons",
     "locations",
     "logs",
     "commands",
-    "hud",
-    "items"
+    "hud"
 ]

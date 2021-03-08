@@ -16,25 +16,27 @@ window.FIVEUX_HUD = {
             thirst: 100,
             hunger: 100,
             stressed: 0,
-            listener: (e) => {},
             RESOURCE_NAME: typeof GetParentResourceName !== 'undefined' ? GetParentResourceName() : 'fiveux',
-            locale: 'en-EN'
+            locale: 'en-EN',
+            child: null
         }
     },
     mounted() {
-        this.listener = (e) => {
-            const data = e.data || e.detail || null;
+        this.child = new pym.Child();
+
+        this.child.onMessage('message', (data) => {
+            if (!data) { return; }
+
+            data = JSON.parse(data);
 
             if (!data || !data.action) { return; }
 
             if (this[data.action]) {
                 this[data.action](data);
             }
-        };
+        });
 
-        window.addEventListener('message', this.listener);
-
-        this.POST('mounted', {})
+        this.POST('mounted', {});
     },
     watch: {
         name() {},

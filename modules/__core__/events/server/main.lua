@@ -221,3 +221,20 @@ RegisterPublicNet('player:spawned', function(position)
         repeat Citizen.Wait(0) until ok ~= nil
     end
 end)
+
+RegisterLocalEvent('onResourceStop', function(resource)
+    resource = ensure(resource, 'unknown')
+
+    local registered_events = events:getEventRegistered('onResourceStop')
+
+    if (#registered_events <= 0) then
+        return
+    end
+
+    for k, v in pairs(registered_events) do
+        local func = ensure(v, function() end)
+        local ok = xpcall(func, print_error, resource)
+
+        repeat Citizen.Wait(0) until ok ~= nil
+    end
+end)

@@ -55,6 +55,7 @@ ensure = function(input, default, ignoreDefault)
         if (input_type == 'number') then return tostring(input) or (not ignoreDefault and default or nil) end
         if (input_type == 'boolean') then return input and 'yes' or 'no' end
         if (input_type == 'table') then return encode(input) or (not ignoreDefault and default or nil) end
+        if (input_type == 'vector4') then return encode({ input.x, input.y, input.z, input.w }) or (not ignoreDefault and default or nil) end
         if (input_type == 'vector3') then return encode({ input.x, input.y, input.z }) or (not ignoreDefault and default or nil) end
         if (input_type == 'vector2') then return encode({ input.x, input.y }) or (not ignoreDefault and default or nil) end
 
@@ -100,6 +101,13 @@ ensure = function(input, default, ignoreDefault)
             return (not ignoreDefault and default or nil)
         end
 
+        if (input_type == 'vector3' or input_type == 'vector4') then
+            local x = ensure(input.x, default.x)
+            local y = ensure(input.y, default.y)
+
+            return vector2(x, y)
+        end
+
         if (input_type == 'number') then
             return vector2(input, input)
         end
@@ -124,7 +132,7 @@ ensure = function(input, default, ignoreDefault)
             if (#input >= 2) then
                 local x = ensure(input[1], default.x)
                 local y = ensure(input[2], default.y)
-                local z = ensure(input[3], input_type == 'vector2' and 0 or default.z)
+                local z = ensure(input[3], default.z)
 
                 return vector3(x, y, z)
             end
@@ -132,7 +140,7 @@ ensure = function(input, default, ignoreDefault)
             if (input.x ~= nil and input.y ~= nil) then
                 local x = ensure(input.x, default.x)
                 local y = ensure(input.y, default.y)
-                local z = ensure(input.z, input_type == 'vector2' and 0 or default.z)
+                local z = ensure(input.z, default.z)
 
                 return vector3(x, y, z)
             end
@@ -143,13 +151,81 @@ ensure = function(input, default, ignoreDefault)
         if (input_type == 'vector2') then
             local x = ensure(input.x, default.x)
             local y = ensure(input.y, default.y)
-            local z = ensure(input.z, input_type == 'vector2' and 0 or default.z)
+            local z = ensure(input.z, 0)
+
+            return vector3(x, y, z)
+        end
+
+        if (input_type == 'vector4') then
+            local x = ensure(input.x, default.x)
+            local y = ensure(input.y, default.y)
+            local z = ensure(input.z, default.z)
 
             return vector3(x, y, z)
         end
 
         if (input_type == 'number') then
             return vector3(input, input, input)
+        end
+
+        if (input_type == 'string' and input:startsWith('{') and input:endsWith('}')) then
+            local decodedInput = ensure(json.decode(input), {})
+
+            return ensure(decodedInput, default, ignoreDefault)
+        end
+
+        if (input_type == 'string' and input:startsWith('[') and input:endsWith(']')) then
+            local decodedInput = ensure(json.decode(input), {})
+
+            return ensure(decodedInput, default, ignoreDefault)
+        end
+
+        return (not ignoreDefault and default or nil)
+    end
+
+    if (output_type == 'vector4') then
+        if (input_type == 'table') then
+            if (#input >= 2) then
+                local x = ensure(input[1], default.x)
+                local y = ensure(input[2], default.y)
+                local z = ensure(input[3], default.z)
+                local w = ensure(input[4], default.w)
+
+                return vector4(x, y, z, w)
+            end
+
+            if (input.x ~= nil and input.y ~= nil) then
+                local x = ensure(input.x, default.x)
+                local y = ensure(input.y, default.y)
+                local z = ensure(input.z, default.z)
+                local w = ensure(input.w, default.w)
+
+                return vector4(x, y, z, w)
+            end
+
+            return (not ignoreDefault and default or nil)
+        end
+
+        if (input_type == 'vector2') then
+            local x = ensure(input.x, default.x)
+            local y = ensure(input.y, default.y)
+            local z = ensure(input.z, 0)
+            local w = ensure(input.w, 0)
+
+            return vector4(x, y, z, w)
+        end
+
+        if (input_type == 'vector3') then
+            local x = ensure(input.x, default.x)
+            local y = ensure(input.y, default.y)
+            local z = ensure(input.z, default.z)
+            local w = ensure(input.w, 0)
+
+            return vector4(x, y, z, w)
+        end
+
+        if (input_type == 'number') then
+            return vector4(input, input, input, input)
         end
 
         if (input_type == 'string' and input:startsWith('{') and input:endsWith('}')) then
