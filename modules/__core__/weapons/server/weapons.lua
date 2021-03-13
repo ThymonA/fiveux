@@ -48,6 +48,7 @@ function weapons:create(location, name, bullets, components)
     weaponData.location = ensure(dbWeapon.location, 0)
     weaponData.bullets = ensure(dbWeapon.bullets, 0)
     weaponData.attachments = ensure(dbWeapon.components, {})
+    weaponData.loaded = false
 
     data[weaponData.uuid] = weaponData
 
@@ -74,6 +75,7 @@ function weapons:getAllWeapons(location)
         weaponData.location = ensure(dbWeapon.location, 0)
         weaponData.bullets = ensure(dbWeapon.bullets, 0)
         weaponData.attachments = ensure(dbWeapon.components, {})
+        weaponData.loaded = false
 
         data[weaponData.uuid] = weaponData
         results[weaponData.uuid] = weaponData

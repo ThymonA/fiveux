@@ -119,6 +119,20 @@ function environment:create(category, module, directory)
         return _modules:get(name, ...)
     end
 
+    env.required = function(name, ...)
+        local result = _modules:required(name, ...)
+
+        if (result == nil) then
+            Citizen.Wait(0)
+
+            return env.required(name, ...)
+        end
+
+        env[name] = result
+
+        return result
+    end
+
     env.register = function(name, input, global)
         return _modules:register(name, input, global)
     end

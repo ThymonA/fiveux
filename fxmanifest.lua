@@ -25,6 +25,7 @@ server_scripts {
 }
 
 client_scripts {
+    '@menuv/menuv.lua',
     'modules/__boot__/functions/functions.lua',
     'modules/__boot__/functions/string.lua',
     'modules/__boot__/module/constants.lua',
@@ -61,5 +62,6 @@ files {
 }
 
 dependencies {
-	'fivem-mysql'
+	'fivem-mysql',
+    'menuv'
 }

@@ -9,6 +9,7 @@ using 'items'
 using 'object'
 
 local data = {}
+local saveQueue = {}
 
 players = {}
 
@@ -34,8 +35,21 @@ function players:getById(playerId)
     return nil
 end
 
-function players:load(source)
+function players:setNeedsToSpawn(source, needsToSpawn)
+    source = ensure(source, 0)
+    needsToSpawn = ensure(needsToSpawn, false)
+
+    local player = self:get(source)
+
+    if (player ~= nil) then
+        player.needsToSpawn = needsToSpawn
+        data[source].needsToSpawn = needsToSpawn
+    end
+end
+
+function players:load(source, needsToSpawn)
     source = ensure(source, -1)
+    needsToSpawn = ensure(needsToSpawn, false)
 
     if (source < 0) then return nil end
 
@@ -59,13 +73,18 @@ function players:load(source)
             banInfo = {},
             wallets = {},
             locations = {},
-            items = {}
+            items = {},
+            needsToSpawn = needsToSpawn
         }
     elseif (cache:exists(key)) then
         player = cache:read(key)
         player.source = source
         player.identifiers = self:getPlayerIdentifiers(source)
         player.tokens = self:getPlayerTokens(source)
+
+        if (needsToSpawn) then
+            player.needsToSpawn = true
+        end
     else
         if (wallets == nil) then using 'wallets' end
         if (locations == nil) then using 'locations' end
@@ -84,7 +103,8 @@ function players:load(source)
             banInfo = {},
             wallets = {},
             locations = {},
-            items = {}
+            items = {},
+            needsToSpawn = needsToSpawn
         }
 
         if (identifier == nil) then
@@ -213,6 +233,7 @@ function players:load(source)
 
         self:saveWallets()
         self:saveItems()
+        self:saveLocations()
 
         print_success(T('player_saved', ensure(self.name, 'Unknown')))
     end
@@ -254,6 +275,30 @@ function players:load(source)
                     ['amount'] = amount,
                     ['name'] = name,
                     ['id'] = playerId
+                })
+            end
+        end
+    end
+
+    function player:saveLocations()
+        if (ensure(self.citizen, 'unknown') == 'system') then return end
+        
+        local playerId = ensure(self.id, 0)
+        local locations = ensure(self.locations, {})
+
+        for k, v in pairs(locations) do
+            local locationId = ensure(v.id, 0)
+            local weapons = ensure(v.weapons, {})
+
+            for k2, v2 in pairs(weapons) do
+                local weaponId = ensure(v2.id, 0)
+                local bullets = ensure(v2.bullets, 0)
+                local attachments = ensure(v2.attachments, {})
+
+                db:execute("UPDATE `weapons` SET `bullets` = :bullets, `components` = :components WHERE `id` = :id", {
+                    ['id'] = weaponId,
+                    ['bullets'] = bullets,
+                    ['components'] = encode(attachments)
                 })
             end
         end
@@ -448,6 +493,12 @@ function players:load(source)
         return false
     end
 
+    if (player.source ~= nil and player.source >= 1 and player.source < 65535) then
+        saveQueue[player.source] = true
+    else
+        saveQueue[player.source] = false
+    end
+
     data[player.source] = player
 
     return player
@@ -578,7 +629,7 @@ function players:generateCitizenId(identifier)
 end
 
 --- Load `console` as player
-players:load(0)
+players:load(0, false)
 
 --- Register `players` as module
 register('players', players)
@@ -590,9 +641,16 @@ local saveInterval = ensure(ensure(config('general'), {}).saveInterval, 60 * 100
 function savePlayers(cb)
     cb = ensure(cb, function() end)
 
-    for _, player in pairs(data) do
-        if (player ~= nil and player.source ~= nil and player.source > 1 and player.source <= 65535) then
-            player:save()
+    for k, v  in pairs(saveQueue) do
+        local source = ensure(k, 0)
+        local savable = ensure(v, false)
+
+        if (source > 0 and savable) then
+            local player = players:get(source)
+
+            if (player ~= nil) then
+                player:save()
+            end
         end
     end
 
@@ -600,11 +658,15 @@ function savePlayers(cb)
 end
 
 --- Execute this func every x time to save all players to the database
-local StartDBSync = function()
-    SetTimeout(saveInterval, function()
-        savePlayers(StartDBSync)
-    end)
-end
+Citizen.CreateThread(function()
+    while true do
+        savePlayers(function()
+            print_success(T('players_saved'))
+        end)
+
+        Citizen.Wait(saveInterval)
+    end
+end)
 
 --- Will be triggered when a player left the server
 events:on('playerDropped', function(player)
@@ -616,8 +678,10 @@ events:on('playerDropped', function(player)
     local identifier = ensure(player.identifier, 'unknown')
     local key = ('players:%s'):format(identifier)
 
+    saveQueue[src] = false
+
     data[src]:save()
-    data[src] = nil
+    data[src].source = nil
 
     player.source = nil
 
@@ -632,6 +696,3 @@ events:on('onResourceStop', function(resource)
         end)
     end
 end)
-
---- Trigger func to start timeout and auto save
-StartDBSync()

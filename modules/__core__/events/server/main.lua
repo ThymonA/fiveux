@@ -10,8 +10,12 @@ AddEventHandler('playerConnecting', function(_, _, deferrals)
     deferrals.defer()
 
     local playerSrc = ensure(source, 0)
+
+    required 'presentCard'
+    required 'players'
+
     local card = presentCard:create(deferrals)
-    local player = players:load(playerSrc)
+    local player = players:load(playerSrc, true)
 
     if (player == nil or player.identifier == nil) then
         local message = T(('identifier_%s_required'):format(__PRIMARY__:lower()))
@@ -134,6 +138,9 @@ AddEventHandler('playerDropped', function(reason)
     reason = ensure(reason, '')
 
     local playerSrc = ensure(source, 0)
+
+    required 'players'
+
     local player = players:get(playerSrc)
 
     if (player == nil or player.identifier == nil) then
@@ -156,7 +163,10 @@ end)
 
 ratelimit:registerNet('playerJoining', function()
     local playerSrc = ensure(source, 0)
-    local player = players:load(playerSrc)
+    
+    required 'players'
+
+    local player = players:load(playerSrc, false)
 
     if (player == nil or player.identifier == nil) then
         return
@@ -178,7 +188,10 @@ end, 0, 1)
 
 RegisterPublicNet('playerJoined', function()
     local playerSrc = ensure(source, 0)
-    local player = players:load(playerSrc)
+
+    required 'players'
+
+    local player = players:load(playerSrc, false)
 
     if (player == nil or player.identifier == nil) then
         return
@@ -200,6 +213,9 @@ end, 0, 0)
 
 RegisterPublicNet('player:spawned', function(position)
     local playerSrc = ensure(source, 0)
+
+    required 'players'
+
     local player = players:get(playerSrc)
 
     if (player == nil or player.identifier == nil) then

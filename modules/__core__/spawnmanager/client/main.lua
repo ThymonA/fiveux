@@ -3,6 +3,12 @@ local playerData = {}
 RegisterPublicNet('update:playerData', function(data)
     playerData = ensure(data, {})
 
+    local needsToSpawn = ensure(playerData.needsToSpawn, false)
+
+    if (not needsToSpawn) then
+        return
+    end
+
     Citizen.CreateThread(function()
         while true do
             if (NetworkIsPlayerActive(PlayerId())) then

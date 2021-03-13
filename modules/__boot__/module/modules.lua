@@ -64,3 +64,34 @@ function modules:get(name, ...)
 
     return done and result or nil
 end
+
+function modules:required(name, ...)
+    local result = nil
+
+    while (result == nil) do
+        name = ensure(name, 'unknown'):lower()
+
+        if (name == 'unknown') then return end
+        if (data == nil) then data = {} end
+
+        local module = data[name] or nil
+        local m_name = ensure(__NAME__, 'global')
+
+        if (module == nil) then return nil end
+
+        local func = ensure(module, function() end)
+        local done, res = xpcall(func, function(err)
+            print_error(("Couldn't load module '~x~%s~s~': %s"):format(name, err), 'modules')
+        end, ...)
+
+        repeat Citizen.Wait(0) until done == true
+
+        result = res
+
+        if (result == nil) then
+            Citizen.Wait(0)
+        end
+    end
+
+    return result
+end

@@ -62,3 +62,17 @@ object:register('marker', function(input)
         addon_data = ensure(marker.addon_data, {})
     }
 end)
+
+object:register('storage_weapons', function(input)
+    local storage = ensure(input, {})
+    local weapons = ensure(storage.weapons, {})
+    local results = {}
+
+    for k, v in pairs(weapons) do
+        local weapon = object:convert('weapon', v)
+
+        weapons[weapon.name] = weapon
+    end
+
+    return weapons
+end)

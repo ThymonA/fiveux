@@ -12,18 +12,25 @@ events:on('playerJoined', function(player)
         group = ensure(player.group, 'user'),
         job = object:convert('job', player.job),
         job2 = object:convert('job', player.job2),
-        inventory = object:convert('location', ensure(player.locations, {}).inventory)
+        inventory = object:convert('location', ensure(player.locations, {}).inventory),
+        needsToSpawn = ensure(player.needsToSpawn, false),
+        weapons = object:convert('storage_weapons', ensure(player.locations, {}).inventory)
     }
 
     TriggerNet('update:playerData', player.source, playerData)
+    
+    players:setNeedsToSpawn(player.source, false)
 end)
 
 events:on('playerSpawned', function(player, ped, position)
     local inventory = ensure(ensure(player.locations, {}).inventory, {})
     local weapons = ensure(inventory.weapons, {})
 
+    RemoveAllPedWeapons(ped, true)
+
     for _, weapon in pairs(weapons) do
-        GiveWeaponToPed(ped, weapon.hash, weapon.bullets, false, false)
+        GiveWeaponToPed(ped, weapon.hash, 0, false, false)
+        SetPedAmmo(ped, weapon.hash, weapon.bullets)
 
         local attachments = ensure(weapon.attachments, {})
         local components = ensure(weapon.components, {})
@@ -35,16 +42,40 @@ events:on('playerSpawned', function(player, ped, position)
                 end
             end
         end
+
+        weapon.loaded = true
     end
+
+    players:setNeedsToSpawn(player.source, false)
 end)
 
-ratelimit:registerNet('players:position', function(src, position)
-    src = ensure(src, 0)
-    position = ensure(position, vec(-206.79, -1015.12, 29.14))
-
+RegisterPublicNet('players:position', function(pos)
+    local src = ensure(source, 0)
+    local position = ensure(pos, vec(-206.79, -1015.12, 29.14))
     local player = players:get(src)
 
     if (player ~= nil) then
         player.position = position
     end
-end, 250, 0)
+end)
+
+RegisterPublicNet('players:ammo', function(bullets)
+    local src = ensure(source, 0)
+    local ammos = ensure(bullets, {})
+    local player = players:get(src)
+
+    if (player ~= nil) then
+        local inventory = ensure(ensure(player.locations, {}).inventory, {})
+        local weapons = ensure(inventory.weapons, {})
+
+        for k, weapon in pairs(weapons) do
+            local weapon_name = ensure(weapon.name, 'weapon_unknown')
+            local weapon_ammo = ensure(weapon.bullets, 0)
+            local weapon_loaded = ensure(weapon.loaded, false)
+
+            if (weapon_loaded) then
+                player.locations.inventory.weapons[k].bullets = ensure(ammos[weapon_name], weapon_ammo)
+            end
+        end
+    end
+end)

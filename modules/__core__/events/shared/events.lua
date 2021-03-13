@@ -1,4 +1,3 @@
-local _msgpack = msgpack
 local data = {}
 
 events = {}
@@ -134,14 +133,14 @@ end
 
 function events:triggerOnEvent(event, name, ...)
     local registered_events = self:getEventRegistered(event, name)
-    local params = _msgpack.pack(...)
+    local params = table.pack(...)
 
     for k, v in pairs(registered_events) do
         Citizen.CreateThread(function()
             v = ensure(v, function() end)
 
             try(function()
-                v(_msgpack.unpack(params))
+                v(table.unpack(params))
             end, print_error)
         end)
     end

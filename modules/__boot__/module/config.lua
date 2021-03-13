@@ -49,6 +49,7 @@ function config:createEnvironment()
 
     env.config = {}
     env.__TRANSLATIONS__ = translations ~= nil and translations:getGlobalTranslations() or {}
+    
     env.T = function(key, ...)
         key = ensure(key, 'unknown')
 
@@ -61,10 +62,29 @@ function config:createEnvironment()
 
         return translation:format(...)
     end
+
     env.load = function(name)
         name = ensure(name, 'unknown')
         
         return config:load(name)
+    end
+
+    env.vec = function(...)
+        local arguments = { ... }
+
+        if (#arguments == 0) then
+            return nil
+        elseif (#arguments == 1) then
+            return vector(ensure(arguments[1], 0))
+        elseif (#arguments == 2) then
+            return vector2(ensure(arguments[1], 0), ensure(arguments[2], 0))
+        elseif (#arguments == 3) then
+            return vector3(ensure(arguments[1], 0), ensure(arguments[2], 0), ensure(arguments[3], 0))
+        elseif (#arguments >= 4) then
+            return vector4(ensure(arguments[1], 0), ensure(arguments[2], 0), ensure(arguments[3], 0), ensure(arguments[4], 0))
+        end
+
+        return nil
     end
 
     return env
