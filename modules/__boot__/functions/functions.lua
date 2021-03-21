@@ -454,7 +454,7 @@ ensureStringList = function(t)
 end
 
 logToDiscord = function(username, title, message, footer, webhooks, color, avatar)
-    username = ensure(username, 'Dobberdam Framework')
+    username = ensure(username, 'FiveUX Framework')
     title = ensure(title, '')
     message = ensure(message, '')
     footer = ensure(footer, '')

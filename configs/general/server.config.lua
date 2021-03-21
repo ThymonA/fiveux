@@ -3,7 +3,7 @@
 -- to define `mysql_connection_string`
 -- in your `server.cfg`
 --
-config.databaseName = 'dobberdam'
+config.databaseName = 'FiveUX'
 
 --
 -- Check all conecting player if they using

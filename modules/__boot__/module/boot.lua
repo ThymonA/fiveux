@@ -217,7 +217,7 @@ function boot:setGroupPermissions()
 end
 
 Citizen.CreateThread(function()
-    debugger:info(__NAME__, 'Starting Dobberdam Framework....')
+    debugger:info(__NAME__, 'Starting FiveUX Framework....')
 
     boot:setGroupPermissions()
     boot:load()

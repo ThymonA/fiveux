@@ -20,7 +20,7 @@ local function executeMigration()
 
     local modules = _boot:getModules()
     local generalCfg = config('general')
-    local database = ensure(generalCfg.databaseName, 'dobberdam')
+    local database = ensure(generalCfg.databaseName, 'FiveUX')
 
     db:ready(function()
         hasMigration = true

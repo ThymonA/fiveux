@@ -6,7 +6,7 @@
 -- Load global configuration
 --
 local generalCfg = config('general')
-local database = ensure(generalCfg.databaseName, 'dobberdam')
+local database = ensure(generalCfg.databaseName, 'FiveUX')
 
 --
 -- Execute this migration after `key` (module) and `value`

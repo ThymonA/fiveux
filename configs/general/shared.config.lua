@@ -23,7 +23,7 @@ config.avatarUrl = 'https://i.imgur.com/enJ9xAA.png'
 --
 -- Name of your server, to match your server name
 --
-config.serverName = 'DobberdamRP'
+config.serverName = 'FiveUX'
 
 --
 -- Discord of your server

@@ -2,7 +2,7 @@ fx_version 'cerulean'
 game 'gta5'
 lua54 'yes'
 
-name 'Dobberdam Framework'
+name 'FiveUX Framework'
 version '1.0.0'
 description 'FiveM framework written from scratch by Thymon Arens'
 author 'ThymonA'
