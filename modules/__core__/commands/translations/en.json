@@ -1,6 +1,0 @@
-{
-    "console_not_allowed": "You can't execute command '~x~%s~s~' from your console.",
-    "player_not_allowed": "You can't execute command '~x~%s~s~'.",
-    "invalid_wallet_action": "You entered an invalid action, you can only choose from: %s",
-    "invalid_target": "You have entered a non-existent player (%s)"
-}

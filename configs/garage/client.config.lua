@@ -1,1 +1,0 @@
-config.rgb = vec(255, 0, 0)

@@ -1,12 +1,6 @@
-fx_version 'cerulean'
-game 'gta5'
-lua54 'yes'
-
-name 'FiveUX Framework'
+name 'player'
 version '1.0.0'
-description 'FiveM framework written by Thymon Arens and licensed under GNU General Public License'
-author 'ThymonA'
-url 'https://github.com/ThymonA/fiveux/'
+description 'FiveUX player module'
 
 license [[
     FiveUX Framework Copyright (C) 2021 Thymon Arens
@@ -25,12 +19,12 @@ license [[
     along with this program.  If not, see <https://www.gnu.org/licenses/>
 ]]
 
+client_scripts {}
 server_scripts {
-    'shared/constants.lua',
-    'shared/functions.lua',
-    'shared/bootable.lua'
+    'server/main.lua'
 }
+shared_scripts {}
 
 dependencies {
-    'fivem-mysql'
+    'database'
 }
