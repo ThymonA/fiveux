@@ -58,6 +58,8 @@
             newFrame.iframe.style.width = `${window.screen.width}px`;
             newFrame.iframe.style.height = `${window.screen.height}px`;
             newFrame.iframe.style.overflow = 'hidden';
+
+            this.nuiCallback('nui_created', { name: name });
         }
 
         destroyFrame = (name) => { }

@@ -39,7 +39,7 @@ function garage:getAllPlayerVehicles(playerId)
     playerId = ensure(playerId, 0)
 
     local dbResults = db:fetchAll("SELECT * FROM `player_vehicles` WHERE `player_id` = :id", {
-        ['id'] = id
+        ['id'] = playerId
     })
 
     return parseResults(dbResults)
@@ -54,7 +54,7 @@ function garage:getPlayerVehiclesByType(playerId, vehicleType)
     end
 
     local dbResults = db:fetchAll("SELECT * FROM `player_vehicles` WHERE `player_id` = :id AND `type` = :type", {
-        ['id'] = id,
+        ['id'] = playerId,
         ['type'] = vehicleType
     })
 

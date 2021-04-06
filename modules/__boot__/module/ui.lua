@@ -1,6 +1,7 @@
 local ready = false
 local data = {}
 local callbacks = {}
+local created = {}
 
 ui = {}
 
@@ -32,10 +33,21 @@ function ui:create(category, module, file, visible)
         url = url
     }
 
+    created[module] = false
     data[module] = frame
 
     self:onReady(function()
-        SendNUIMessage({ action = 'create_frame', name = module, url = url, visible = visible })
+        local done = false
+
+        while not done do
+            Citizen.Wait(0)
+
+            SendNUIMessage({ action = 'create_frame', name = module, url = url, visible = visible })
+
+            Citizen.Wait(50)
+
+            done = ensure(created[module], false)
+        end
     end)
 end
 
@@ -63,6 +75,17 @@ end
 RegisterNUICallback('nui_ready', function(_, cb)
     ready = true
     cb = ensure(cb, function() end)
+
+    cb('ok')
+end)
+
+RegisterNUICallback('nui_created', function(info, cb)
+    info = ensure(info, {})
+    cb = ensure(cb, function() end)
+
+    local name = ensure(info.name, 'unknown')
+
+    created[name] = true
 
     cb('ok')
 end)

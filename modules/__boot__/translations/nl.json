@@ -15,11 +15,9 @@
     "hours": "Uren",
     "day": "Dag",
     "days": "Dagen",
-
     "item_hamburger": "Hamburger",
     "item_tequila": "Tequila",
     "item_idcard": "Legitimatiebewijs",
-
     "weapon_dagger": "Antique Cavalry Dagger",
     "weapon_bat": "Baseball Bat",
     "weapon_bottle": "Broken Bottle",
@@ -114,5 +112,15 @@
     "weapon_petrolcan": "Jerry Can",
     "gadget_parachute": "Parachute",
     "weapon_fireextinguisher": "Fire Extinguisher",
-    "weapon_hazardcan": "Hazardous Jerry Can"
+    "weapon_hazardcan": "Hazardous Jerry Can",
+    "class_super": "Super Cars",
+    "class_sport": "Sports Cars",
+    "class_classic": "Sports Classics",
+    "class_coupe": "Coupes",
+    "class_muscle": "Muscle",
+    "class_sedan": "Sedan",
+    "class_compact": "Compacts",
+    "class_suv": "SUV",
+    "class_offroad": "Off-Road Vehicles",
+    "class_motorcycle": "Motorcycles"
 }

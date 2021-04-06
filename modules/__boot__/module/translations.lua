@@ -22,7 +22,7 @@ function translations:load(category, module)
     local fLangPath = pathTemp:format(category, module, fLang)
     local coreLangPath = corePathTemp:format(lang)
     local fCoreLangPath = corePathTemp:format(fLang)
-    local langList, fLangList, coreLangList, fCoreLangList, finalList = {}, {}, {}
+    local langList, fLangList, coreLangList, fCoreLangList, finalList = {}, {}, {}, {}, {}
 
     if (cache:exists(langKey)) then
         langList = ensure(cache:read(langKey), {})

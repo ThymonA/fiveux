@@ -12,7 +12,7 @@ RegisterPublicNet('update:playerData', function(data)
     Citizen.CreateThread(function()
         while true do
             if (NetworkIsPlayerActive(PlayerId())) then
-                local model = `s_m_y_blackops_01`
+                local model = GetHashKey('s_m_y_blackops_01')
                 local position = ensure(playerData.position, vec(-206.79, -1015.12, 29.14))
     
                 RequestModel(model)

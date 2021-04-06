@@ -114,7 +114,7 @@ function jobs:getJobWithGrade(jobId, gradeId)
                 grades = ensure(v.grades, {}),
                 allowed = ensure(v.allowed, {}),
                 webhooks = ensure(v.webhooks, {}),
-                label = ensure(v.label, T(('job_%s'):format(gradeName))),
+                label = ensure(v.label, T(('job_%s'):format(v.name))),
                 grade = {}
             }
 

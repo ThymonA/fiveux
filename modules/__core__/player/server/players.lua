@@ -7,6 +7,7 @@ using 'events'
 using 'threads'
 using 'items'
 using 'object'
+using 'log_queue'
 
 local data = {}
 local saveQueue = {}
@@ -174,6 +175,10 @@ function players:load(source, needsToSpawn)
     cache:write(key, player)
 
     function player:log(object)
+        if (log_queue == nil) then
+            log_queue = get('log_queue')
+        end
+
         return log_queue(ensure(self.source, 0))(object)
     end
 
@@ -413,7 +418,7 @@ function players:load(source, needsToSpawn)
             local prevJob = ensure(self.job, {})
             local newJob = jobs:getJobWithGrade(jobId, gradeId)
 
-            if (job ~= nil) then
+            if (newJob ~= nil) then
                 ExecuteCommand(('remove_principal identifier.citizen:%s job.%s'):format(player.citizen, ensure(ensure(prevJob, {}).name, 'unemployed')))
                 ExecuteCommand(('remove_principal identifier.%s:%s job.%s'):format(__PRIMARY__, player.identifier, ensure(ensure(prevJob, {}).name, 'unemployed')))
                 ExecuteCommand(('add_principal identifier.citizen:%s job.%s'):format(player.citizen, ensure(ensure(newJob, {}).name, 'unemployed')))
@@ -443,7 +448,7 @@ function players:load(source, needsToSpawn)
             local prevJob = ensure(self.job2, {})
             local newJob = jobs:getJobWithGrade(jobId, gradeId)
 
-            if (job ~= nil) then
+            if (newJob ~= nil) then
                 ExecuteCommand(('remove_principal identifier.citizen:%s job.%s'):format(player.citizen, ensure(ensure(prevJob, {}).name, 'unemployed')))
                 ExecuteCommand(('remove_principal identifier.%s:%s job.%s'):format(__PRIMARY__, player.identifier, ensure(ensure(prevJob, {}).name, 'unemployed')))
                 ExecuteCommand(('add_principal identifier.citizen:%s job.%s'):format(player.citizen, ensure(ensure(newJob, {}).name, 'unemployed')))
