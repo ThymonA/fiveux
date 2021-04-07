@@ -1,6 +1,6 @@
-name 'player'
+name 'ban'
 version '1.0.0'
-description 'FiveUX player module'
+description 'FiveUX ban module'
 
 license [[
     FiveUX Framework Copyright (C) 2021 Thymon Arens
@@ -27,5 +27,5 @@ shared_scripts {}
 
 dependencies {
     'database',
-    'ban'
+    'logging'
 }

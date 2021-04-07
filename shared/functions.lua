@@ -695,6 +695,25 @@ playerIdentifiers = function(rawIdentifiers)
     return identifiers
 end
 
+getCurrentDate = function()
+    local date = { year = 2021, month = 1, day = 1, hour = 0, minute = 0, second = 0 }
+
+    if (os ~= nil and os.date ~= nil) then
+        local d = ensure(os.date('*t'), {})
+
+        date = {
+            year = ensure(d.year, 2021),
+            month = ensure(d.month, 1),
+            day = ensure(d.day, 1),
+            hour = ensure(d.hour, 0),
+            minute = ensure(d.min, 0),
+            second = ensure(d.sec, 0)
+        }
+    end
+
+    return date
+end
+
 function string:startsWith(word)
     word = ensure(word, 'unknown')
 
