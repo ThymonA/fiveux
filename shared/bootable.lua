@@ -22,6 +22,8 @@ local __modules = {}
 local __exports = {}
 local __configs = {}
 local __translations = {}
+local __sharedTranslations = {}
+local __loaded = false
 
 --- Create a new environment
 ---@param self bootable
@@ -123,8 +125,8 @@ end
 ---@param module string Name of module
 ---@return table List of translations
 function bootable:loadTranslations(category, module)
-    category = ensure(category, 'unknown')
-    module = ensure(module, 'unknown')
+    category = ensure(category, 'shared')
+    module = ensure(module, 'shared')
 
     local key = ('%s:%s'):format(category, module)
     local cfg = self:loadConfiguration('general')
@@ -134,6 +136,11 @@ function bootable:loadTranslations(category, module)
     if (__translations[key] ~= nil) then return __translations[key] end
 
     local translation_path = ('modules/__%s__/%s/translations/%s.lua'):format(category, module, language)
+
+    if (category == 'shared' and module == 'shared') then
+        translation_path = ('shared/translations/%s.lua'):format(language)
+    end
+
     local translation_data = LoadResourceFile(RESOURCE_NAME, translation_path)
     local environment = self:createEnvironment({ translations = {} })
 
@@ -411,6 +418,23 @@ function bootable:getAllModules()
     return modules
 end
 
+--- Load a exported module
+---@param name string Name of module
+function bootable:loadExport(name, ...)
+    name = ensure(name, 'unknown')
+
+    if (__exports == nil or __exports[name] == nil) then
+        print_warning(('Module "~x~%s~s~" not found'):format(name), NAME)
+        return nil
+    end
+
+    if (typeof(__exports[name]) == 'function') then
+        return __exports[name](...)
+    else
+        return __exports[name]
+    end
+end
+
 --- Generate a new environment for given module
 ---@param self bootable
 ---@param category string Name of category
@@ -453,6 +477,23 @@ function bootable:createModuleEnvironment(category, module, version)
             name = ensure(name, 'unknown')
 
             return self:loadConfiguration(name)
+        end,
+        vec = function(...)
+            local arguments = { ... }
+    
+            if (#arguments == 0) then
+                return nil
+            elseif (#arguments == 1) then
+                return vector(ensure(arguments[1], 0))
+            elseif (#arguments == 2) then
+                return vector2(ensure(arguments[1], 0), ensure(arguments[2], 0))
+            elseif (#arguments == 3) then
+                return vector3(ensure(arguments[1], 0), ensure(arguments[2], 0), ensure(arguments[3], 0))
+            elseif (#arguments >= 4) then
+                return vector4(ensure(arguments[1], 0), ensure(arguments[2], 0), ensure(arguments[3], 0), ensure(arguments[4], 0))
+            end
+    
+            return nil
         end
     })
 
@@ -602,10 +643,36 @@ function bootable:shutdown(m_category, m_name)
     end
 end
 
+--- Load shared translation from `__sharedTranslations`
+---@param key string Key of translation
+---@return string Translated label or fallback
+function bootable:T(key, ...)
+    key = ensure(key, 'unknown')
+
+    local translations = ensure(__sharedTranslations, {})
+    local fallback = ('translation(%s/%s)'):format(NAME, key)
+    local translation = ensure(translations[key], fallback)
+
+    if (translation:len() <= 0) then translation = fallback end
+
+    return translation:format(...)
+end
+
 --- Load all modules
 ---@param self bootable
 function bootable:init()
-    local modules = bootable:getAllModules()
+    local generalConfig = ensure(self:loadConfiguration('general'), {})
+    local primaryIdentifier = ensure(generalConfig.primaryIdentifier, 'license')
+
+    if (not any(primaryIdentifier, constants.identifierTypes, 'value')) then
+        primaryIdentifier = 'license'
+    end
+
+    _G.PRIMARY = primaryIdentifier
+
+    __sharedTranslations = self:loadTranslations()
+
+    local modules = self:getAllModules()
 
     __exports['modules'] = modules
 
@@ -630,7 +697,11 @@ function bootable:init()
                 local m_env = ensure(module.environment, {})
                 local m_shared_scripts = ensure(module.shared_scripts, {})
                 local m_env_scripts = {}
-                local m_translations = self:loadTranslations(m_category, m_name)
+                local m_translations = {}
+                local m_module_translations = self:loadTranslations(m_category, m_name)
+
+                for k, v in pairs(__sharedTranslations) do m_translations[k] = v end
+                for k, v in pairs(m_module_translations) do m_translations[k] = v end
 
                 m_env.__translations = m_translations
 
@@ -799,13 +870,44 @@ function bootable:init()
                 })
             end
         end
+
+        __loaded = true
     end)
 end
 
+--- Execute this function to start framework
 local function bootFramework()
     Citizen.CreateThread(function()
         bootable:init()
     end)
 end
 
+--- Prevent players to connect when framework hasn't been loaded
+if (ENVIRONMENT == 'server') then
+    AddEventHandler('playerConnecting', function(_, _, deferrals)
+        deferrals.defer()
+
+        local playerSrc = ensure(source, 0)
+
+        if (not __loaded) then
+            deferrals.done(bootable:T('framework_not_loaded'))
+        end
+
+        local players = bootable:loadExport('players')
+        
+        if (players ~= nil and playerSrc > 0) then
+            players:updatePlayerBySource(playerSrc)
+        end
+
+        local player = players:loadBySource(playerSrc)
+
+        if (player == nil or player.identifier == nil or player.identifier == 'unknown') then
+            deferrals.done(bootable:T(('identifier_%s_required'):format(PRIMARY)))
+        end
+
+        deferrals.done()
+    end)
+end
+
+--- Start framework
 bootFramework()

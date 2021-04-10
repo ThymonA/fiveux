@@ -1,5 +1,14 @@
--- Name of your datebase. You also need to define `mysql_connection_string` in your `server.cfg`
+--- Name of your datebase.
 config.databaseName = 'fiveux'
 
--- Ban new matching identifiers
+--- Ban new matching identifiers
 config.banNewIdentifiers = true
+
+--- Default player group
+config.defaultGroup = 'user'
+
+--- Default player job
+config.defaultJob = { name = 'unemployed', grade = 0 }
+
+--- Default player job2
+config.defaultJob2 = { name = 'unemployed', grade = 0 }

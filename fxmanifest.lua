@@ -25,6 +25,32 @@ license [[
     along with this program.  If not, see <https://www.gnu.org/licenses/>
 ]]
 
+files {
+    'configurations/**/shared.config.lua',
+    'configurations/**/client.config.lua',
+    'shared/translations/*.lua',
+    'modules/fxmodules.lua',
+    'modules/**/fxcategory.lua',
+    'modules/**/fxmodule.lua',
+    'modules/**/client/*.lua',
+    'modules/**/shared/*.lua',
+    'modules/**/translations/*.lua',
+    'modules/**/client/**/*.lua',
+    'modules/**/shared/**/*.lua',
+    'modules/**/**/fxmodule.lua',
+    'modules/**/**/client/*.lua',
+    'modules/**/**/shared/*.lua',
+    'modules/**/**/translations/*.lua',
+    'modules/**/**/client/**/*.lua',
+    'modules/**/**/shared/**/*.lua'
+}
+
+client_scripts {
+    'shared/constants.lua',
+    'shared/functions.lua',
+    'shared/bootable.lua'
+}
+
 server_scripts {
     'shared/constants.lua',
     'shared/functions.lua',
