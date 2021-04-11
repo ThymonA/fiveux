@@ -635,7 +635,7 @@ generateCitizenId = function(identifier)
     identifier = ensure(identifier, 'unknown')
     
     if (identifier == 'unknown') then return 'unknown' end
-	if (identifier == 'console') then return 'system' end
+	if (identifier == 'system') then return 'system' end
 
 	if (PRIMARY == 'steam' or PRIMARY == 'license' or PRIMARY == 'license2') then
 		local rawPrefix = tonumber(identifier, 16)

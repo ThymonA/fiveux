@@ -1,6 +1,7 @@
 import 'modules'
 
 local migrations = {}
+local __done = {}
 local hasMigration = true
 
 function migrations:exists(category, module, version)
@@ -174,6 +175,7 @@ function migrations:init()
                 end
             end
 
+            __done[m_name] = false
             numberOfMigrationsDone = numberOfMigrationsDone + 1
         end)
     end
@@ -184,5 +186,16 @@ function migrations:init()
 end
 
 migrations:init()
+
+--- Checks if module has any depending migration
+---@param name string Name of module
+---@return boolean Has any depending migration
+function db:hasMigration(name)
+    name = ensure(name, 'unknown')
+
+    if (name == 'unknown') then return false end
+
+    return ensure(__done[name], true)
+end
 
 repeat Citizen.Wait(0) until hasMigration == false

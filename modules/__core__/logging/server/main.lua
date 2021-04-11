@@ -181,7 +181,7 @@ function logs:getSteamAvatar(identifier, fallback)
     identifier = ensure(identifier, 'unknown')
     fallback = ensure(fallback, 'https://i.imgur.com/xa7JN6h.png')
 
-    if (identifier ~= nil and not any(identifier, { 'unknown', 'none', '', 'console' }, 'value')) then
+    if (identifier ~= nil and not any(identifier, { 'unknown', 'none', '', 'system' }, 'value')) then
         local steamHex64 = tonumber(identifier, 16)
         local webApiKey = ensure(GetConvar('steam_webApiKey', 'unknown'), 'unknown')
 

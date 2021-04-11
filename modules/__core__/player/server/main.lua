@@ -14,7 +14,14 @@ players = {}
 function players:loadBySource(source)
     source = ensure(source, 0)
 
-    if (source <= 0) then return nil end
+    if (source < 0) then return nil end
+
+    if (source == 0) then
+        sources[0] = 'system'
+        ids['system'] = 0
+
+        return self:loadByFx('system', 'system')
+    end
 
     local name = ensure(GetPlayerName(source), 'unknown')
 
@@ -224,6 +231,8 @@ function players:createPlayer(fxid, name)
     local defaultJob2 = ensure(cfg.defaultJob2, {})
     local defaultSpawn = ensure(cfg.defaultSpawn, vec(-206.79, -1015.12, 29.14))
 
+    if (fxid == 'system') then defaultGroup = 'superadmin' end
+
     local player = {
         fxid = fxid,
         name = name,
@@ -299,6 +308,7 @@ function players:loadTokensByFx(fxid)
     fxid = ensure(fxid, 'unknown')
 
     if (fxid == 'unknown') then return {} end
+    if (fxid == 'system') then return {} end
 
     local dbResults = db:fetchAll('SELECT * FROM `player_tokens` WHERE `fxid` = :fxid AND `date` = (SELECT `date` FROM `player_tokens` WHERE `fxid` = :fxid GROUP BY `date` ORDER BY `date` DESC LIMIT 1)', { ['fxid'] = fxid })
 
@@ -359,6 +369,19 @@ function players:loadIdentifiersByFx(fxid)
     }
 
     if (fxid == 'unknown') then return identifiers end
+    if (fxid == 'system') then
+        identifiers.steam = 'system'
+        identifiers.license = 'system'
+        identifiers.license2 = 'system'
+        identifiers.xbl = 'system'
+        identifiers.live = 'system'
+        identifiers.discord = 'system'
+        identifiers.fivem = 'system'
+        identifiers.ip = '127.0.0.1'
+        identifiers.fxid = 'system'
+        
+        return identifiers
+    end
 
     local dbResults = db:fetchAll('SELECT * FROM `player_identifiers` WHERE `fxid` = :fxid ORDER BY `date` DESC LIMIT 1', { ['fxid'] = fxid })
 
@@ -449,5 +472,14 @@ function players:updatePlayerBySource(source)
 
     return true
 end
+
+--- Load console player by default
+Citizen.CreateThread(function()
+    while db:hasMigration(NAME) do
+        Citizen.Wait(0)
+    end
+
+    players:loadBySource(0)
+end)
 
 export('players', players)
