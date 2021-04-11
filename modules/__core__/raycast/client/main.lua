@@ -161,7 +161,3 @@ end)
 
 --- Exports raycast module
 export('raycast', raycast)
-
-on('raycast:self', function(entity, coords)
-    print('YOU PRESSED ON YOURSELF!!!')
-end)
