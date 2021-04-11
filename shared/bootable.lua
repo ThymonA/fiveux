@@ -26,6 +26,7 @@ local __modules = {}
 local __exports = {}
 local __configs = {}
 local __events = {}
+local __keyPressed = {}
 local __translations = {}
 local __sharedTranslations = {}
 local __loaded = false
@@ -54,6 +55,23 @@ function bootable:createEnvironment(globals)
         __newindex = function(t, k, v)
             rawset(env, k, v)
             rawset(t, k, v)
+        end,
+        __index = function(t, k)
+            if (t ~= nil) then
+                local result = rawget(t, k)
+
+                if (result ~= nil) then return result end
+            end
+
+            if (env ~= nil) then
+                local result = rawget(env, k)
+
+                if (result ~= nil) then return result end
+            end
+
+            if (_G ~= nil and _G[k] ~= nil) then return _G[k] end
+
+            return nil
         end
     })
 
@@ -566,6 +584,35 @@ function bootable:createModuleEnvironment(category, module, version)
         return template:format(boldText(serverName), message, footer)
     end
 
+    if (ENVIRONMENT == 'client') then
+        env.addControl = function(name, description, type, key)
+            local module = ensure(env.NAME, NAME)
+
+            name = ensure(name, 'unknown')
+            description = ensure(description, self:T('default_key_description', module, name))
+            type = ensure(type, 'keyboard')
+            key = ensure(key, 'e')
+
+            return self:registerKeybind(module, name, description, type, key)
+        end
+
+        env.isControlPressed = function(name)
+            name = ensure(name, 'unknown')
+
+            if (name == 'unknown') then return false end
+
+            return self:isControlPressed(name)
+        end
+
+        env.isControlReleased = function(name)
+            name = ensure(name, 'unknown')
+
+            if (name == 'unknown') then return true end
+
+            return self:isControlReleased(name)
+        end
+    end
+
     return env
 end
 
@@ -807,19 +854,21 @@ function bootable:getRegisteredEvents(event, name)
 
     if (__events == nil or __events[event] == nil) then return {} end
 
+    local results = {}
     local events = ensure(__events[event], {})
+    local global_funcs = ensure(events.funcs, {})
+    
+    for k, v in pairs(global_funcs) do table.insert(results, v) end
 
     if (name == 'unknown') then
-        return ensure(events.funcs, {})
+        return results
     end
 
-    local subEvents = ensure(events.params[name], {})
+    local named_funcs = ensure(events.params[name], {})
 
-    for k, v in pairs(subEvents) do
-        table.insert(events, v)
-    end
+    for k, v in pairs(named_funcs) do table.insert(results, v) end
 
-    return events
+    return results
 end
 
 --- Register an event
@@ -1207,11 +1256,63 @@ function bootable:init()
     end)
 end
 
---- Execute this function to start framework
-local function bootFramework()
-    Citizen.CreateThread(function()
-        bootable:init()
-    end)
+if (ENVIRONMENT == 'client') then
+    --- Returns if given control is pressed
+    ---@param name string Name of control
+    ---@return boolean Control is pressed
+    function bootable:isControlPressed(name)
+        name = ensure(name, 'unknown')
+
+        if (name == 'unknown') then return false end
+
+        name = name:replace(' ', '')
+        name = name:lower()
+
+        __keyPressed = ensure(__keyPressed, {})
+
+        return ensure(__keyPressed[name], false)
+    end
+
+    --- Returns if given control is released
+    ---@param name string Name of control
+    ---@return boolean Control is released
+    function bootable:isControlReleased(name)
+        name = ensure(name, 'unknown')
+
+        if (name == 'unknown') then return true end
+
+        name = name:replace(' ', '')
+        name = name:lower()
+
+        __keyPressed = ensure(__keyPressed, {})
+
+        return not ensure(__keyPressed[name], false)
+    end
+
+    --- Register new keybind
+    ---@param module string Name of module
+    ---@param name string Name of keybind
+    ---@param description string Description of keybind
+    ---@param type string Default key mapper ID
+    ---@param default string Default key
+    function bootable:registerKeybind(module, name, description, type, default)
+        module = ensure(module, NAME)
+        name = ensure(name, 'unknown')
+        description = ensure(description, self:T('default_key_description', module, name))
+        type = ensure(type, 'keyboard'):upper()
+        default = ensure(default, 'e'):upper()
+
+        if (not any(type, constants.mapperIds, 'value')) then
+            print_warning(('Key mapper id doesn\'t exists (%s)'):format(type), module)
+            return
+        end
+
+        __keyPressed[name] = false
+
+        RegisterKeyMapping(('+%s'):format(name), description, type, default)
+        RegisterCommand(('+%s'):format(name), function() __keyPressed[name] = true end)
+        RegisterCommand(('-%s'):format(name), function() __keyPressed[name] = false end)
+    end
 end
 
 --- Prevent players to connect when framework hasn't been loaded
@@ -1277,6 +1378,13 @@ if (ENVIRONMENT == 'server') then
         end
 
         deferrals.done()
+    end)
+end
+
+--- Execute this function to start framework
+local function bootFramework()
+    Citizen.CreateThread(function()
+        bootable:init()
     end)
 end
 

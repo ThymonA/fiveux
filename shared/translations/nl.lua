@@ -13,5 +13,6 @@ translations = {
     ['card_description'] = 'Je bent nu aan het verbinden met %s, even wachten a.u.b.',
     ['join_discord'] = 'Join Discord',
     ['connecting_error'] = 'Er is een onbekende fout opgetreden, u kunt geen verbinding maken met de server.',
-    ['join_our_discord'] = 'Join onze discord: %s'
+    ['join_our_discord'] = 'Join onze discord: %s',
+    ['default_key_description'] = 'Sneltoets voor \'%s\' met als naam \'%s\''
 }

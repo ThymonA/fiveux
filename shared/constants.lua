@@ -36,3 +36,32 @@ constants.boldFonts = {
     ['X'] = '𝗫', ['Y'] = '𝗬', ['Z'] = '𝗭', ['1'] = '𝟭', ['2'] = '𝟮', ['3'] = '𝟯', ['4'] = '𝟰',
     ['5'] = '𝟱', ['6'] = '𝟲', ['7'] = '𝟳', ['8'] = '𝟴', ['9'] = '𝟵', ['0'] = '𝟬'
 }
+
+constants.mapperIds = {
+    'DIGITALBUTTON_AXIS',
+    'GAME_CONTROLLED',
+    'JOYSTICK_AXIS',
+    'JOYSTICK_AXIS_NEGATIVE',
+    'JOYSTICK_AXIS_POSITIVE',
+    'JOYSTICK_BUTTON',
+    'JOYSTICK_IAXIS',
+    'JOYSTICK_POV',
+    'JOYSTICK_POV_AXIS',
+    'KEYBOARD',
+    'MKB_AXIS',
+    'MOUSE_ABSOLUTEAXIS',
+    'MOUSE_BUTTON',
+    'MOUSE_BUTTONANY',
+    'MOUSE_CENTEREDAXIS',
+    'MOUSE_RELATIVEAXIS',
+    'MOUSE_SCALEDAXIS',
+    'MOUSE_NORMALIZED',
+    'MOUSE_WHEEL',
+    'PAD_ANALOGBUTTON',
+    'PAD_AXIS',
+    'PAD_DEBUGBUTTON',
+    'PAD_DIGITALBUTTON',
+    'PAD_DIGITALBUTTONANY',
+    'TOUCHPAD_ABSOLUTE_AXIS',
+    'TOUCHPAD_CENTERED_AXIS'
+}

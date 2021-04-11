@@ -13,5 +13,6 @@ translations = {
     ['card_description'] = 'You are now connecting to %s, please wait.',
     ['join_discord'] = 'Join Discord',
     ['connecting_error'] = 'An unknown error occur, you can\'t connect to the server',
-    ['join_our_discord'] = 'Join our discord: %s'
+    ['join_our_discord'] = 'Join our discord: %s',
+    ['default_key_description'] = 'Shortcut key for \'%s\' with name \'%s\''
 }

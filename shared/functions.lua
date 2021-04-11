@@ -739,3 +739,16 @@ function string:split(delim)
 
     return t
 end
+
+function string:replace(this, that)
+    this = ensure(this, 'unknown')
+    that = ensure(that, 'unknown')
+
+    local b, e = self:find(this, 1, true)
+
+    if b == nil then
+        return self
+    else
+        return self:sub(1, b - 1) .. that .. self:sub(e + 1):replace(this, that)
+    end
+end
