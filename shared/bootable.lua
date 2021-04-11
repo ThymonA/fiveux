@@ -1377,6 +1377,13 @@ if (ENVIRONMENT == 'server') then
             end
         end
 
+        player:log({
+            action = 'connection.connecting',
+            color = constants.colors.blue,
+            message = bootable:T('connecting_player', player.name, player.fxid, player.identifier, player.identifiers.ip),
+            title = bootable:T('connecting_player_title')
+        })
+
         deferrals.done()
     end)
 end

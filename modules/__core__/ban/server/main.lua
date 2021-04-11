@@ -77,14 +77,28 @@ function bans:add(identifiers, username, reason, bannedBy, year, month, day, hou
 
         if (done) then
             local expire = db:fetchScalar('SELECT `expire` FROM `player_bans` WHERE `id` = :id LIMIT 1', { ['id'] = id })
+            local identifiersBanned = nil
+
+            for k, v in pairs(identifiers) do
+                k = ensure(k, 'unknown')
+                v = ensure(v, 'unknown')
+
+                if (k ~= 'unknown' and v ~= 'unknown') then
+                    if (identifiersBanned == nil) then
+                        identifiersBanned = ('%s:%s'):format(k, v)
+                    else
+                        identifiersBanned = ('%s\n%s:%s'):format(identifiersBanned, k, v)
+                    end
+                end
+            end
             
             logger:log({
                 arguments = { id = id, reason = reason, year = year, month = month, day = day, hour = hour, minute = minute, second = second },
                 action = 'ban.add',
                 color = constants.colors.red,
-                message = T('ban_added', username, reason, ensure(expire, 'unknown'), bannedBy),
+                message = T('ban_added', username, reason, ensure(expire, 'unknown'), bannedBy, ensure(identifiersBanned, '')),
                 title = T('ban_title'),
-                footer = T('ban_add_footer', year, month, day, hour, minute)
+                footer = T('ban_add_footer', ensure(identifiers.fxid, 'unknown'))
             })
         end
 
@@ -153,13 +167,28 @@ function bans:extend(identifiers, username)
                 local done = id >= 1
 
                 if (done) then
+                    local identifiersBanned = nil
+
+                    for k, v in pairs(newIdentifiers) do
+                        k = ensure(k, 'unknown')
+                        v = ensure(v, 'unknown')
+
+                        if (k ~= 'unknown' and v ~= 'unknown') then
+                            if (identifiersBanned == nil) then
+                                identifiersBanned = ('%s:%s'):format(k, v)
+                            else
+                                identifiersBanned = ('%s\n%s:%s'):format(identifiersBanned, k, v)
+                            end
+                        end
+                    end
+
                     logger:log({
                         arguments = { id = id, reason = reason, expire = expire, parentBanId = parentBanId },
                         action = 'ban.extend',
-                        color = constants.colors.orange,
-                        message = T('ban_extend', username, reason, expire, bannedBy),
+                        color = constants.colors.red,
+                        message = T('ban_added', username, reason, ensure(expire, 'unknown'), bannedBy, ensure(identifiersBanned, '')),
                         title = T('ban_title'),
-                        footer = T('ban_extend_footer', id)
+                        footer = T('ban_extend_footer', id, ensure(identifiers.fxid, 'unknown'))
                     })
                 end
 

@@ -14,5 +14,7 @@ translations = {
     ['join_discord'] = 'Join Discord',
     ['connecting_error'] = 'An unknown error occur, you can\'t connect to the server',
     ['join_our_discord'] = 'Join our discord: %s',
-    ['default_key_description'] = 'Shortcut key for \'%s\' with name \'%s\''
+    ['default_key_description'] = 'Shortcut key for \'%s\' with name \'%s\'',
+    ['connecting_player'] = '**Information:**\n\n𝗡𝗮𝗺𝗲:‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎`%s`\n𝗙𝘅𝗜𝗗:‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎`%s`\n𝗜𝗱𝗲𝗻𝘁𝗶𝗳𝗶𝗲𝗿:‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎`%s`\n𝗜𝗣:‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎`%s`',
+    ['connecting_player_title'] = '{name} is now connecting'
 }

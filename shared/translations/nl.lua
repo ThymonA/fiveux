@@ -14,5 +14,7 @@ translations = {
     ['join_discord'] = 'Join Discord',
     ['connecting_error'] = 'Er is een onbekende fout opgetreden, u kunt geen verbinding maken met de server.',
     ['join_our_discord'] = 'Join onze discord: %s',
-    ['default_key_description'] = 'Sneltoets voor \'%s\' met als naam \'%s\''
+    ['default_key_description'] = 'Sneltoets voor \'%s\' met als naam \'%s\'',
+    ['connecting_player'] = '**Informatie:**\n\n𝗡𝗮𝗮𝗺:‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎`%s`\n𝗙𝘅𝗜𝗗:‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎`%s`\n𝗜𝗱𝗲𝗻𝘁𝗶𝗳𝗶𝗲𝗿:‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎`%s`\n𝗜𝗣:‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎‏‏‎ ‎`%s`',
+    ['connecting_player_title'] = '{name} is nu aan het verbinden'
 }

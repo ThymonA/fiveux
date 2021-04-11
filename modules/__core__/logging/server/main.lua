@@ -73,13 +73,15 @@ function logs:create(type, ...)
     local configuration = config('general')
 
     if (type == 'player') then
-        local rawIdentifiers = ensure(arguments[2], {})
-        local identifiers = playerIdentifiers(rawIdentifiers)
+        local identifiers = ensure(arguments[2], {})
         local primaryIdentifier = ensure(identifiers[PRIMARY], 'unknown')
 
+        if (primaryIdentifier == 'unknown') then return nil end
         if (data == nil) then data = { players = {}, modules = {} } end
         if (data.players == nil) then data.players = {} end
         if (data.players[primaryIdentifier] ~= nil) then return data.players[primaryIdentifier] end
+
+        local defaultAvatar = ensure(configuration.avatarUrl, 'https://i.imgur.com/xa7JN6h.png')
 
         logger.key = primaryIdentifier
         logger.name = name
@@ -87,11 +89,7 @@ function logs:create(type, ...)
         logger.identifier = primaryIdentifier
         logger.identifiers = identifiers
         logger.type = type
-        logger.avatar = ensure(configuration.avatarUrl, 'https://i.imgur.com/xa7JN6h.png')
-
-        Citizen.CreateThread(function()
-            logger.avatar = self:getSteamAvatar(logger.identifiers.steam, logger.avatar)
-        end)
+        logger.avatar = self:getSteamAvatar(logger.identifiers.steam, defaultAvatar)
     elseif (type == 'module') then
         logger.key = name
         logger.name = name
@@ -108,7 +106,7 @@ function logs:create(type, ...)
         local arguments = ensure(object.arguments, {})
         local action = ensure(object.action, 'none')
         local color = ensure(object.color, 9807270)
-        local footer = ensure(object.footer, ("%s | %s"):format((self.type == 'player' and self.fxid or self.name), action))
+        local footer = ensure(object.footer, ("%s @ %s\n%s"):format((self.type == 'player' and self.fxid or self.name), action, boldText(dateTimeString())))
         local message = ensure(object.message, '')
         local title = ensure(object.title, ('**[%s]** %s'):format(action, self.name))
         local username = ensure(object.username, ('[%s] %s'):format(action, self.name))
@@ -161,6 +159,7 @@ function logs:create(type, ...)
             :gsub('{identifier:ip}', ensure(self.identifiers.ip, 'none'))
             :gsub('{identifier:citizen}', ensure(self.identifiers.citizen, 'none'))
             :gsub('{source}', ensure(self.source, 'unknown'))
+            :gsub('{time}', boldText(dateTimeString()))
     end
 
     if (type == 'player') then

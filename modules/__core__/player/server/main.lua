@@ -103,7 +103,8 @@ function players:loadByFx(fxid, name)
         identifier = identifiers[PRIMARY],
         identifiers = identifiers,
         tokens = self:loadTokensByFx(fxid),
-        variables = {}
+        variables = {},
+        logger = logs:create('player', playerData.name, identifiers)
     }
 
     function player:getSource()
@@ -149,6 +150,12 @@ function players:loadByFx(fxid, name)
         self.variables = ensure(self.variables, {})
 
         return self.variables[key]
+    end
+
+    function player:log(object)
+        if (self.logger == nil) then return nil end
+
+        return self.logger:log(object)
     end
 
     if (player.identifier ~= nil and player.identifier ~= 'unknown') then
