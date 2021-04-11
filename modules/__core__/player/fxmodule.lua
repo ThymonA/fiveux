@@ -27,5 +27,5 @@ shared_scripts {}
 
 dependencies {
     'database',
-    'ban'
+    'logging'
 }

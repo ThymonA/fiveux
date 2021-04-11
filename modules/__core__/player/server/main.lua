@@ -1,6 +1,5 @@
 import 'db'
 import 'logs'
-import 'bans'
 
 local data = {}
 local ids = {}

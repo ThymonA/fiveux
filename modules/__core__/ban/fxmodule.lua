@@ -27,5 +27,6 @@ shared_scripts {}
 
 dependencies {
     'database',
-    'logging'
+    'logging',
+    'player'
 }
