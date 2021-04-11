@@ -1,3 +1,7 @@
+---@alias vector2 table Vector2
+---@alias vector3 table Vector3
+---@alias vector4 table Vector4
+
 --- Globals
 local pi = print_info
 local pe = print_error
