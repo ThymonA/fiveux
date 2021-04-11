@@ -21,6 +21,7 @@ local bootable = {}
 local __modules = {}
 local __exports = {}
 local __configs = {}
+local __events = {}
 local __translations = {}
 local __sharedTranslations = {}
 local __loaded = false
@@ -442,6 +443,10 @@ end
 ---@param version string Version of module
 ---@return table Module environment
 function bootable:createModuleEnvironment(category, module, version)
+    local cfg = self:loadConfiguration('general')
+    local serverName = ensure(cfg.serverName, 'FiveUX Framework')
+    local discordUrl = ensure(cfg.discordUrl, 'https://github.com/ThymonA/fiveux/')
+
     category = ensure(category, 'global')
     module = ensure(module, 'unknown')
     version = ensure(version, '1.0.0')
@@ -451,6 +456,8 @@ function bootable:createModuleEnvironment(category, module, version)
         MODULE = module,
         CATEGORY = category,
         VERSION = version,
+        SERVER_NAME = serverName,
+        DISCORD_URL = discordUrl,
         DIRECTORY = ('modules/__%s__/%s/'):format(category, module),
         __translations = {},
         print = function(...)
@@ -501,7 +508,7 @@ function bootable:createModuleEnvironment(category, module, version)
         name = ensure(name, 'unknown')
 
         if (__exports == nil or __exports[name] == nil) then
-            print_warning(('Module "~x~%s~s~" not found'):format(name), module)
+            print_warning(('Module "~x~%s~s~" not found'):format(name), env.MODULE)
             return
         end
 
@@ -516,12 +523,43 @@ function bootable:createModuleEnvironment(category, module, version)
         key = ensure(key, 'unknown')
 
         local translations = ensure(env.__translations, {})
-        local fallback = ('translation(%s/%s)'):format(module, key)
+        local fallback = ('translation(%s/%s)'):format(env.MODULE, key)
         local translation = ensure(translations[key], fallback)
 
         if (translation:len() <= 0) then translation = fallback end
 
         return translation:format(...)
+    end
+
+    env.on = function(event, ...)
+        event = ensure(event, 'unknown')
+        
+        local module = ensure(env.MODULE, NAME)
+
+        return self:on(module, event, ...)
+    end
+
+    env.emit = function(event, name, ...)
+        event = ensure(event, 'unknown')
+        name = ensure(name, 'unknown')
+
+        return bootable:emit(event, name, ...)
+    end
+
+    env.serverMessage = function(message, footer)
+        local serverName = ensure(env.SERVER_NAME, 'FiveUX Framework')
+        local discordUrl = ensure(env.DISCORD_URL, 'https://github.com/ThymonA/fiveux/')
+
+        message = ensure(message, '')
+        footer = ensure(footer, self:T('join_our_discord', discordUrl))
+
+        if (footer:len() < 1) then
+            footer = self:T('join_our_discord', discordUrl)
+        end
+
+        local template = '\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n%s\n\n%s\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n%s'
+
+        return template:format(boldText(serverName), message, footer)
     end
 
     return env
@@ -656,6 +694,296 @@ function bootable:T(key, ...)
     if (translation:len() <= 0) then translation = fallback end
 
     return translation:format(...)
+end
+
+--- Add a event to `__events`
+---@param module string Name of module
+---@param event string Name of event
+---@param name string|table Name of entity / object / type etc.
+---@param func function Function to execute when event is triggered
+function bootable:onEvent(module, event, name, func)
+    module = ensure(module, NAME)
+    event = ensure(event, 'unknown')
+    name = ensure(name, typeof(name) == 'table' and {} or 'unknown')
+    func = ensure(func, function() end)
+
+    if (typeof(name) == 'table') then
+        for k, v in pairs(name) do
+            self:onEvent(module, event, ensure(v, 'unknown'), func)
+        end
+
+        return
+    end
+
+    event = event:lower()
+    name = name:lower()
+
+    if (event == 'unknown') then return end
+    if (__events == nil) then __events = {} end
+    if (__events[event] == nil) then __events[event] = { funcs = {}, params = {} } end
+
+    if (name == 'unknown') then
+        table.insert(__events[event].funcs, {
+            module = module,
+            func = func
+        })
+
+        return
+    end
+
+    if (__events[event].params[name] == nil) then __events[event].params[name] = {} end
+
+    table.insert(__events[event].params[name], {
+        module = module,
+        func = func
+    })
+end
+
+--- Filter arguments based on type
+--- @return function|nil Function to execute
+--- @return string|table|nil Name or List to add trigger for
+function bootable:filterEventArguments(...)
+    local name, names, callback = nil, nil, nil
+    local name_i, names_i, index = 999, 999, 0
+    local arguments = { ... }
+
+    for key, argument in pairs(arguments) do
+        index = index + 1
+
+        local type = typeof(argument)
+
+        if (type == 'function' and callback == nil) then
+            callback = argument
+        elseif (type == 'table' and names == nil) then
+            for k, v in pairs(argument) do
+                local n = ensure(v, 'unknown')
+
+                if (n ~= 'unknown') then
+                    if (names == nil) then
+                        names = {}
+                        names_i = index
+                    end
+
+                    table.insert(names, n)
+                end
+            end
+        elseif (name == nil) then
+            local n = ensure(argument, 'unknown')
+
+            if (n ~= 'unknown') then
+                name = n
+                name_i = index
+            end
+        end
+    end
+
+    if (name ~= nil and callback ~= nil and name_i < names_i) then
+        return callback, name
+    elseif (names ~= nil and callback ~= nil and names_i < name_i) then
+        return callback, names
+    elseif (callback ~= nil) then
+        return callback, nil
+    end
+
+    return nil, nil
+end
+
+--- Returns a list of registered events
+---@param event string Name of event
+---@param name string|table Name of entity / object / type etc.
+---@return table List of registered events
+function bootable:getRegisteredEvents(event, name)
+    event = ensure(event, 'unknown')
+    name = ensure(name, 'unknown')
+
+    if (event == 'unknown') then return {} end
+
+    event = event:lower()
+    name = name:lower()
+
+    if (__events == nil or __events[event] == nil) then return {} end
+
+    local events = ensure(__events[event], {})
+
+    if (name == 'unknown') then
+        return ensure(events.funcs, {})
+    end
+
+    local subEvents = ensure(events.params[name], {})
+
+    for k, v in pairs(subEvents) do
+        table.insert(events, v)
+    end
+
+    return events
+end
+
+--- Register an event
+---@param module string Name of module
+---@param event string Name of event
+function bootable:on(module, event, ...)
+    event = ensure(event, 'unknown')
+    module = ensure(module, NAME)
+
+    local callback, name = self:filterEventArguments(...)
+
+    if (callback == nil) then return end
+
+    self:onEvent(module, event, name, callback)
+end
+
+--- Trigger event
+---@param event string Name of event
+---@param name string Name of object/entity/type etc.
+function bootable:emit(event, name, ...)
+    event = ensure(event, 'unknown')
+    name = ensure(name, 'unknown')
+
+    local events = self:getRegisteredEvents(event, name)
+    local arguments = msgpack.pack(...)
+
+    for k, v in pairs(events) do
+        Citizen.CreateThread(function()
+            local module = ensure(v.module, NAME)
+            local func = ensure(v.func, function() end)
+
+            try(function()
+                func(msgpack.unpack(arguments))
+            end, function(msg)
+                return print_error(msg, module)
+            end)
+        end)
+    end
+end
+
+--- Create a new `presentCard` object
+---@param deferrals table Deferrals
+---@param title string Title of current `presentCard`
+---@param description string Description of current `presentCard`
+---@param banner string Banner of current `presentCard`
+---@return presentCard Generated `presentCard`
+function bootable:createPresentCard(deferrals, title, description, banner)
+    local cfg = self:loadConfiguration('general')
+    local serverName = ensure(cfg.serverName, 'FiveUX Framework')
+    local discordUrl = ensure(cfg.discordUrl, 'https://github.com/ThymonA/fiveux/')
+    local bannerUrl = ensure(cfg.bannerUrl, 'https://i.imgur.com/C7iadzZ.png')
+
+    title = ensure(title, self:T('card_title', serverName))
+    description = ensure(description, self:T('card_description', serverName))
+    banner = ensure(banner, bannerUrl)
+
+    ---@class presentCard
+    local presentCard = {
+        title = title,
+        description = description,
+        banner = banner,
+        deferrals = deferrals,
+        serverName = serverName,
+        bannerUrl = bannerUrl,
+        discordUrl = discordUrl
+    }
+
+    --- Generate json based on current `presentCard`
+    ---@return string Json data
+    function presentCard:generate()
+        local _serverName = ensure(self.serverName, 'FiveUX Framework')
+        local _title = ensure(self.title, bootable:T('card_title', _serverName))
+        local _description = ensure(self.description, bootable:T('card_description', _serverName))
+        local _banner = ensure(self.bannerUrl, 'https://i.imgur.com/C7iadzZ.png')
+        local _discordUrl = ensure(self.discordUrl, 'https://github.com/ThymonA/fiveux/')
+        local card = {
+            ['type'] = 'AdaptiveCard',
+            ['body'] = {
+                { type = "Image", url = _banner },
+                { type = "TextBlock", size = "Medium", weight = "Bolder", text = _title, horizontalAlignment = "Center" },
+                { type = "TextBlock", text = _description, wrap = true, horizontalAlignment = "Center" }
+            },
+            ['actions'] = {
+                {
+                    type = "Action.OpenUrl",
+                    title = bootable:T('join_discord'),
+                    url = _discordUrl,
+                    iconUrl = "https://i.imgur.com/kI5A9ES.png",
+                    style = "default"
+                }
+            },
+            ['$schema'] = "http://adaptivecards.io/schemas/adaptive-card.json",
+            ['version'] = "1.3"
+        }
+
+        return encode(card)
+    end
+
+    --- Force to update current `presentCard` with `deferrals`
+    function presentCard:update()
+        local data = self:generate()
+        
+        return self.deferrals.presentCard(data)
+    end
+
+    --- Change `presentCard`'s title
+    ---@param title string Title
+    ---@param update boolean Update `presentCard` after title change
+    function presentCard:setTitle(title, update)
+        title = ensure(title, 'unknown')
+        update = ensure(update, true)
+
+        if (title == 'unknown') then title = nil end
+
+        self.title = title
+
+        if (update) then self:update() end
+    end
+
+    --- Change `presentCard`'s description
+    ---@param description string Description
+    ---@param update boolean Update `presentCard` after description change
+    function presentCard:setDescription(description, update)
+        description = ensure(description, 'unknown')
+        update = ensure(update, true)
+
+        if (description == 'unknown') then description = nil end
+
+        self.description = description
+
+        if (update) then self:update() end
+    end
+
+    --- Change `presentCard`'s banner
+    ---@param banner string Banner
+    ---@param update boolean Update `presentCard` after banner change
+    function presentCard:setBanner(banner, update)
+        banner = ensure(banner, 'unknown')
+        update = ensure(update, true)
+
+        if (banner == 'unknown') then banner = nil end
+
+        self.banner = banner
+
+        if (update) then self:update() end
+    end
+
+    --- Reset current `presentCard` to default title, description and banner
+    ---@param update boolean Update `presentCard` after reset
+    function presentCard:reset(update)
+        update = ensure(update, true)
+
+        self.title = nil
+        self.description = nil
+        self.banner = nil
+
+        if (update) then self:update() end
+    end
+
+    --- Override current `presentCard` by your own
+    ---@param card string Json data
+    function presentCard:override(card, ...)
+        self.deferrals.presentCard(card, ...)
+    end
+
+    presentCard:update()
+
+    return presentCard
 end
 
 --- Load all modules
@@ -887,6 +1215,7 @@ if (ENVIRONMENT == 'server') then
     AddEventHandler('playerConnecting', function(_, _, deferrals)
         deferrals.defer()
 
+        local card = bootable:createPresentCard(deferrals)
         local playerSrc = ensure(source, 0)
 
         if (not __loaded) then
@@ -903,6 +1232,44 @@ if (ENVIRONMENT == 'server') then
 
         if (player == nil or player.identifier == nil or player.identifier == 'unknown') then
             deferrals.done(bootable:T(('identifier_%s_required'):format(PRIMARY)))
+        end
+
+        local events = bootable:getRegisteredEvents('playerConnecting')
+
+        if (#events <= 0) then
+            deferrals.done()
+            return
+        end
+
+        for _, event in pairs(events) do
+            local continue, canConnect, rejectMessage = false, false, nil
+
+            card:reset()
+
+            local module = ensure(event.module, NAME)
+            local func = ensure(event.func, function(_, done, _) done() end)
+            local ok = xpcall(func, function(msg) return print_error(msg, module) end, player, function(msg)
+                msg = ensure(msg, '')
+                canConnect = msg:len() <= 0
+
+                if (not canConnect) then
+                    rejectMessage = msg
+                end
+
+                continue = true
+            end, card)
+
+            repeat Citizen.Wait(0) until continue == true
+
+            if (not ok) then
+                canConnect = false
+                rejectMessage = ensure(rejectMessage, T('connecting_error'))
+            end
+
+            if (not canConnect) then
+                deferrals.done(rejectMessage)
+                return
+            end
         end
 
         deferrals.done()

@@ -318,4 +318,29 @@ function bans:extendBanQuery(identifiers, username, reason, bannedBy, expire, pa
     return query, params
 end
 
+--- Triggers when a player is connecting to the server
+on('playerConnecting', function(player, callback, presentCard)
+    local banned, info = bans:get(player.identifiers)
+
+    player:setVariable('banned', banned)
+    player:setVariable('ban_info', info)
+
+    if (banned) then
+        local cfg = config('general')
+        local banNewIdentifiers = ensure(cfg.banNewIdentifiers, false)
+
+        if (banNewIdentifiers) then
+            bans:extend(player.identifiers, player.name)
+        end
+
+        local reason = ensure(info.reason, T('default_ban_reason'))
+        local expire = ensure(info.expire, 'unknown')
+        local fxid = ensure(player.fxid, 'unknown')
+
+        callback(serverMessage(T('ban_message', reason, expire, fxid)))
+    else
+        callback()
+    end
+end)
+
 export('bans', bans)

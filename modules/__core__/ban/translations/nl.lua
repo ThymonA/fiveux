@@ -16,5 +16,6 @@ translations = {
 ```]],
     ['ban_title'] = 'Speler verbannen!',
     ['ban_add_footer'] = 'Verbannen voor %s jaar, %s maanden, %s dagen, %s uren en %s minuten',
-    ['ban_extend_footer'] = 'Overeenkomst ban ID: %s'
+    ['ban_extend_footer'] = 'Overeenkomst ban ID: %s',
+    ['ban_message'] = 'Je bent verbannen van deze server!\n\n𝗥𝗲𝗱𝗲𝗻: %s\n𝗩𝗲𝗿𝗹𝗼𝗼𝗽𝘁 𝗼𝗽: %s\n𝗜𝗗: %s'
 }

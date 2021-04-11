@@ -4,6 +4,7 @@ import 'bans'
 
 local data = {}
 local ids = {}
+local sources = {}
 
 --- @class players
 players = {}
@@ -17,12 +18,25 @@ function players:loadBySource(source)
     if (source <= 0) then return nil end
 
     local name = ensure(GetPlayerName(source), 'unknown')
+
+    if (sources == nil) then sources = {} end
+    if (sources[source] ~= nil) then
+        local fxid = ensure(sources[source], 'unknown')
+
+        if (fxid ~= 'unknown') then
+            ids[fxid] = source
+
+            return self:loadByFx(fxid, name)
+        end
+    end
+
     local rawIdentifiers = ensure(GetPlayerIdentifiers(source), {})
     local identifiers = playerIdentifiers(rawIdentifiers)
 
     if (identifiers.fxid == nil or identifiers.fxid == 'unknown') then return nil end
 
     ids[identifiers.fxid] = source
+    sources[source] = identifiers.fxid
 
     return self:loadByFx(identifiers.fxid, name)
 end
@@ -82,7 +96,8 @@ function players:loadByFx(fxid, name)
         position = playerData.position,
         identifier = identifiers[PRIMARY],
         identifiers = identifiers,
-        tokens = self:loadTokensByFx(fxid)
+        tokens = self:loadTokensByFx(fxid),
+        variables = {}
     }
 
     function player:getSource()
@@ -109,6 +124,25 @@ function players:loadByFx(fxid, name)
     
     function player:setGroup(group)
         group = ensure(group, 'user')
+    end
+
+    function player:setVariable(key, value)
+        key = ensure(key, 'unknown')
+
+        if (key == 'unknown') then return end
+
+        self.variables = ensure(self.variables, {})
+        self.variables[key] = value
+    end
+
+    function player:getVariable(key)
+        key = ensure(key, 'unknown')
+
+        if (key == 'unknown') then return nil end
+
+        self.variables = ensure(self.variables, {})
+
+        return self.variables[key]
     end
 
     if (player.identifier ~= nil and player.identifier ~= 'unknown') then
