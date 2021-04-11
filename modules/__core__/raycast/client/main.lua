@@ -139,15 +139,15 @@ Citizen.CreateThread(function()
                     local entityType = ensure(type, 0)
 
                     emit('raycast:entity', entityHash, entity, coords, entityType)
-                    
-                    if (entityType == 1) then
+
+                    if (entityType == 4 or (entityType == 1 and PlayerPedId() == entity)) then
+                        emit('raycast:self', entityHash, entity, coords)
+                    elseif (entityType == 1) then
                         emit('raycast:ped', entityHash, entity, coords)
                     elseif (entityType == 2) then
                         emit('raycast:vehicle', entityHash, entity, coords)
                     elseif (entityType == 3) then
                         emit('raycast:object', entityHash, entity, coords)
-                    elseif (entityType == 4) then
-                        emit('raycast:self', entityHash, entity, coords)
                     elseif (entityType == 5) then
                         emit('raycast:player', entityHash, entity, coords)
                     end
@@ -161,3 +161,7 @@ end)
 
 --- Exports raycast module
 export('raycast', raycast)
+
+on('raycast:self', function(entity, coords)
+    print('YOU PRESSED ON YOURSELF!!!')
+end)
