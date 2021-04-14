@@ -1,6 +1,6 @@
-name 'player'
+name 'command'
 version '1.0.0'
-description 'FiveUX player module'
+description 'FiveUX command module'
 
 license [[
     FiveUX Framework Copyright (C) 2021 Thymon Arens
@@ -19,17 +19,12 @@ license [[
     along with this program.  If not, see <https://www.gnu.org/licenses/>
 ]]
 
-client_scripts {
-    'client/main.lua'
-}
+client_scripts {}
 server_scripts {
-    'server/main.lua',
-    'server/events.lua'
+    'server/main.lua'
 }
 shared_scripts {}
 
 dependencies {
-    'database',
-    'logging',
-    'wallet'
+    'player'
 }

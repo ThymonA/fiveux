@@ -96,7 +96,7 @@ function markers:addPermissions(id, list, type)
 
     if (isWhitelistAll(list)) then
         if (type == 'allow') then
-            ExecuteCommand(('add_ace builtin.everyone marker.x%s allow'):format(id))
+            ExecuteCommand(('add_ace builtin.everyone marker.x%s %s'):format(id, type))
         end
     else
         for _, group in pairs(list.groups) do
@@ -120,7 +120,7 @@ function markers:removePermissions(id, list, type)
 
     if (isWhitelistAll(list)) then
         if (type == 'allow') then
-            ExecuteCommand(('remove_ace builtin.everyone marker.x%s allow'):format(id))
+            ExecuteCommand(('remove_ace builtin.everyone marker.x%s %s'):format(id, type))
         end
     else
         for _, group in pairs(list.groups) do
