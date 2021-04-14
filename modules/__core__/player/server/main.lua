@@ -2,9 +2,24 @@ import 'db'
 import 'logs'
 import 'wallets'
 
+--- Configuration
+local cfg = ensure(config('general'), {})
+
+--- Local storage
 local data = {}
 local ids = {}
 local sources = {}
+local saveInterval = ensure(cfg.savePlayersInterval, 1)
+
+--- Defaults
+local default_player = {
+    group = ensure(cfg.defaultGroup, 'user'),
+    job = ensure(ensure(cfg.defaultJob, {}).name, 'unemployed'),
+    grade = ensure(ensure(cfg.defaultJob, {}).grade, 0),
+    job2 = ensure(ensure(cfg.defaultJob2, {}).name, 'unemployed'),
+    grade2 = ensure(ensure(cfg.defaultJob2, {}).grade, 0),
+    spawn = ensure(cfg.defaultSpawn, vec(-206.79, -1015.12, 29.14))
+}
 
 --- @class players
 players = {}
@@ -246,6 +261,30 @@ function players:loadByFx(fxid, name)
         return self.logger:log(object)
     end
 
+    function player:save()
+        local name = ensure(self.name, 'unknown')
+
+        db:execute('UPDATE `players` SET `name` = :name, `group` = :group, `job` = :job, `grade` = :grade, `job2` = :job2, `grade2` = :grade2, `stats` = :stats, `position` = :position WHERE `fxid` = :fxid', {
+            ['name'] = name,
+            ['group'] = ensure(self.group, default_player.group),
+            ['job'] = ensure(self.job, default_player.job),
+            ['grade'] = ensure(self.grade, default_player.grade),
+            ['job2'] = ensure(self.job2, default_player.job2),
+            ['grade2'] = ensure(self.grade2, default_player.grade2),
+            ['stats'] = ensure(self.stats, '[]'),
+            ['position'] = ensure(self.position, '[0, 0, 0]'),
+            ['fxid'] = ensure(self.fxid, 'unknown')
+        })
+
+        for _, wallet in pairs(ensure(self.wallets, {})) do
+            if (wallet ~= nil) then
+                wallet:save()
+            end
+        end
+
+        print_success(T('player_saved', name))
+    end
+
     if (player.identifier ~= nil and player.identifier ~= 'unknown') then
         ExecuteCommand(('add_principal identifier.%s:%s group.%s'):format(PRIMARY, player.identifier, player.group))
         ExecuteCommand(('add_principal identifier.%s:%s job.%s'):format(PRIMARY, player.identifier, player.job))
@@ -290,8 +329,6 @@ function players:getPlayer(fxid)
 
     if (#dbResults >= 1) then
         local dbPlayer = ensure(dbResults[1], {})
-        local cfg = ensure(config('general'), {})
-        local defaultSpawn = ensure(cfg.defaultSpawn, vec(-206.79, -1015.12, 29.14))
         local player = {
             fxid = fxid,
             name = ensure(dbPlayer.name, 'unknown'),
@@ -301,7 +338,7 @@ function players:getPlayer(fxid)
             job2 = ensure(dbPlayer.name, 'unemployed'),
             grade2 = ensure(dbPlayer.grade, 0),
             stats = ensure(dbPlayer.stats, { health = 100, armor = 0, stamina = 100, thirst = 100, hunger = 100 }),
-            position = ensure(dbPlayer.position, defaultSpawn)
+            position = ensure(dbPlayer.position, default_player.spawn)
         }
 
         return player
@@ -318,26 +355,21 @@ function players:createPlayer(fxid, name)
     fxid = ensure(fxid, 'unknown')
     name = ensure(name, 'unknown')
 
+    local defaultGroup = ('%s'):format(default_player.group)
+
     if (fxid == 'unknown') then return nil end
-
-    local cfg = ensure(config('general'), {})
-    local defaultGroup = ensure(cfg.defaultGroup, 'user')
-    local defaultJob = ensure(cfg.defaultJob, {})
-    local defaultJob2 = ensure(cfg.defaultJob2, {})
-    local defaultSpawn = ensure(cfg.defaultSpawn, vec(-206.79, -1015.12, 29.14))
-
     if (fxid == 'system') then defaultGroup = 'superadmin' end
 
     local player = {
         fxid = fxid,
         name = name,
         group = defaultGroup,
-        job = ensure(defaultJob.name, 'unemployed'),
-        grade = ensure(defaultJob.grade, 0),
-        job2 = ensure(defaultJob2.name, 'unemployed'),
-        grade2 = ensure(defaultJob2.grade, 0),
+        job = default_player.job,
+        grade = default_player.grade,
+        job2 = default_player.job2,
+        grade2 = default_player.grade2,
         stats = { health = 100, armor = 0, stamina = 100, thirst = 100, hunger = 100 },
-        position = defaultSpawn
+        position = default_player.spawn
     }
 
     local done = db:execute('INSERT INTO `players` (`fxid`, `name`, `group`, `job`, `grade`, `job2`, `grade2`, `stats`, `position`) VALUES (:fxid, :name, :group, :job, :grade, :job2, :grade2, :stats, :position)', {
@@ -568,6 +600,25 @@ function players:updatePlayerBySource(source)
     return true
 end
 
+--- Save all players
+function players:saveAll()
+    for fxid, playerSource in pairs(ids) do
+        if (playerSource ~= nil) then
+            playerSource = ensure(playerSource, 0)
+
+            if (playerSource > 0 and playerSource < 5565) then
+                local player = self:loadBySource(playerSource)
+
+                if (player ~= nil) then
+                    player:save()
+                end
+            end
+        end
+    end
+
+    print_success(T('players_saved'))
+end
+
 --- Load console player by default
 Citizen.CreateThread(function()
     while db:hasMigration(NAME) do
@@ -577,4 +628,35 @@ Citizen.CreateThread(function()
     players:loadBySource(0)
 end)
 
+--- Thread to save players every `x` time
+Citizen.CreateThread(function()
+    while db:hasMigration(NAME) do
+        Citizen.Wait(0)
+    end
+
+    while true do
+        Citizen.Wait(round(saveInterval * (60 * 1000)))
+
+        players:saveAll()
+    end
+end)
+
+--- Will be triggered when a player disconnects from the server
+on('playerDropped', function(p, s, r)
+    p = ensure(p, {})
+
+    local fxid = ensure(p.fxid, 'unknown')
+    local name = ensure(p.name, 'unknown')
+    local player = players:loadByFx(fxid, name)
+
+    if (player == nil) then return end
+
+    --- Save player data
+    player:save()
+
+    --- Remove cached source
+    ids[fxid] = nil
+end)
+
+--- Export players
 export('players', players)

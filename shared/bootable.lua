@@ -1448,6 +1448,14 @@ if (ENVIRONMENT == 'server') then
 
         if (player == nil or player.identifier == nil or player.identifier == 'unknown') then return end
 
+        player:log({
+            action = 'connection.disconnected',
+            color = constants.colors.red,
+            message = bootable:T('disconnected_player', player.name, player.fxid, player.identifier, reason),
+            title = bootable:T('disconnected_player_title'),
+            arguments = { reason = reason }
+        })
+
         bootable:emit('playerDropped', nil, player, playerSrc, reason)
     end)
 

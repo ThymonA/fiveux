@@ -20,3 +20,7 @@ config.defaultWallets = {
     ['crime'] = 0,
     ['wash'] = 0
 }
+
+--- Save all players interval
+--- [ Time in minutes ]
+config.savePlayersInterval = 1
