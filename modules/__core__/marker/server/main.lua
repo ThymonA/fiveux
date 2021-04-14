@@ -85,16 +85,6 @@ function markers:remove(id)
     data[id] = nil
 end
 
-local EC = ExecuteCommand
-
-local function ExecuteCommand(cmd)
-    cmd = ensure(cmd, '')
-
-    print(cmd)
-
-    EC(cmd)
-end
-
 --- Add marker permissions based on given `list` and `type`
 ---@param id number Marker ID
 ---@param list table List of permissions
