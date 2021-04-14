@@ -1,6 +1,6 @@
-name 'player'
+name 'ratelimit'
 version '1.0.0'
-description 'FiveUX player module'
+description 'FiveUX ratelimit module'
 
 license [[
     FiveUX Framework Copyright (C) 2021 Thymon Arens
@@ -20,13 +20,9 @@ license [[
 ]]
 
 client_scripts {}
-server_scripts {
-    'server/main.lua'
+server_scripts {}
+shared_scripts {
+    'shared/main.lua'
 }
-shared_scripts {}
 
-dependencies {
-    'database',
-    'logging',
-    'wallet'
-}
+dependencies {}

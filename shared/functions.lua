@@ -623,7 +623,10 @@ timeToString = function(time)
 end
 
 round = function(value, numDecimalPlaces)
-    if (numDecimalPlaces) then
+    value = ensure(value, 0)
+    numDecimalPlaces = ensure(numDecimalPlaces, 0)
+
+    if (numDecimalPlaces > 0) then
         local power = 10 ^ numDecimalPlaces
         return math.floor((value * power) + 0.5) / (power)
     end
@@ -712,6 +715,39 @@ getCurrentDate = function()
     end
 
     return date
+end
+
+ensureWhitelist = function(input)
+    input = ensure(input, { groups = { 'all' }, jobs = { 'all' } })
+    input.groups = ensureStringList(ensure(input.groups, {}))
+    input.jobs = ensureStringList(ensure(input.jobs, {}))
+
+    if (#input.groups == 0 and #input.jobs == 0) then
+        input.groups = { 'all' }
+        input.jobs = { 'all' }
+
+        return input
+    end
+
+    return input
+end
+
+isWhitelistAll = function(input)
+    input = ensure(input, { groups = { 'all' }, jobs = { 'all' } })
+    input.groups = ensureStringList(ensure(input.groups, {}))
+    input.jobs = ensureStringList(ensure(input.jobs, {}))
+
+    if (#input.groups == 0 and #input.jobs == 0) then return true end
+
+    for _, group in pairs(input.groups) do
+        if (ensure(group, 'unknown'):lower() == 'all') then return true end
+    end
+
+    for _, job in pairs(input.jobs) do
+        if (ensure(job, 'unknown'):lower() == 'all') then return true end
+    end
+
+    return false
 end
 
 function string:startsWith(word)

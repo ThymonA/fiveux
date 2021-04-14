@@ -1,6 +1,6 @@
-name 'player'
+name 'marker'
 version '1.0.0'
-description 'FiveUX player module'
+description 'FiveUX marker module'
 
 license [[
     FiveUX Framework Copyright (C) 2021 Thymon Arens
@@ -19,14 +19,15 @@ license [[
     along with this program.  If not, see <https://www.gnu.org/licenses/>
 ]]
 
-client_scripts {}
-server_scripts {
-    'server/main.lua'
+client_scripts {
+    'client/main.lua'
 }
+
+server_scripts {
+    'server/main.lua',
+    'server/events.lua'
+}
+
 shared_scripts {}
 
-dependencies {
-    'database',
-    'logging',
-    'wallet'
-}
+dependencies {}

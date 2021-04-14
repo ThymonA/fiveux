@@ -1,6 +1,6 @@
-name 'player'
+name 'wallet'
 version '1.0.0'
-description 'FiveUX player module'
+description 'FiveUX wallet module'
 
 license [[
     FiveUX Framework Copyright (C) 2021 Thymon Arens
@@ -26,7 +26,5 @@ server_scripts {
 shared_scripts {}
 
 dependencies {
-    'database',
-    'logging',
-    'wallet'
+    'database'
 }

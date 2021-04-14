@@ -1,5 +1,6 @@
 import 'db'
 import 'logs'
+import 'wallets'
 
 local data = {}
 local ids = {}
@@ -104,13 +105,18 @@ function players:loadByFx(fxid, name)
         identifiers = identifiers,
         tokens = self:loadTokensByFx(fxid),
         variables = {},
-        logger = logs:create('player', playerData.name, identifiers)
+        logger = logs:create('player', playerData.name, identifiers),
+        wallets = wallets:loadAllByIdentifier(fxid)
     }
 
     function player:getSource()
         local fxid = ensure(self.fxid, 'unknown')
 
         return ensure(ids[fxid], 0)
+    end
+
+    function player:triggerLocal(event, ...)
+        return TriggerEvent(event, self, ...)
     end
 
     function player:triggerEvent(event, ...)
@@ -131,6 +137,88 @@ function players:loadByFx(fxid, name)
     
     function player:setGroup(group)
         group = ensure(group, 'user')
+    end
+
+    function player:getWallet(name)
+        name = ensure(name, 'unknown')
+
+        if (self.wallets ~= nil and self.wallets[name] ~= nil) then
+            return self.wallets[name].balance
+        end
+    end
+
+    function player:setWallet(name, amount)
+        name = ensure(name, 'unknown')
+        amount = round(ensure(amount, 0))
+
+        if (self.wallets ~= nil and self.wallets[name] ~= nil) then
+            if (amount <= -2147483647) then amount = -2147483647 end
+            if (amount >= 2147483647) then amount = 2147483647 end
+
+            local prevBalance = ensure(self.wallets[name].balance, 0)
+
+            self.wallets[name]:setBalance(amount)
+
+            local newBalance = ensure(self.wallets[name].balance, 0)
+
+            self:triggerLocal('player:wallet:set', name, self.wallets[name].balance, amount)
+            self:triggerEvent('player:wallet:set', name, self.wallets[name].balance, amount)
+            self:logWallet('set', name, amount, prevBalance, newBalance)
+        end
+    end
+
+    function player:addWallet(name, amount)
+        name = ensure(name, 'unknown')
+        amount = round(ensure(amount, 0))
+
+        if (self.wallets ~= nil and self.wallets[name] ~= nil) then
+            if (amount <= -2147483647) then amount = -2147483647 end
+            if (amount >= 2147483647) then amount = 2147483647 end
+
+            local prevBalance = ensure(self.wallets[name].balance, 0)
+
+            self.wallets[name]:addBalance(amount)
+
+            local newBalance = ensure(self.wallets[name].balance, 0)
+
+            self:triggerLocal('player:wallet:add', name, self.wallets[name].balance, amount)
+            self:triggerEvent('player:wallet:add', name, self.wallets[name].balance, amount)
+            self:logWallet('add', name, amount, prevBalance, newBalance)
+        end
+    end
+
+    function player:removeWallet(name, amount)
+        name = ensure(name, 'unknown')
+        amount = round(ensure(amount, 0))
+
+        if (self.wallets ~= nil and self.wallets[name] ~= nil) then
+            if (amount <= -2147483647) then amount = -2147483647 end
+            if (amount >= 2147483647) then amount = 2147483647 end
+
+            local prevBalance = ensure(self.wallets[name].balance, 0)
+
+            self.wallets[name]:removeBalance(amount)
+
+            local newBalance = ensure(self.wallets[name].balance, 0)
+
+            self:triggerLocal('player:wallet:remove', name, newBalance, amount)
+            self:triggerEvent('player:wallet:remove', name, newBalance, amount)
+            self:logWallet('remove', name, amount, prevBalance, newBalance)
+        end
+    end
+
+    function player:logWallet(type, name, amount, prevBalance, newBalance)
+        type = ensure(type, 'add')
+        name = ensure(name, 'unknown')
+        amount = ensure(amount, 0)
+        prevBalance = ensure(prevBalance, 0)
+        newBalance = ensure(newBalance, 0)
+
+        self:log({
+            arguments = { amount = amount, name = name, prev = prevBalance, new = newBalance },
+            action = ('wallet.%s.%s'):format(name, type),
+            logDiscord = false
+        })
     end
 
     function player:setVariable(key, value)

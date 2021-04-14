@@ -17,6 +17,11 @@ _G.ENVIRONMENT = IsDuplicityVersion() and 'server' or 'client'
 _G.NAME = 'global'
 --- Primary license type (steam/license/xbl/live/discord etc...)
 _G.PRIMARY = 'license'
+--- Custom Trigger Events
+_G.TriggerLocal = TriggerEvent
+_G.TriggerRemote = ENVIRONMENT == 'server' and TriggerClientEvent or TriggerServerEvent
+_G.MarkEventAsGlobal = RegisterNetEvent
+_G.RegisterEvent = AddEventHandler
 
 --- Bootable class
 ---@class bootable
@@ -1059,7 +1064,7 @@ function bootable:init()
 
     self:setGlobalModules(modules)
 
-    if (#modules == 0) then return end
+    if (modules == nil or #modules == 0) then return end
 
     local remaining = #modules
     local results = {}
@@ -1252,6 +1257,49 @@ function bootable:init()
             end
         end
 
+        if (ENVIRONMENT == 'server') then
+            ---@type ratelimits
+            local ratelimits = bootable:loadExport('ratelimits')
+
+            if (ratelimits ~= nil) then
+                ratelimits:addEvent('playerJoining', function()
+                    local playerSrc = ensure(source, 0)
+                    local players = bootable:loadExport('players')
+            
+                    if (players == nil or playerSrc <= 0) then return end
+
+                    ---@type player
+                    local player = players:loadBySource(playerSrc)
+
+                    if (player == nil or player.identifier == nil or player.identifier == 'unknown') then return end
+
+                    bootable:emit('playerJoining', nil, player, playerSrc)
+                end, 0, 1)
+
+                ratelimits:addEvent('playerJoined', function()
+                    local playerSrc = ensure(source, 0)
+                    local players = bootable:loadExport('players')
+            
+                    if (players == nil or playerSrc <= 0) then return end
+
+                    ---@type player
+                    local player = players:loadBySource(playerSrc)
+
+                    if (player == nil or player.identifier == nil or player.identifier == 'unknown') then return end
+
+                    player:log({
+                        action = 'connection.joined',
+                        color = constants.colors.green,
+                        message = bootable:T('joined_player', player.name, player.fxid, player.identifier, playerSrc),
+                        title = bootable:T('joined_player_title'),
+                        arguments = { source = playerSrc }
+                    })
+
+                    bootable:emit('playerJoined', nil, player, playerSrc)
+                end, 0, 1)
+            end
+        end
+
         __loaded = true
     end)
 end
@@ -1315,9 +1363,8 @@ if (ENVIRONMENT == 'client') then
     end
 end
 
---- Prevent players to connect when framework hasn't been loaded
 if (ENVIRONMENT == 'server') then
-    AddEventHandler('playerConnecting', function(_, _, deferrals)
+    RegisterEvent('playerConnecting', function(_, _, deferrals)
         deferrals.defer()
 
         local card = bootable:createPresentCard(deferrals)
@@ -1333,6 +1380,7 @@ if (ENVIRONMENT == 'server') then
             players:updatePlayerBySource(playerSrc)
         end
 
+        ---@type player
         local player = players:loadBySource(playerSrc)
 
         if (player == nil or player.identifier == nil or player.identifier == 'unknown') then
@@ -1386,6 +1434,44 @@ if (ENVIRONMENT == 'server') then
 
         deferrals.done()
     end)
+
+    RegisterEvent('playerDropped', function(reason)
+        reason = ensure(reason, bootable:T('no_reason'))
+
+        local playerSrc = ensure(source, 0)
+        local players = bootable:loadExport('players')
+        
+        if (players == nil or playerSrc <= 0) then return end
+
+        ---@type player
+        local player = players:loadBySource(playerSrc)
+
+        if (player == nil or player.identifier == nil or player.identifier == 'unknown') then return end
+
+        bootable:emit('playerDropped', nil, player, playerSrc, reason)
+    end)
+
+    MarkEventAsGlobal('fiveux:status')
+    RegisterEvent('fiveux:status', function()
+        local playerSrc = ensure(source, 0)
+        
+        TriggerRemote('fiveux:status', playerSrc, ensure(__loaded, false))
+    end)
+
+    MarkEventAsGlobal('playerSpawned')
+    RegisterEvent('playerSpawned', function()
+        local playerSrc = ensure(source, 0)
+        local players = bootable:loadExport('players')
+        
+        if (players == nil or playerSrc <= 0) then return end
+
+        ---@type player
+        local player = players:loadBySource(playerSrc)
+
+        if (player == nil or player.identifier == nil or player.identifier == 'unknown') then return end
+
+        bootable:emit('playerSpawned', nil, player, playerSrc)
+    end)
 end
 
 --- Execute this function to start framework
@@ -1393,6 +1479,12 @@ local function bootFramework()
     Citizen.CreateThread(function()
         bootable:init()
     end)
+end
+
+--- Checks if framework has loaded
+---@return boolean Framework loaded
+_G.FrameworkLoaded = function()
+    return ensure(__loaded, false)
 end
 
 --- Start framework

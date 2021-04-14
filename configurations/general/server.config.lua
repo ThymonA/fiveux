@@ -12,3 +12,11 @@ config.defaultJob = { name = 'unemployed', grade = 0 }
 
 --- Default player job2
 config.defaultJob2 = { name = 'unemployed', grade = 0 }
+
+--- Default wallets (player/jobs)
+config.defaultWallets = {
+    ['cash'] = 7500,
+    ['bank'] = 32500,
+    ['crime'] = 0,
+    ['wash'] = 0
+}

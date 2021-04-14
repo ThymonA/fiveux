@@ -48,7 +48,8 @@ files {
 client_scripts {
     'shared/constants.lua',
     'shared/functions.lua',
-    'shared/bootable.lua'
+    'shared/bootable.lua',
+    'shared/main.client.lua'
 }
 
 server_scripts {
