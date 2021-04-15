@@ -1,6 +1,10 @@
 import 'players'
 
 --- Local storage
+---@type table
+local cfg = config('commands')
+---@type table<string, table>
+local configPermissions = ensure(cfg.permissions, {})
 ---@type table<string, command>
 local data = {}
 
@@ -9,14 +13,15 @@ commands = {}
 
 --- Register a command
 ---@param name string Name of command
----@param whitelist table Whitelist of command
----@param blacklist table Blacklist of command
 ---@param callback function Callback to execute
-function commands:add(name, whitelist, blacklist, callback)
+function commands:add(name, callback)
     name = ensure(name, 'unknown'):replace(' ', '_')
+    callback = ensure(callback, function() end)
+
+    local whitelist, blacklist = self:permissions(name)
+
     whitelist = ensureWhitelist(whitelist)
     blacklist = ensureWhitelist(blacklist)
-    callback = ensure(callback, function() end)
 
     ---@class command
     local command = {
@@ -66,7 +71,7 @@ function commands:add(name, whitelist, blacklist, callback)
         player:log({
             arguments = { command = cmd, args = args },
             action = 'command.execute',
-            logDiscord = false
+            discord = false
         })
 
         xpcall(command.callback, print_error, player, table.unpack(args))
@@ -123,6 +128,23 @@ function commands:removePermissions(name, list, type)
             ExecuteCommand(('remove_ace job.%s command.%s %s'):format(job, name, type))
         end
     end
+end
+
+--- Returns permissions of given command
+---@param name string Name of command
+---@return table Whitelist of command
+---@return table Blacklist of command
+function commands:permissions(name)
+    name = ensure(name, 'unknown')
+
+    if (configPermissions == nil) then configPermissions = {} end
+    if (configPermissions[name] == nil) then
+        return { 'superadmin' }, {}
+    end
+
+    local info = ensure(configPermissions[name], {})
+
+    return ensure(info.whitelist, { 'superadmin' }), ensure(info.blacklist, {})
 end
 
 --- Export commands

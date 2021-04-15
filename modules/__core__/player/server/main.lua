@@ -232,7 +232,7 @@ function players:loadByFx(fxid, name)
         self:log({
             arguments = { amount = amount, name = name, prev = prevBalance, new = newBalance },
             action = ('wallet.%s.%s'):format(name, type),
-            logDiscord = false
+            discord = false
         })
     end
 

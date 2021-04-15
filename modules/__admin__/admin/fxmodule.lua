@@ -27,5 +27,5 @@ shared_scripts {}
 
 dependencies {
     'command',
-    'game'
+    'player'
 }
