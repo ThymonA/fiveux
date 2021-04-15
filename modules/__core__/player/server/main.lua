@@ -335,8 +335,8 @@ function players:getPlayer(fxid)
             group = ensure(dbPlayer.group, 'user'),
             job = ensure(dbPlayer.job, 'unemployed'),
             grade = ensure(dbPlayer.grade, 0),
-            job2 = ensure(dbPlayer.name, 'unemployed'),
-            grade2 = ensure(dbPlayer.grade, 0),
+            job2 = ensure(dbPlayer.job2, 'unemployed'),
+            grade2 = ensure(dbPlayer.grade2, 0),
             stats = ensure(dbPlayer.stats, { health = 100, armor = 0, stamina = 100, thirst = 100, hunger = 100 }),
             position = ensure(dbPlayer.position, default_player.spawn)
         }

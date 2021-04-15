@@ -48,10 +48,6 @@ function commands:add(name, whitelist, blacklist, callback)
         self:removePermissions(name, prevBlacklist, 'deny')
     end
 
-    --- Set command permissions
-    self:addPermissions(name, whitelist, 'allow')
-    self:addPermissions(name, blacklist, 'deny')
-
     data[name] = command
 
     RegisterCommand(name, function(source, args, raw)
@@ -74,7 +70,11 @@ function commands:add(name, whitelist, blacklist, callback)
         })
 
         xpcall(command.callback, print_error, player, table.unpack(args))
-    end)
+    end, true)
+
+    --- Set command permissions
+    self:addPermissions(name, whitelist, 'allow')
+    self:addPermissions(name, blacklist, 'deny')
 end
 
 --- Add command permissions based on given `list` and `type`
