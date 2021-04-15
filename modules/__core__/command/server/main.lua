@@ -73,7 +73,7 @@ function commands:add(name, whitelist, blacklist, callback)
             logDiscord = false
         })
 
-        xpcall(command.callback, print_error, table.unpack(args))
+        xpcall(command.callback, print_error, player, table.unpack(args))
     end)
 end
 

@@ -666,6 +666,16 @@ generateCitizenId = function(identifier)
 	return 'unknown'
 end
 
+ensureHash = function(input)
+    if (typeof(input) == 'number') then return input end
+    
+    input = ensure(input, 'unknown')
+
+    if (input == 'unknown') then return nil end
+
+    return GetHashKey(input)
+end
+
 playerIdentifiers = function(rawIdentifiers)
     rawIdentifiers = ensure(rawIdentifiers, {})
 

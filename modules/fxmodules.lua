@@ -1,4 +1,5 @@
 categories {
     'core',
-    'general'
+    'game',
+    'admin'
 }
