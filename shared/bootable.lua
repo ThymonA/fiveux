@@ -27,14 +27,18 @@ _G.RegisterEvent = AddEventHandler
 ---@class bootable
 ---
 local bootable = {}
+---@type table<string, module>
 local __modules = {}
 local __exports = {}
 local __configs = {}
 local __events = {}
+local __nui_pages = {}
 local __keyPressed = {}
 local __translations = {}
 local __sharedTranslations = {}
 local __loaded = false
+local __nuiLoaded = false
+local __nuiCallbacks = {}
 
 --- Create a new environment
 ---@param self bootable
@@ -328,6 +332,7 @@ function bootable:getAllModules()
                 local _cm_client_scripts = {}
                 local _cm_server_scripts = {}
                 local _cm_shared_scripts = {}
+                local _cm_ui_page = nil
                 local _cm_dependencies = {}
                 local env = self:createEnvironment({
                     name = function(n)
@@ -396,6 +401,13 @@ function bootable:getAllModules()
                             end
                         end
                     end,
+                    ui_page = function(s)
+                        s = ensure(s, 'unknown')
+
+                        if (s ~= 'unknown') then
+                            _cm_ui_page = s
+                        end
+                    end,
                     dependency = function(d)
                         d = ensure(d, 'unknown')
 
@@ -434,6 +446,7 @@ function bootable:getAllModules()
                         client_scripts = _cm_client_scripts,
                         server_scripts = _cm_server_scripts,
                         shared_scripts = _cm_shared_scripts,
+                        ui_page = _cm_ui_page,
                         dependencies = _cm_dependencies,
                         category = c_name,
                         category_description = c_description
@@ -616,6 +629,74 @@ function bootable:createModuleEnvironment(category, module, version)
 
             return self:isControlReleased(name)
         end
+
+        env.NUI = function()
+            local module_name = ensure(env.NAME, 'unknown')
+            local module_category = ensure(env.CATEGORY, 'unknown')
+
+            if (__modules == nil or __modules[module_name] == nil) then return end
+
+            local module_info = ensure(__modules[module_name], {})
+            local module_page = ensure(module_info.ui_page, 'unknown')
+            local nui_key = ('%s:%s:%s'):format(module_category, module_name, module_page)
+
+            if (__nui_pages == nil or __nui_pages[nui_key] == nil) then return end
+
+            return __nui_pages[nui_key]
+        end
+
+        env.SendNUIMessage = function(data)
+            local nui = env.NUI()
+            
+            if (nui == nil) then return end
+
+            return nui:sendMessage(data)
+        end
+
+        env.RegisterNUICallback = function(name, callback)
+            name = ensure(name, 'unknown')
+            callback = ensure(callback, function(_, cb) cb('ok') end)
+
+            local nui = env.NUI()
+            
+            if (nui == nil) then return end
+            if (__nuiCallbacks == nil) then __nuiCallbacks = {} end
+            if (__nuiCallbacks[nui.name] == nil) then __nuiCallbacks[nui.name] = {} end
+            
+            __nuiCallbacks[nui.name][name] = callback
+        end
+
+        env.HideNUI = function()
+            local nui = env.NUI()
+            
+            if (nui == nil) then return end
+
+            return nui:hide()
+        end
+
+        env.ShowNUI = function()
+            local nui = env.NUI()
+            
+            if (nui == nil) then return end
+
+            return nui:show()
+        end
+
+        env.DestroyNUI = function()
+            local nui = env.NUI()
+            
+            if (nui == nil) then return end
+
+            return nui:destroy()
+        end
+
+        env.CreateNUI = function()
+            local nui = env.NUI()
+            
+            if (nui == nil) then return end
+
+            return nui:create()
+        end
     end
 
     return env
@@ -637,12 +718,14 @@ function bootable:setGlobalModules(modules)
         local m_client_scripts = ensure(module.client_scripts, {})
         local m_server_scripts = ensure(module.server_scripts, {})
         local m_shared_scripts = ensure(module.shared_scripts, {})
+        local m_ui_page = ensure(module.ui_page, 'unknown')
         local m_dependencies = ensure(module.dependencies, {})
         local m_category = ensure(module.category, 'unknown')
         local m_category_description = ensure(module.category_description, '')
         local m_environment = self:createModuleEnvironment(m_category, m_name, m_version)
 
-        __modules[m_name] = {
+        ---@class module
+        local __module = {
             loaded = false,
             failed = false,
             failed_message = nil,
@@ -655,6 +738,7 @@ function bootable:setGlobalModules(modules)
             client_scripts = m_client_scripts,
             server_scripts = m_server_scripts,
             shared_scripts = m_shared_scripts,
+            ui_page = m_ui_page,
             dependencies = m_dependencies,
             category = m_category,
             category_description = m_category_description,
@@ -666,6 +750,8 @@ function bootable:setGlobalModules(modules)
                 end
             })
         }
+
+        __modules[m_name] = __module
     end
 end
 
@@ -1044,6 +1130,109 @@ function bootable:createPresentCard(deferrals, title, description, banner)
     return presentCard
 end
 
+--- Create a nui object for given module
+---@param module module
+function bootable:createNUI(module)
+    local ui_page = ensure(module.ui_page, 'unknown')
+
+    if (ui_page == 'unknown') then return end
+
+    ---@class nui
+    local nui = {
+        name = ('%s:%s:%s'):format(module.category, module.name, ui_page),
+        url = ('https://cfx-nui-%s/modules/__%s__/%s/%s'):format(RESOURCE_NAME, module.category, module.name, ui_page),
+        loaded = false,
+        destroyed = false,
+        visible = false,
+        focus = false,
+        cursor = false
+    }
+
+    function nui:sendMessage(info, internal)
+        internal = ensure(internal, false)
+
+        while not __nuiLoaded do Citizen.Wait(0) end
+
+        if (internal) then
+            local data = ensure(info, {})
+
+            data.source = '__fxinternal'
+
+            return SendNUIMessage(data)
+        end
+
+        while not self.loaded do Citizen.Wait(0) end
+
+        local data = {}
+
+        data.target = ensure(self.name, 'unknown')
+        data.data = ensure(info, {})
+
+        return SendNUIMessage(data)
+    end
+
+    function nui:show()
+        while not __nuiLoaded do Citizen.Wait(0) end
+        while not self.loaded do Citizen.Wait(0) end
+
+        self.visible = true
+        self:sendMessage({ action = 'show_frame', name = self.name }, true)
+    end
+
+    function nui:hide()
+        while not __nuiLoaded do Citizen.Wait(0) end
+        while not self.loaded do Citizen.Wait(0) end
+
+        self.visible = false
+        self.focus = false
+        self.cursor = false
+        self:sendMessage({ action = 'hide_frame', name = self.name }, true)
+    end
+
+    function nui:focus()
+        while not __nuiLoaded do Citizen.Wait(0) end
+        while not self.loaded do Citizen.Wait(0) end
+
+        self.focus = true
+        self:sendMessage({ action = 'focus_frame', name = self.name }, true)
+    end
+
+    function nui:destroy()
+        while not __nuiLoaded do Citizen.Wait(0) end
+        while not self.loaded do Citizen.Wait(0) end
+
+        self.loaded = false
+        self.destroyed = true
+        self.visible = false
+        self.focus = false
+        self.cursor = false
+        self:sendMessage({ action = 'destroy_frame', name = self.name }, true)
+    end
+
+    function nui:create()
+        while not __nuiLoaded do Citizen.Wait(0) end
+
+        self.loaded = ensure(self.loaded, false)
+        self.destroyed = false
+        self.visible = true
+        self.focus = false
+        self.cursor = false
+        self:sendMessage({ action = 'create_frame', name = self.name, url = self.url, visible = self.visible }, true)
+    end
+
+    __nui_pages[nui.name] = nui
+
+    Citizen.CreateThread(function()
+        local name = ensure(nui.name, 'unknown')
+
+        while not __nuiLoaded do Citizen.Wait(0) end
+
+        if (__nui_pages == nil or __nui_pages[name] == nil) then return end
+
+        __nui_pages[name]:create()
+    end)
+end
+
 --- Load all modules
 ---@param self bootable
 function bootable:init()
@@ -1075,6 +1264,10 @@ function bootable:init()
             local raw_name = ensure(raw_module.name, 'unknown')
             local module = ensure(__modules[raw_name], {})
             local m_name = ensure(module.name, 'unknown')
+
+            if (ENVIRONMENT == 'client') then
+                bootable:createNUI(module)
+            end
 
             local function m_func()
                 local m_category = ensure(module.category, 'unknown')
@@ -1361,6 +1554,49 @@ if (ENVIRONMENT == 'client') then
         RegisterCommand(('+%s'):format(name), function() __keyPressed[name] = true end)
         RegisterCommand(('-%s'):format(name), function() __keyPressed[name] = false end)
     end
+
+    RegisterNUICallback('nui_ready', function(info, callback)
+        info = ensure(info, {})
+        callback = ensure(callback, function() end)
+        
+        __nuiLoaded = true
+        
+        callback('ok')
+    end)
+
+    RegisterNUICallback('frame_load', function(info, callback)
+        info = ensure(info, {})
+        callback = ensure(callback, function() end)
+
+        local name = ensure(info.name, 'unknown')
+
+        if (__nui_pages == nil or __nui_pages[name] == nil) then
+            callback('ok')
+            return
+        end
+
+        __nui_pages[name].loaded = true
+
+        callback('ok')
+    end)
+
+    RegisterNUICallback('frame_message', function(info, callback)
+        info = ensure(info, {})
+        callback = ensure(callback, function() end)
+
+        local event = ensure(info.event, 'unknown')
+        local name = ensure(info.name, 'unknown')
+        local message = ensure(info.msg, {})
+
+        if (__nuiCallbacks == nil) then __nuiCallbacks = {} end
+        if (__nuiCallbacks[name] == nil) then __nuiCallbacks[name] = {} end
+
+        if (__nuiCallbacks[name][event] ~= nil) then
+            return __nuiCallbacks[name][event](message, callback)
+        end
+        
+        callback('ok')
+    end)
 end
 
 if (ENVIRONMENT == 'server') then

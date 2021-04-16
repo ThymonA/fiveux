@@ -25,10 +25,16 @@ license [[
     along with this program.  If not, see <https://www.gnu.org/licenses/>
 ]]
 
+ui_page 'shared/html/fiveux.html'
+ui_page_preload 'yes'
+
 files {
     'configurations/**/shared.config.lua',
     'configurations/**/client.config.lua',
     'shared/translations/*.lua',
+    'shared/html/*.html',
+    'shared/html/*.js',
+    'shared/html/*.css',
     'modules/fxmodules.lua',
     'modules/**/fxcategory.lua',
     'modules/**/fxmodule.lua',
@@ -42,7 +48,15 @@ files {
     'modules/**/**/shared/*.lua',
     'modules/**/**/translations/*.lua',
     'modules/**/**/client/**/*.lua',
-    'modules/**/**/shared/**/*.lua'
+    'modules/**/**/shared/**/*.lua',
+    'modules/**/html/*',
+    'modules/**/html/*.*',
+    'modules/**/html/**/*',
+    'modules/**/html/**/*.*',
+    'modules/**/**/html/*',
+    'modules/**/**/html/*.*',
+    'modules/**/**/html/**/*',
+    'modules/**/**/html/**/*.*'
 }
 
 client_scripts {
