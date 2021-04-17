@@ -7,6 +7,7 @@ local default_vector2 = vec(0, 0)
 local default_vector3 = vec(0, 0, 0)
 local cfg = config('general')
 local raycastLength = ensure(cfg.raycastLength, 50.0)
+local mousePosition = vec(0, 0)
 
 --- @class raycast
 raycast = {}
@@ -43,8 +44,7 @@ end
 --- Calculates the position where mouse is pointing at
 ---@param camPosition vector3|table Position of camera
 ---@param camRotation vector3|table Rotation of camera
----@param mousePosition vector2|table Position of mouse
-function raycast:screenToWorld(camPosition, camRotation, mousePosition)
+function raycast:screenToWorld(camPosition, camRotation)
     camPosition = ensure(camPosition, default_vector3)
     camRotation = ensure(camRotation, default_vector3)
     mousePosition = ensure(mousePosition, default_vector2)
@@ -79,10 +79,11 @@ end
 ---@return number Entity type
 ---@return vector3 Camera direction
 function raycast:screen2dToWorld3D()
+    mousePosition = vec(ensure(GetControlNormal(0, 239), 0), ensure(GetControlNormal(0, 240), 0))
+
     local camRotation = ensure(GetGameplayCamRot(0), default_vector3)
     local camPosition = ensure(GetGameplayCamCoord(), default_vector3)
-    local mousePosition = vec(ensure(GetControlNormal(0, 239), 0), ensure(GetControlNormal(0, 240), 0))
-    local camera3dPosition, forwardDirection = self:screenToWorld(camPosition, camRotation, mousePosition)
+    local camera3dPosition, forwardDirection = self:screenToWorld(camPosition, camRotation)
     local cameraDirection = camPosition + forwardDirection * raycastLength
     local raycastHandle = StartShapeTestRay(camera3dPosition, cameraDirection, 30, 0, 0)
     local retval, hit, endCoords, surfaceNormal, entityHit = GetShapeTestResult(raycastHandle)
@@ -94,6 +95,12 @@ function raycast:screen2dToWorld3D()
     end
 
     return false, nil, nil, nil, nil, nil
+end
+
+--- Returns position of mouse
+---@return vector2
+function raycast:getMousePosition()
+    return ensure(mousePosition, default_vector2)
 end
 
 --- Register controls

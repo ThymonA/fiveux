@@ -1,9 +1,6 @@
-html {
-	user-select: none;
-	overflow: hidden;
-    display: grid;
-    min-height: 100%;
-}
+@import url('all.css');
+@import url("https://fonts.googleapis.com/css?family=Barlow+Condensed:100,200,300,400,500,600,700,800,900");
+@import url("https://fonts.googleapis.com/css?family=K2D:100,200,300,400,500,600,700,800,900");
 
 ::-webkit-scrollbar {
     display: none;
@@ -25,9 +22,14 @@ body .hidden {
     display: none !important;
     opacity: 0.0 !important;
 }
+
+html {
+    display: grid;
+    min-height: 100%;
+}
   
 body {
-    /*background: url('https://i.imgur.com/MoYBh1e.jpg') center center no-repeat;*/
+/*background: url('https://i.imgur.com/MoYBh1e.jpg') center center no-repeat;*/
     background-size: cover;
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -48,6 +50,26 @@ div.separator {
 /* Variables */
 ::-webkit-scrollbar {
     display: none;
+}
+
+*, *:before, *:after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    padding: 0;
+}
+
+* {
+	box-sizing: border-box;
+}
+  
+html {
+	user-select: none;
+	overflow: hidden;
 }
 
 html body {
@@ -105,11 +127,11 @@ h1 {
 
 .wheel .arc i {
 	position: absolute;
-	top: 38.5%;
-	left: 13.5%;
-	font-size: 2.5rem;
+	top: 40%;
+	left: 15%;
+	font-size: 2rem;
 	transform: rotate(calc(var(--rotation) * -1));
-	color: rgba(107, 0, 197, 1.0);
+	color: rgba(0, 255, 20, 0.8);
 	transition: color 0.3s;
 }
 
@@ -125,15 +147,15 @@ h1 {
 
 .wheel .arc:nth-child(1) {
 	--rotation: -22.5deg;
-	--color: rgba(167, 63, 255, 0.35);
-    --color-border: rgba(138, 0, 255, 0.94);
+	--color: rgba(36, 36, 36, 0.75);
+    --color-border: hsla(127, 100%, 50%, 0.94);
 	transition-delay: 0.015s;
 }
 
-.wheel .arc:nth-child(1).disabled {
+.wheel .arc:nth-child(2).disabled {
 	--rotation: -22.5deg;
-	--color: hsla(0, 0%, 100%, 0);
-    --color-border: rgba(138, 0, 255, 0.2);
+	--color: rgba(36, 36, 36, 0.60);
+    --color-border: hsla(127, 100%, 50%, 0.2);
 	transition-delay: 0.015s;
 }
 
@@ -149,15 +171,15 @@ h1 {
 
 .wheel .arc:nth-child(2) {
 	--rotation: 22.5deg;
-	--color: rgba(167, 63, 255, 0.35);
-    --color-border: rgba(138, 0, 255, 0.94);
+	--color: rgba(36, 36, 36, 0.75);
+    --color-border: hsla(127, 100%, 50%, 0.94);
 	transition-delay: 0s;
 }
 
 .wheel .arc:nth-child(2).disabled {
 	--rotation: 22.5deg;
-	--color: hsla(0, 0%, 100%, 0);
-    --color-border: rgba(138, 0, 255, 0.2);
+	--color: rgba(36, 36, 36, 0.60);
+    --color-border: hsla(127, 100%, 50%, 0.2);
 	transition-delay: 0s;
 }
 
@@ -173,15 +195,15 @@ h1 {
 
 .wheel .arc:nth-child(3) {
 	--rotation: 67.5deg;
-	--color: rgba(167, 63, 255, 0.35);
-    --color-border: rgba(138, 0, 255, 0.94);
+	--color: rgba(36, 36, 36, 0.75);
+    --color-border: hsla(127, 100%, 50%, 0.94);
 	transition-delay: 0.015s;
 }
 
 .wheel .arc:nth-child(3).disabled {
 	--rotation: 67.5deg;
-	--color: hsla(0, 0%, 100%, 0);
-    --color-border: rgba(138, 0, 255, 0.2);
+	--color: rgba(36, 36, 36, 0.60);
+    --color-border: hsla(127, 100%, 50%, 0.2);
 	transition-delay: 0.015s;
 }
 
@@ -197,15 +219,15 @@ h1 {
 
 .wheel .arc:nth-child(4) {
 	--rotation: 112.5deg;
-	--color: rgba(167, 63, 255, 0.35);
-    --color-border: rgba(138, 0, 255, 0.94);
+	--color: rgba(36, 36, 36, 0.75);
+    --color-border: hsla(127, 100%, 50%, 0.94);
 	transition-delay: 0s;
 }
 
 .wheel .arc:nth-child(4).disabled {
 	--rotation: 112.5deg;
-	--color: hsla(0, 0%, 100%, 0);
-    --color-border: rgba(138, 0, 255, 0.2);
+	--color: rgba(36, 36, 36, 0.60);
+    --color-border: hsla(127, 100%, 50%, 0.2);
 	transition-delay: 0s;
 }
 
@@ -221,15 +243,15 @@ h1 {
 
 .wheel .arc:nth-child(5) {
 	--rotation: 157.5deg;
-	--color: rgba(167, 63, 255, 0.35);
-    --color-border: rgba(138, 0, 255, 0.94);
+	--color: rgba(36, 36, 36, 0.75);
+    --color-border: hsla(127, 100%, 50%, 0.94);
 	transition-delay: 0.015s;
 }
 
 .wheel .arc:nth-child(5).disabled {
 	--rotation: 157.5deg;
-	--color: hsla(0, 0%, 100%, 0);
-    --color-border: rgba(138, 0, 255, 0.2);
+	--color: rgba(36, 36, 36, 0.60);
+    --color-border: hsla(127, 100%, 50%, 0.2);
 	transition-delay: 0.015s;
 }
 
@@ -245,15 +267,15 @@ h1 {
 
 .wheel .arc:nth-child(6) {
 	--rotation: 202.5deg;
-	--color: rgba(167, 63, 255, 0.35);
-    --color-border: rgba(138, 0, 255, 0.94);
+	--color: rgba(36, 36, 36, 0.75);
+    --color-border: hsla(127, 100%, 50%, 0.94);
 	transition-delay: 0s;
 }
 
 .wheel .arc:nth-child(6).disabled {
 	--rotation: 202.5deg;
-	--color: hsla(0, 0%, 100%, 0);
-    --color-border: rgba(138, 0, 255, 0.2);
+	--color: rgba(36, 36, 36, 0.60);
+    --color-border: hsla(127, 100%, 50%, 0.2);
 	transition-delay: 0s;
 }
 
@@ -269,15 +291,15 @@ h1 {
 
 .wheel .arc:nth-child(7) {
 	--rotation: 247.5deg;
-	--color: rgba(167, 63, 255, 0.35);
-    --color-border: rgba(138, 0, 255, 0.94);
+	--color: rgba(36, 36, 36, 0.75);
+    --color-border: hsla(127, 100%, 50%, 0.94);
 	transition-delay: 0.015s;
 }
 
 .wheel .arc:nth-child(7).disabled {
 	--rotation: 247.5deg;
-	--color: hsla(0, 0%, 100%, 0);
-    --color-border: rgba(138, 0, 255, 0.2);
+	--color: rgba(36, 36, 36, 0.60);
+    --color-border: hsla(127, 100%, 50%, 0.2);
 	transition-delay: 0.015s;
 }
 
@@ -293,14 +315,14 @@ h1 {
 
 .wheel .arc:nth-child(8) {
 	--rotation: 292.5deg;
-	--color: rgba(167, 63, 255, 0.35);
-    --color-border: rgba(138, 0, 255, 0.94);
+	--color: rgba(36, 36, 36, 0.75);
+    --color-border: hsla(127, 100%, 50%, 0.94);
 	transition-delay: 0s;
 }
 
 .wheel .arc:nth-child(8).disabled {
 	--rotation: 292.5deg;
-	--color: hsla(0, 0%, 100%, 0);
-    --color-border: rgba(138, 0, 255, 0.2);
+	--color: rgba(36, 36, 36, 0.60);
+    --color-border: hsla(127, 100%, 50%, 0.2);
 	transition-delay: 0s;
 }

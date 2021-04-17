@@ -2,5 +2,6 @@ categories {
     'core',
     'game',
     'admin',
-    'ui'
+    'ui',
+    'menu'
 }

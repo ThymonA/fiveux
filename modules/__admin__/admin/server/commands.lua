@@ -1,4 +1,5 @@
 import 'commands'
+import 'modules'
 
 --- Command to spawn vehicles on player location
 ---@example /car adder
@@ -133,4 +134,20 @@ commands:add('remove_wallet', function(player, ...)
     if (targetPlayer == nil) then return end
 
     targetPlayer:removeWallet(targetWallet, targetAmount)
+end)
+
+--- Reload NUI
+---@example /reload_nui ui wheel
+---@see /reload_nui {category} {module}
+commands:add('reload_nui', function(player, category, module)
+    category = ensure(category, 'unknown')
+    module = ensure(module, 'unknown')
+
+    for _, module in pairs(modules) do
+        if (module.category == category and module.name == module) then
+            local key = ('%s:%s:%s'):format(module.category, module.name, module.ui_page)
+
+            TriggerRemote('fiveux:nui:reload', key)
+        end
+    end
 end)

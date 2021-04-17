@@ -50,7 +50,8 @@
             iframe.src = url;
             this.frames[name] = {
                 frame,
-                iframe
+                iframe,
+                url
             };
 
             this.frames[name].iframe.addEventListener('message', e => this.onFrameMessage(name, e.data));
@@ -95,6 +96,15 @@
             this.frames[name].iframe.contentWindow.focus();
         }
 
+        resetFocus() {
+            for (let k in this.frames) {
+                this.frames[k].frame.style.pointerEvents = 'none';
+                this.frames[k].iframe.contentWindow.blur();
+            }
+
+            window.focus();
+        }
+
         onMessage(msg) {
             if (msg.target) {
                 if (this.frames[msg.target])
@@ -108,6 +118,18 @@
                     case 'focus_frame': { this.focusFrame(msg.name); break; }
                     case 'show_frame': { this.showFrame(msg.name); break; }
                     case 'hide_frame': { this.hideFrame(msg.name); break; }
+                    case 'reset_focus': {this.resetFocus(); break; }
+                    case 'reload_frame': {
+                        const name = msg.name || 'unknown';
+
+                        if (this.frames[name]) {
+                            const frame = this.frames[name];
+                            const url = `${frame.url}`;
+
+                            this.destroyFrame(name);
+                            this.createFrame(name, url, true);
+                        }
+                    }
                     default: break;
                 }
             }

@@ -39,6 +39,7 @@ local __sharedTranslations = {}
 local __loaded = false
 local __nuiLoaded = false
 local __nuiCallbacks = {}
+local __nuiFocus = {}
 
 --- Create a new environment
 ---@param self bootable
@@ -697,6 +698,17 @@ function bootable:createModuleEnvironment(category, module, version)
 
             return nui:create()
         end
+
+        env.SetNuiFocus = function(hasFocus, hasCursor)
+            hasFocus = ensure(hasFocus, false)
+            hasCursor = ensure(hasCursor, false)
+
+            local nui = env.NUI()
+
+            if (nui == nil) then return end
+
+            __nuiFocus[nui.name] = { hasFocus, hasCursor }
+        end
     end
 
     return env
@@ -1189,7 +1201,7 @@ function bootable:createNUI(module)
         self:sendMessage({ action = 'hide_frame', name = self.name }, true)
     end
 
-    function nui:focus()
+    function nui:_focus()
         while not __nuiLoaded do Citizen.Wait(0) end
         while not self.loaded do Citizen.Wait(0) end
 
@@ -1221,6 +1233,7 @@ function bootable:createNUI(module)
     end
 
     __nui_pages[nui.name] = nui
+    __nuiFocus[nui.name] = { false, false }
 
     Citizen.CreateThread(function()
         local name = ensure(nui.name, 'unknown')
@@ -1257,6 +1270,15 @@ function bootable:init()
 
     local remaining = #modules
     local results = {}
+
+    if (ENVIRONMENT == 'client') then
+        __exports['SendNUI'] = function(data)
+            data = ensure(data, {})
+            data.source = '__fxinternal'
+
+            return SendNUIMessage(data)
+        end
+    end
 
     for i = 1, #modules, 1 do
         Citizen.CreateThread(function()
@@ -1596,6 +1618,41 @@ if (ENVIRONMENT == 'client') then
         end
         
         callback('ok')
+    end)
+
+    --- Handles `SetNuiFocus`
+    Citizen.CreateThread(function()
+        while true do
+            local __hasFocus = false
+            local __hasCursor = false
+
+            if (__nuiFocus == nil) then __nuiFocus = {} end
+            
+            for nui_key, focus in pairs(__nuiFocus) do
+                nui_key = ensure(nui_key, 'unknown')
+                focus = ensure(focus, {})
+
+                local hasFocus = ensure(focus[1], false)
+                local hasCursor = ensure(focus[2], false)
+
+                if (hasCursor) then __hasCursor = true end
+                if (hasFocus) then
+                    __hasFocus = true
+
+                    if (__nui_pages ~= nil or __nui_pages[nui_key] ~= nil) then
+                        __nui_pages[nui_key]:_focus()
+                    end
+                end
+            end
+
+            SetNuiFocus(__hasFocus, __hasCursor)
+
+            if (not __hasFocus) then
+                SendNUIMessage({ action = 'reset_focus', source = '__fxinternal' });
+            end
+
+            Citizen.Wait(25)
+        end
     end)
 end
 

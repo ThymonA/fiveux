@@ -7,15 +7,10 @@
             data() {
                 return {
                     id: 0,
-                    hidden: false,
-                    items: [
-                        { id: 1, lib: 'las', icon: 'la-car' },
-                        { id: 2, lib: 'las', icon: 'la-car-battery' },
-                        { id: 3, lib: 'las', icon: 'la-car' },
-                        { id: 4, lib: 'las', icon: 'la-car' }
-                    ],
-                    x: 320,
-                    y: 320,
+                    hidden: true,
+                    items: [],
+                    x: 0,
+                    y: 0,
                     mouseX: 0,
                     mouseY: 0,
                     chosen: 0
@@ -47,6 +42,23 @@
                 y() {}
             },
             methods: {
+                SHOW({ id, items, x, y }) {
+                    this.id = id || 0;
+                    this.items = items || [];
+                    this.x = x || 0;
+                    this.y = y || 0;
+                    this.hidden = false;
+                    this.postNUI('show', { id: this.id })
+                },
+                HIDE() {
+                    this.id = 0;
+                    this.items = [];
+                    this.x = 0;
+                    this.y = 0;
+                    this.hidden = true;
+                    this.chosen = 0;
+                    this.postNUI('hide')
+                },
                 itemover: function(e) {
                     const element = e.srcElement || null;
 
@@ -64,6 +76,8 @@
                     this.chosen = 0
                 },
                 itemindex: function() {
+                    if (this.hidden) { return 0; }
+
                     let dx = this.mouseX - this.x;
                     let dy = this.mouseY - this.y;
                     let mag = Math.sqrt(dx * dx + dy * dy);
@@ -78,14 +92,24 @@
                     return index
                 },
                 mousemove: function({ x, y }) {
+                    if (this.hidden) { return; }
+
                     this.mouseX = x;
                     this.mouseY = y;
                     this.chosen = this.itemindex();
                 },
                 mousedown: function(e) {
+                    if (this.hidden) { return; }
                     if (e.which != 1) { return; }
 
-                    
+                    this.postNUI('select', { id: this.id, chosen: this.chosen });
+
+                    this.id = 0;
+                    this.items = [];
+                    this.x = 0;
+                    this.y = 0;
+                    this.hidden = true;
+                    this.chosen = 0;
                 },
                 postNUI(event, info) {
                     event = event || 'unknown';
