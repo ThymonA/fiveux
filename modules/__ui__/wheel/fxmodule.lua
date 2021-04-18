@@ -27,6 +27,4 @@ client_scripts {
 server_scripts {}
 shared_scripts {}
 
-dependencies {
-    'streaming'
-}
+dependencies {}
