@@ -121,7 +121,8 @@ function players:loadByFx(fxid, name)
         tokens = self:loadTokensByFx(fxid),
         variables = {},
         logger = logs:create('player', playerData.name, identifiers),
-        wallets = wallets:loadAllByIdentifier(fxid)
+        wallets = wallets:loadAllByIdentifier(fxid),
+        skins = db:fetchAll('SELECT * FROM `player_skins` WHERE `fxid` = :fxid', { ['fxid'] = fxid })
     }
 
     function player:getSource()
@@ -255,6 +256,93 @@ function players:loadByFx(fxid, name)
         return self.variables[key]
     end
 
+    function player:addSkin(name, model, skin, active)
+        name = ensure(name, 'unknown')
+        model = ensure(model, 'mp_m_freemode_01')
+        skin = encode(ensure(skin, {}), false, 0)
+        active = ensure(ensure(active, false), 0)
+        
+        local id = db:insert('INSERT INTO `player_skins` (`fxid`, `name`, `model`, `skin`, `active`) VALUES (:fxid, :name, :model, :skin, :active)', {
+            ['fxid'] = self.fxid,
+            ['name'] = name,
+            ['model'] = model,
+            ['skin'] = skin,
+            ['active'] = active
+        })
+
+        table.insert(self.skins, {
+            id = id,
+            fxid = self.fxid,
+            name = name,
+            model = model,
+            skin = skin,
+            active = active
+        })
+
+        if (active) then
+            self:makeSkinActive(#self.skins)
+        end
+    end
+
+    function player:getActiveSkin()
+        if (#self.skins <= 0) then return nil end
+        
+        for _, skin in pairs(self.skins) do
+            if (ensure(skin.active, false)) then
+                return {
+                    id = ensure(skin.id, 0),
+                    fxid = ensure(skin.fxid, self.fxid),
+                    name = ensure(skin.name, 'unknown'),
+                    model = ensure(skin.model, 'mp_m_freemode_01'),
+                    skin = json.decode(ensure(skin.skin, '[]')),
+                    active = true
+                }
+            end
+        end
+
+        self:makeSkinActive(1)
+
+        return {
+            id = ensure(self.skins[1].id, 0),
+            fxid = ensure(self.skins[1].fxid, self.fxid),
+            name = ensure(self.skins[1].name, 'unknown'),
+            model = ensure(self.skins[1].model, 'mp_m_freemode_01'),
+            skin = json.decode(ensure(self.skins[1].skin, '[]')),
+            active = true
+        }
+    end
+
+    function player:getSkinById(id)
+        id = ensure(id, 0)
+
+        if (#self.skins <= 0) then return nil end
+
+        for _, skin in pairs(self.skins) do
+            if (ensure(skin.id, 0) == id) then
+                return {
+                    id = ensure(skin.id, 0),
+                    fxid = ensure(skin.fxid, self.fxid),
+                    name = ensure(skin.name, 'unknown'),
+                    model = ensure(skin.model, 'mp_m_freemode_01'),
+                    skin = json.decode(ensure(skin.skin, '[]')),
+                    active = ensure(skin.active, false)
+                }
+            end
+        end
+
+        return nil
+    end
+
+    function player:makeSkinActive(index)
+        index = ensure(index, 0)
+
+        if (#self.skins <= 0) then return end
+
+        for i, _ in pairs(self.skins) do
+            self.skins[i].active = i == index
+        end
+    end
+
     function player:log(object)
         if (self.logger == nil) then return nil end
 
@@ -279,6 +367,18 @@ function players:loadByFx(fxid, name)
         for _, wallet in pairs(ensure(self.wallets, {})) do
             if (wallet ~= nil) then
                 wallet:save()
+            end
+        end
+
+        for _, skin in pairs(ensure(self.skins, {})) do
+            if (skin ~= nil) then
+                db:execute('UPDATE `player_skins` SET `name` = :name, `model` = :model, `skin` = :skin, `active` = :active WHERE `id` = :id', {
+                    ['name'] = ensure(skin.name, 'unknown'),
+                    ['model'] = ensure(skin.model, 'mp_m_freemode_01'),
+                    ['skin'] = encode(ensure(skin.skin, {}), false, 0),
+                    ['active'] = ensure(skin.active, 0),
+                    ['id'] = ensure(skin.id, 0)
+                })
             end
         end
 

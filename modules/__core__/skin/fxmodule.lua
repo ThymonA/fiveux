@@ -1,6 +1,6 @@
-name 'player'
+name 'skin'
 version '1.0.0'
-description 'FiveUX player module'
+description 'FiveUX skin module'
 
 license [[
     FiveUX Framework Copyright (C) 2021 Thymon Arens
@@ -22,15 +22,7 @@ license [[
 client_scripts {
     'client/main.lua'
 }
-server_scripts {
-    'server/main.lua',
-    'server/events.lua'
-}
+server_scripts {}
 shared_scripts {}
 
-dependencies {
-    'database',
-    'logging',
-    'wallet',
-    'skin'
-}
+dependencies {}

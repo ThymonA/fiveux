@@ -10,5 +10,6 @@ modules {
     { name = 'ban', required = true },
     { name = 'player', required = true },
     { name = 'marker', required = true },
-    { name = 'command', required = true }
+    { name = 'command', required = true },
+    { name = 'skin', required = true }
 }

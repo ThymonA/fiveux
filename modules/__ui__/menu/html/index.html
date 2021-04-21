@@ -1,0 +1,137 @@
+<!doctype html>
+<html class="no-js">
+    <head>
+        <meta charset="utf-8">
+        <title>FiveUX menu UI</title>
+        <meta name="description" content="https://github.com/ThymonA/fiveux">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta property="og:title" content="FiveUX Framework">
+        <meta property="og:type" content="framework">
+        <meta property="og:url" content="https://github.com/ThymonA/fiveux">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css" crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.1/css/bulma.min.css" crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.5.5/css/simple-line-icons.min.css" crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
+        <link rel="stylesheet" href="./css/main.css">
+    </head>
+    <body>
+        <!-- Menu container -->
+        <div id="nui_menu"></div>
+
+        <!-- Menu html template -->
+        <script type="text/x-template" id="nui_menu_template">
+            <div id="nui_menu" class="menu default" :class="[{'hide': hidden}, position, size]" :data-id="id">
+                <v-style>
+                    html,
+                    body {
+                        color: {{TEXT_COLOR(red, green, blue)}};
+                    }
+                
+                    .menu.default .menu-header {
+                        background: url("nui://{{RESOURCE_NAME}}/{{bannerUrl}}") no-repeat;
+                        background-size: 100%;
+                    }
+                
+                    .menu.default .menu-header .menu-bg-icon i,
+                    .menu.default .menu-header .menu-bg-icon svg {
+                        color: rgb({{red}},{{green}},{{blue}});
+                    }
+                
+                    .menu.default .menu-subheader {
+                        background-color: rgb({{red}},{{green}},{{blue}});
+                    }
+                
+                    .menu.default .menu-items .menu-item.active {
+                        border-left: 0.5em solid rgb({{red}},{{green}},{{blue}});
+                        border-right: 0.5em solid rgb({{red}},{{green}},{{blue}});
+                        background-color: rgb({{red}},{{green}},{{blue}});
+                        color: {{TEXT_COLOR(red, green, blue)}};
+                    }
+                
+                    .menu.default .menu-items .menu-item.active i,
+                    .menu.default .menu-items .menu-item.active svg {
+                        color: {{TEXT_COLOR(red, green, blue)}};
+                    }
+                
+                    .menu.default .menu-items .menu-item.active span.menu-icon {
+                        border-right: 1px solid {{TEXT_COLOR(red, green, blue)}};
+                    }
+                
+                    .menu.default .menu-items span.menu-options span.menu-btn {
+                        color: {{TEXT_COLOR(red, green, blue)}};
+                    }
+                
+                    .menu.default .menu-items span.menu-options span.menu-btn.active {
+                        background-color: rgb({{red}},{{green}},{{blue}});
+                        color: {{TEXT_COLOR(red, green, blue)}};
+                    }
+                
+                    .menu.default .menu-items .menu-item.active span.menu-options span.menu-btn {
+                        background-color: rgb({{red}},{{green}},{{blue}});
+                        color: {{TEXT_COLOR(red, green, blue)}};
+                    }
+                
+                    .menu.default .menu-items .menu-item.active span.menu-options span.menu-btn.active {
+                        background-color: black;
+                        color: white;
+                    }
+                
+                    .menu.default .menu-items input[type="range"]::-webkit-slider-runnable-track {
+                        background: rgba({{red}},{{green}},{{blue}}, 0.50);
+                        box-shadow: 0px 0px 0px {{TEXT_COLOR(red, green, blue, 0.50)}};
+                        border: 0px solid {{TEXT_COLOR(red, green, blue, 0.50)}};
+                    }
+                
+                    .menu.default .menu-items input[type="range"]::-webkit-slider-thumb {
+                        border: 1px solid rgb({{red}},{{green}},{{blue}});
+                        background: rgb({{red}},{{green}},{{blue}});
+                        box-shadow: 0px 0px 0px {{TEXT_COLOR(red, green, blue, 0.50)}};
+                    }
+                
+                    .menu.default .menu-items .menu-item.active input[type="range"]::-webkit-slider-thumb {
+                        background: {{TEXT_COLOR(red, green, blue)}} !important;
+                        border: 1px solid {{TEXT_COLOR(red, green, blue, 0.50)}} !important;
+                    }
+                
+                    .menu.default .menu-items .menu-item.active input[type="range"]::-webkit-slider-runnable-track,
+                    .menu.default .menu-items .menu-item.active input[type="range"]:focus::-webkit-slider-runnable-track {
+                        background: {{TEXT_COLOR(red, green, blue, 0.50)}} !important;
+                    }
+                
+                    .menu.default .menu-items input[type="range"]:focus::-webkit-slider-runnable-track {
+                        background: rgba({{red}},{{green}},{{blue}}, 0.50);
+                    }
+                
+                    .menu.default .menu-items .menu-desc {
+                        border-left: 0.375em solid rgb({{red}},{{green}},{{blue}});
+                    }
+                </v-style>
+                <header class="menu-header">
+                    <strong v-html="FORMAT_TEXT(title)"></strong>
+                </header>
+                <nav class="menu-subheader" v-html="FORMAT_TEXT(subtitle)"></nav>
+                <ul class="menu-items" ref="items">
+                    <li class="menu-item media" v-for="item in items" :key="item.id" :class="[{'active': (index + 1) == item.index, 'disabled': item.disabled }, (`menu-${item.type}`)]" :index="(item.index - 1)">
+                        <div class="media-content flex-left item-title" v-html="FORMAT_TEXT(item.label)"></div>
+                        <div class="media-right">
+                            <i v-if="item.type == 'checkbox'" :class="{'fas fa-check': item.value, 'far fa-square': !item.value}"></i>
+                            <input type="range" :min="item.min" :max="item.max" :value="(item.value)" v-if="item.type == 'range'">
+                            <span class="menu-label" v-if="item.type == 'label'" v-html="FORMAT_TEXT(item.value)"></span>
+                        </div>
+                    </li>
+                </ul>
+                <footer class="menu-description" :class="{'hide': GET_CURRENT_DESCRIPTION() == ''}">
+                    <strong v-html="GET_CURRENT_DESCRIPTION()"></strong>
+                </footer>
+            </div>
+        </script>
+
+        <!-- Scripts -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js" crossorigin="anonymous"></script>
+        <script src="nui://fiveux/shared/html/wrapper.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2" crossorigin="anonymous"></script>
+        <script src="./js/main.js"></script>
+    </body>
+</html>

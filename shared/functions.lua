@@ -312,12 +312,13 @@ try = function(func, catch_func)
     end
 end
 
-encode = function(input, ignoreJson)
+encode = function(input, ignoreJson, decimals)
     local innerTable = ''
     local hasKey = false
 
     input = ensure(input, {})
     ignoreJson = ensure(ignoreJson, false)
+    decimals = ensure(decimals, 2)
 
     for k, v in pairs(input) do
         local keyType = typeof(k) or 'nil'
@@ -333,9 +334,9 @@ encode = function(input, ignoreJson)
             end
 
             if (valueType == 'table') then
-				finalValue = hasIndex and encode(v) or ('"%s": %s'):format(k, encode(v))
+				finalValue = hasIndex and encode(v, false, decimals) or ('"%s": %s'):format(k, encode(v, false, decimals))
 			elseif (valueType == 'number') then
-				finalValue = hasIndex and ('%.2f'):format(v) or ('"%s": %.2f'):format(k, v)
+				finalValue = hasIndex and round(v, decimals) or ('"%s": %s'):format(k, round(v, decimals))
 			elseif (valueType == 'string') then
                 if (not ignoreJson) then
                     v = v:gsub("\"", "\\\"")

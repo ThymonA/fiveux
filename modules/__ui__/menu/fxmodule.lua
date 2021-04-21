@@ -1,6 +1,6 @@
-name 'player'
+name 'menu'
 version '1.0.0'
-description 'FiveUX player module'
+description 'FiveUX menu module'
 
 license [[
     FiveUX Framework Copyright (C) 2021 Thymon Arens
@@ -19,18 +19,12 @@ license [[
     along with this program.  If not, see <https://www.gnu.org/licenses/>
 ]]
 
+ui_page 'html/index.html'
+
 client_scripts {
     'client/main.lua'
 }
-server_scripts {
-    'server/main.lua',
-    'server/events.lua'
-}
+server_scripts {}
 shared_scripts {}
 
-dependencies {
-    'database',
-    'logging',
-    'wallet',
-    'skin'
-}
+dependencies {}

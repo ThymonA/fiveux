@@ -14,10 +14,74 @@ end)
 
 --- Spawn player based on server info
 MarkEventAsGlobal('fiveux:spawn')
-RegisterEvent('fiveux:spawn', function(coords)
+RegisterEvent('fiveux:spawn', function(modelName, coords, skin)
+    modelName = ensure(modelName, 'unknown')
     coords = ensure(coords, default_vector3)
+    skin = ensure(skin, {})
 
-    local model = GetHashKey('s_m_y_blackops_01')
+    ---@type skins
+    local skins = GetExport('skins')
+    local cfg = GetConfiguration('general')
+    local defaultModel = ensure(cfg.defaultModel, 'mp_m_freemode_01')
+
+    if (modelName == 'unknown') then
+        local defaultHash = GetHashKey(defaultModel)
+
+        RequestModel(defaultHash)
+
+        while not HasModelLoaded(defaultHash) do
+            Citizen.Wait(0)
+        end
+
+        local pId = PlayerId()
+
+        SetPlayerModel(pId, defaultHash)
+
+        local ped = PlayerPedId()
+
+        SetPedDefaultComponentVariation(ped)
+
+        SetModelAsNoLongerNeeded(defaultHash)
+
+        DoScreenFadeIn(2500)
+        ShutdownLoadingScreen()
+
+        FreezeEntityPosition(ped, true)
+        SetCanAttackFriendly(ped, true, false)
+
+        NetworkSetFriendlyFireOption(true)
+        ClearPlayerWantedLevel(pId)
+        SetMaxWantedLevel(0)
+
+        local timeout = 0
+
+        RequestCollisionAtCoord(coords.x, coords.y, coords.z)
+
+        while not HasCollisionLoadedAroundEntity(ped) and timeout < 2000 do
+            timeout = timeout + 1
+            Citizen.Wait(0)
+        end
+
+        SetEntityCoords(ped, coords.x, coords.y, coords.z, false, false, false, true)
+        PlaceObjectOnGroundProperly(ped)
+
+        local finished = false
+
+        TriggerEvent('skins:create', function() finished = true end)
+
+        while finished == false do Citizen.Wait(0) end
+        
+        ped = PlayerPedId()
+
+        SetEntityCoords(ped, coords.x, coords.y, coords.z, false, false, false, true)
+        FreezeEntityPosition(ped, false)
+
+        TriggerRemote('playerSpawned')
+
+        __playerSpawned = true
+    end
+
+    local model = GetHashKey(modelName)
 
     if (GetEntityModel(PlayerPedId()) == model) then
         __playerSpawned = true
@@ -37,7 +101,6 @@ RegisterEvent('fiveux:spawn', function(coords)
     local ped = PlayerPedId()
 
     SetPedDefaultComponentVariation(ped)
-
     SetModelAsNoLongerNeeded(model)
 
     DoScreenFadeIn(2500)
@@ -51,20 +114,23 @@ RegisterEvent('fiveux:spawn', function(coords)
     SetMaxWantedLevel(0)
 
     local timeout = 0
+    local playerSkin = skins:create(ped)
 
-    RequestCollisionAtCoord(coords.x, coords.y, coords.z)
+    playerSkin:load(skin, function(ped)
+        RequestCollisionAtCoord(coords.x, coords.y, coords.z)
 
-    while not HasCollisionLoadedAroundEntity(ped) and timeout < 2000 do
-        timeout = timeout + 1
-        Citizen.Wait(0)
-    end
+        while not HasCollisionLoadedAroundEntity(ped) and timeout < 2000 do
+            timeout = timeout + 1
+            Citizen.Wait(0)
+        end
 
-    SetEntityCoords(ped, coords.x, coords.y, coords.z, false, false, false, true)
-    FreezeEntityPosition(ped, false)
+        SetEntityCoords(ped, coords.x, coords.y, coords.z, false, false, false, true)
+        FreezeEntityPosition(ped, false)
 
-    TriggerRemote('playerSpawned')
+        TriggerRemote('playerSpawned')
 
-    __playerSpawned = true
+        __playerSpawned = true
+    end)
 end)
 
 --- Detects when a player is fully loaded

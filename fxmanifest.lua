@@ -56,7 +56,15 @@ files {
     'modules/**/**/html/*',
     'modules/**/**/html/*.*',
     'modules/**/**/html/**/*',
-    'modules/**/**/html/**/*.*'
+    'modules/**/**/html/**/*.*',
+    'modules/**/images/*',
+    'modules/**/images/*.*',
+    'modules/**/images/**/*',
+    'modules/**/images/**/*.*',
+    'modules/**/**/images/*',
+    'modules/**/**/images/*.*',
+    'modules/**/**/images/**/*',
+    'modules/**/**/images/**/*.*'
 }
 
 client_scripts {
@@ -73,5 +81,6 @@ server_scripts {
 }
 
 dependencies {
-    'fivem-mysql'
+    'fivem-mysql',
+    'menuv'
 }

@@ -34,6 +34,7 @@ local __configs = {}
 local __events = {}
 local __nui_pages = {}
 local __keyPressed = {}
+local __keyPressedTimes = {}
 local __translations = {}
 local __sharedTranslations = {}
 local __loaded = false
@@ -542,6 +543,11 @@ function bootable:createModuleEnvironment(category, module, version)
             end
     
             return nil
+        end,
+        src = function(url)
+            url = ensure(url, '')
+
+            return ('modules/__%s__/%s/%s'):format(category, module, url)
         end
     })
 
@@ -621,6 +627,14 @@ function bootable:createModuleEnvironment(category, module, version)
             if (name == 'unknown') then return false end
 
             return self:isControlPressed(name)
+        end
+
+        env.isControlJustPressed = function(name)
+            name = ensure(name, 'unknown')
+
+            if (name == 'unknown') then return false end
+
+            return self:isControlJustPressed(name)
         end
 
         env.isControlReleased = function(name)
@@ -1536,6 +1550,28 @@ if (ENVIRONMENT == 'client') then
         return ensure(__keyPressed[name], false)
     end
 
+    --- Returns if given control is pressed
+    ---@param name string Name of control
+    ---@return boolean Control is pressed
+    function bootable:isControlJustPressed(name)
+        name = ensure(name, 'unknown')
+
+        if (name == 'unknown') then return false end
+
+        name = name:replace(' ', '')
+        name = name:lower()
+
+        __keyPressed = ensure(__keyPressed, {})
+        __keyPressedTimes = ensure(__keyPressedTimes, {})
+
+        local pressed = ensure(__keyPressed[name], false)
+        local currentTimer = GetGameTimer()
+        local timer = ensure(__keyPressedTimes[name], 0)
+        local difference = currentTimer - timer
+
+        return difference > 0 and difference < 10 and pressed
+    end
+
     --- Returns if given control is released
     ---@param name string Name of control
     ---@return boolean Control is released
@@ -1571,10 +1607,17 @@ if (ENVIRONMENT == 'client') then
         end
 
         __keyPressed[name] = false
+        __keyPressedTimes[name] = 0
 
         RegisterKeyMapping(('+%s'):format(name), description, type, default)
-        RegisterCommand(('+%s'):format(name), function() __keyPressed[name] = true end)
-        RegisterCommand(('-%s'):format(name), function() __keyPressed[name] = false end)
+        RegisterCommand(('+%s'):format(name), function()
+            __keyPressed[name] = true
+            __keyPressedTimes[name] = GetGameTimer()
+        end)
+        RegisterCommand(('-%s'):format(name), function()
+            __keyPressed[name] = false
+            __keyPressedTimes[name] = GetGameTimer()
+        end)
     end
 
     RegisterNUICallback('nui_ready', function(info, callback)
@@ -1786,6 +1829,34 @@ end
 ---@return boolean Framework loaded
 _G.FrameworkLoaded = function()
     return ensure(__loaded, false)
+end
+
+--- Load export
+---@param name string Name of export
+---@return any Returns nil or founded export
+_G.GetExport = function(name, ...)
+    name = ensure(name, 'unknown')
+
+    if (__exports == nil or __exports[name] == nil) then
+        return nil
+    end
+
+    if (typeof(__exports[name]) == 'function') then
+        return __exports[name](...)
+    else
+        return __exports[name]
+    end
+
+    return nil
+end
+
+--- Load configuration
+---@param name string Name of configuration
+---@return table Founded configuration
+_G.GetConfiguration = function(name)
+    name = ensure(name, 'unknown')
+
+    return bootable:loadConfiguration(name)
 end
 
 --- Start framework
