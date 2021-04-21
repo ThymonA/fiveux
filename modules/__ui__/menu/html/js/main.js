@@ -1,4 +1,18 @@
 (() => {
+    VueScrollTo.setDefaults({
+        container: 'ul.menu-items',
+        duration: 500,
+        easing: 'ease-in',
+        offset: -25,
+        force: true,
+        cancelable: false,
+        onStart: false,
+        onDone: false,
+        onCancel: false,
+        x: false,
+        y: true
+    });
+
     window.NUI_MENU_COMPONENT = Vue.component('v-style', {
         render: function(createElement) {
             return createElement('style', this.$slots.default);
@@ -40,6 +54,23 @@
                 });
             
                 this.postNUI('ready')
+            },
+            updated: function() {
+                if (this.index < 0) { return; }
+        
+                const el = document.getElementsByTagName('li');
+        
+                for (var i = 0; i < el.length; i++) {
+                    const index = el[i].getAttribute('index')
+        
+                    if (index === null) { continue; }
+        
+                    const idx = parseInt(index);
+        
+                    if (idx == this.index) {
+                        this.$scrollTo(`li[index="${this.index}"]`, 0, {});
+                    }
+                }
             },
             watch: {
                 hidden() {},
@@ -86,7 +117,7 @@
                     }
 
                     if (reloaded && this.id != id) { return; }
-                    if (this.id != id) { this.index = 0; }
+                    if (this.id != id || !reloaded) { this.index = 0; }
 
                     this.id = id;
                     this.title = title;
@@ -133,9 +164,8 @@
                     }
 
                     const nextIndex = this.NEXT_INDEX(this.index);
-                    const prevIndex = this.PREV_INDEX(nextIndex);
 
-                    this.index = prevIndex;
+                    this.index = nextIndex;
                     this.hidden = false;
 
                     if (!reloaded) {
