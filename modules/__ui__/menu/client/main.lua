@@ -405,7 +405,7 @@ RegisterNUICallback('change', function(info, callback)
 
             local params = ensure(item.params, {})
 
-            local ok = xpcall(data[id].__onChange, print_error, value, item.value, data[id], table.unpack(params))
+            local ok = xpcall(data[id].__onChange, print_error, value, item, data[id], table.unpack(params))
 
             repeat Citizen.Wait(0) until ok ~= nil
         end
@@ -443,8 +443,7 @@ RegisterNUICallback('submit', function(info, callback)
             item.value = value
 
             local params = ensure(item.params, {})
-
-            local ok = xpcall(data[id].__onSelect, print_error, item.value, data[id], table.unpack(params))
+            local ok = xpcall(data[id].__onSelect, print_error, item, data[id], table.unpack(params))
 
             repeat Citizen.Wait(0) until ok ~= nil
         end
@@ -485,3 +484,5 @@ Citizen.CreateThread(function()
         end
     end
 end)
+
+export('menus', menus)

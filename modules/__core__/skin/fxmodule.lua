@@ -25,4 +25,6 @@ client_scripts {
 server_scripts {}
 shared_scripts {}
 
-dependencies {}
+dependencies {
+    'menu'
+}

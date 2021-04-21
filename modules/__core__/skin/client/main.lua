@@ -1,3 +1,5 @@
+import 'menus'
+
 --- Local storage
 local skinMenu = nil
 
@@ -437,64 +439,28 @@ RegisterEvent('skins:create', function(doneCallback)
     local skinCfg = config('skins')
     local defaultMenuLocation = ensure(cfg.defaultMenuLocation, 'topleft')
     local defaultMenuColor = ensure(cfg.defaultMenuLocation, vector3(255, 0, 0))
-    local defaultMenuSize = ensure(cfg.defaultMenuLocation, 'size-125')
-    local defaultMenuBanner = ensure(cfg.defaultMenuLocation, 'default')
-    local defaultMenuLibrary = ensure(cfg.defaultMenuLocation, 'menuv')
     local defaultModel = ensure(cfg.defaultModel, 'mp_m_freemode_01')
     local allowedModels = ensure(skinCfg.models, {})
     local skin = skins:create(PlayerPedId())
     local skin_model = nil
-
-    if (true == true) then
-        local model = 'a_m_y_vindouche_01'
-        local modelHash = GetHashKey(model)
-
-        RequestModel(modelHash)
-
-        while not HasModelLoaded(modelHash) do
-            Citizen.Wait(0)
-        end
-
-        local pId = PlayerId()
-
-        SetPlayerModel(pId, modelHash)
-
-        local ped = PlayerPedId()
-
-        PlaceObjectOnGroundProperly(ped)
-
-        skin:changePed(ped)
-        skin:refresh(function()
-            local data_model = ensure(model, defaultModel)
-            local data_skin = skin:export()
-            local data_name = T('default_skin')
-
-            TriggerRemote('player:skin:add', data_name, data_model, data_skin, true)
-
-            doneCallback()
-        end)
-
-        return
-    end
+    local skin_done = false
 
     if (skinMenu == nil) then
-        skinMenu = MenuV:CreateMenu(
-            T('select_model_title'),
-            T('select_model_desc'),
-            defaultMenuLocation,
-            defaultMenuColor.x,
-            defaultMenuColor.y,
-            defaultMenuColor.z,
-            defaultMenuSize,
-            defaultMenuBanner,
-            defaultMenuLibrary,
-            'skin_menu')
+        skinMenu = menus:create({
+            title = T('select_model_title'),
+            subtitle = T('select_model_desc'),
+            position = defaultMenuLocation,
+            red = defaultMenuColor.x,
+            green = defaultMenuColor.y,
+            blue = defaultMenuColor.z
+        })
     end
 
     local function setModel(item)
         item = ensure(item, {})
 
-        local newModel = ensure(item.value, defaultModel)
+        local params = ensure(item.params, {})
+        local newModel = ensure(params[1], defaultModel)
 
         if (newModel ~= skin_model) then
             local modelHash = GetHashKey(newModel)
@@ -518,20 +484,23 @@ RegisterEvent('skins:create', function(doneCallback)
 
         skin_model = newModel
 
-        local function changeOption(category, option, value, callback)
+        local function changeOption(value, item, menu, type, category, option)
+            type = ensure(type, 'unknown')
             category = ensure(category, 'unknown')
             option = ensure(option, 'unknown')
             value = ensure(value, 0)
-            callback = ensure(callback, function() end)
+            
+            if (type ~= 'option') then return end
 
             if (skin.values ~= nil and skin.values[category] ~= nil and skin.values[category][option] ~= nil) then
                 skin.values[category][option].value = value
-                skin:refresh(callback)
+                skin:refresh()
             end
         end
         
         local function reloadOptions()
-            skinMenu:ClearItems()
+            skinMenu:clearAllItems(false)
+            skinMenu:setEvent('change', changeOption)
 
             for category, values in pairs(skin.values) do
                 category = ensure(category, 'unknown')
@@ -548,48 +517,58 @@ RegisterEvent('skins:create', function(doneCallback)
                     local value = ensure(optionValue.value, 0)
 
                     if (enabled and min < max) then
-                        skinMenu:AddRange({ label = label, min = min, max = max, value = value, change = function(item)
-                            item = ensure(item, {})
-
-                            changeOption(category, option, ensure(item.value, 0), reloadOptions)
-                        end })
+                        skinMenu:addItem({ type = 'range', label = label, min = min, max = max, value = value, params = { 'option', category, option } }, false)
                     end
                 end
             end
 
-            skinMenu:AddButton({ label = T('done'), select = function()
+            skinMenu:setEvent('select', function(item, menu, type)
+                type = ensure(type, 'unknown')
+
+                if (type ~= 'save') then return end
+
                 local data_model = ensure(skin_model, defaultModel)
                 local data_skin = skin:export()
                 local data_name = T('default_skin')
 
                 TriggerRemote('player:skin:add', data_name, data_model, data_skin, true)
 
-                skinMenu:Close()
+                skinMenu:close()
+                skin_done = true
 
-                MenuV:CloseAll(function()
-                    doneCallback()
-                end)
-            end})
+                doneCallback(skin.handle)
+            end)
+
+            skinMenu:addItem({ label = T('done'), params = { 'save' } }, true)
         end
 
         reloadOptions()
     end
 
-    skinMenu:On('open', function(m)
+    skinMenu:setEvent('open', function(m)
         if (skin_model == nil) then
-            m:ClearItems()
+            m:clearAllItems(false)
+            m:setEvent('select', setModel)
+            m:setEvent('change', function(...) end)
 
             for _, model in pairs(allowedModels) do
-                m:AddButton({ label = model, value = model, select = setModel })
+                m:addItem({ label = model, value = model, params = { model } }, false)
             end
+
+            m:reload()
         else
             setModel(skin_model)
         end
     end)
 
-    print('OPEN SKIN MENU!!!')
+    skinMenu:setEvent('close', function(m)
+        if (not skin_done) then
+            skin_model = nil
+            m:open()
+        end
+    end)
 
-    skinMenu:Open()
+    skinMenu:open()
 end)
 
 export('skins', skins)
