@@ -23,135 +23,160 @@ function skins:create(handle)
         mpFemale = isMPFemale,
         mpCharachter = isMPCharachter,
         values = {
+            parents = {
+                father = { min = 0, max = 46, value = 0, enabled = isMPCharachter, visible = false },
+                mother = { min = 0, max = 46, value = 0, enabled = isMPCharachter, visible = false },
+                headMix = { min = 0, max = 10, value = 5, enabled = isMPCharachter, visible = false },
+                bodyMix = { min = 0, max = 10, value = 5, enabled = isMPCharachter, visible = false }
+            },
+            faceShape = {
+                noseWidth = { min = -10, max = 10, value = 0, enabled = isMPCharachter, visible = false },
+                nosePeakHeight = { min = -10, max = 10, value = 0, enabled = isMPCharachter, visible = false },
+                nosePeakLength = { min = -10, max = 10, value = 0, enabled = isMPCharachter, visible = false },
+                nosePeakLowering = { min = -10, max = 10, value = 0, enabled = isMPCharachter, visible = false },
+                noseBoneHeight = { min = -10, max = 10, value = 0, enabled = isMPCharachter, visible = false },
+                noseBoneTwist = { min = -10, max = 10, value = 0, enabled = isMPCharachter, visible = false },
+                eyebrownHeight = { min = -10, max = 10, value = 0, enabled = isMPCharachter, visible = false },
+                eyebrwonDepth = { min = -10, max = 10, value = 0, enabled = isMPCharachter, visible = false },
+                eyeOpening = { min = -10, max = 10, value = 0, enabled = isMPCharachter, visible = false },
+                cheeckboneHeight = { min = -10, max = 10, value = 0, enabled = isMPCharachter, visible = false },
+                cheeckboneWidth = { min = -10, max = 10, value = 0, enabled = isMPCharachter, visible = false },
+                lipThickness = { min = -10, max = 10, value = 0, enabled = isMPCharachter, visible = false },
+                jawBoneWidth = { min = -10, max = 10, value = 0, enabled = isMPCharachter, visible = false },
+                jawBoneDepth = { min = -10, max = 10, value = 0, enabled = isMPCharachter, visible = false },
+                chinHeight = { min = -10, max = 10, value = 0, enabled = isMPCharachter, visible = false },
+                chinDepth = { min = -10, max = 10, value = 0, enabled = isMPCharachter, visible = false },
+                chinWidth = { min = -10, max = 10, value = 0, enabled = isMPCharachter, visible = false },
+                chinHoleSize = { min = -10, max = 10, value = 0, enabled = isMPCharachter, visible = false },
+                neckThickness = { min = -10, max = 10, value = 0, enabled = isMPCharachter, visible = false }
+            },
             hair = {
-                styles = { min = 0, max = GetNumberOfPedDrawableVariations(handle, 2), value = 0, enabled = isMPCharachter },
-                colors = { min = 0, max = isMPCharachter and maxOverlayColors or 0, value = 0, enabled = isMPCharachter },
-                hightlights = { min = 0; max = isMPCharachter and maxOverlayColors or 0, value = 0, enabled = isMPCharachter }
+                styles = { min = 0, max = GetNumberOfPedDrawableVariations(handle, 2), value = 0, enabled = true, visible = false },
+                textures = { min = 0, max = GetNumberOfPedTextureVariations(handle, 2, 0), value = 0, enabled = true, visible = false },
+                colors = { min = 0, max = isMPCharachter and maxOverlayColors or 0, value = 0, enabled = isMPCharachter, visible = false },
+                highlights = { min = 0; max = isMPCharachter and maxOverlayColors or 0, value = 0, enabled = isMPCharachter, visible = false }
             },
             blemish = {
-                styles = { min = 0, max = isMPCharachter and GetNumHeadOverlayValues(0) or 0, value = 0, enabled = isMPCharachter },
-                opacities = { min = 0, max = isMPCharachter and 10 or 0, value = 0, enabled = isMPCharachter }
+                styles = { min = 0, max = isMPCharachter and GetNumHeadOverlayValues(0) or 0, value = 0, enabled = isMPCharachter, visible = false },
+                opacities = { min = 0, max = isMPCharachter and 10 or 0, value = 0, enabled = isMPCharachter, visible = false }
             },
             beard = {
-                styles = { min = 0, max = isMPCharachter and GetNumHeadOverlayValues(1) or 0, value = 0, enabled = isMPCharachter and isMPMale },
-                opacities = { min = 0, max = isMPCharachter and 10 or 0, value = 0, enabled = isMPCharachter and isMPMale },
-                colors = { min = 0, max = isMPCharachter and maxOverlayColors or 0, value = 0, enabled = isMPCharachter and isMPMale }
+                styles = { min = 0, max = isMPCharachter and GetNumHeadOverlayValues(1) or 0, value = 0, enabled = isMPCharachter and isMPMale, visible = false },
+                opacities = { min = 0, max = isMPCharachter and 10 or 0, value = 0, enabled = isMPCharachter and isMPMale, visible = false },
+                colors = { min = 0, max = isMPCharachter and maxOverlayColors or 0, value = 0, enabled = isMPCharachter and isMPMale, visible = false },
+                highlights = { min = 0; max = isMPCharachter and maxOverlayColors or 0, value = 0, enabled = isMPCharachter and isMPMale, visible = false }
             },
             eyebrow = {
-                styles = { min = 0, max = isMPCharachter and GetNumHeadOverlayValues(2) or 0, value = 0, enabled = isMPCharachter },
-                opacities = { min = 0, max = isMPCharachter and 10 or 0, value = 0, enabled = isMPCharachter },
-                colors = { min = 0, max = isMPCharachter and maxOverlayColors or 0, value = 0, enabled = isMPCharachter }
+                styles = { min = 0, max = isMPCharachter and GetNumHeadOverlayValues(2) or 0, value = 0, enabled = isMPCharachter, visible = false },
+                opacities = { min = 0, max = isMPCharachter and 10 or 0, value = 0, enabled = isMPCharachter, visible = false },
+                colors = { min = 0, max = isMPCharachter and maxOverlayColors or 0, value = 0, enabled = isMPCharachter, visible = false }
             },
             ageing = {
-                styles = { min = 0, max = isMPCharachter and GetNumHeadOverlayValues(3) or 0, value = 0, enabled = isMPCharachter },
-                opacities = { min = 0, max = isMPCharachter and 10 or 0, value = 0, enabled = isMPCharachter }
+                styles = { min = 0, max = isMPCharachter and GetNumHeadOverlayValues(3) or 0, value = 0, enabled = isMPCharachter, visible = false },
+                opacities = { min = 0, max = isMPCharachter and 10 or 0, value = 0, enabled = isMPCharachter, visible = false }
             },
             makeup = {
-                styles = { min = 0, max = isMPCharachter and GetNumHeadOverlayValues(4) or 0, value = 0, enabled = isMPCharachter and isMPFemale },
-                opacities = { min = 0, max = isMPCharachter and 10 or 0, value = 0, enabled = isMPCharachter and isMPFemale },
-                colors = { min = 0, max = isMPCharachter and maxOverlayColors or 0, value = 0, enabled = isMPCharachter and isMPFemale }
+                styles = { min = 0, max = isMPCharachter and GetNumHeadOverlayValues(4) or 0, value = 0, enabled = isMPCharachter and isMPFemale, visible = false },
+                opacities = { min = 0, max = isMPCharachter and 10 or 0, value = 0, enabled = isMPCharachter and isMPFemale, visible = false },
+                colors = { min = 0, max = isMPCharachter and maxOverlayColors or 0, value = 0, enabled = isMPCharachter and isMPFemale, visible = false }
             },
             blush = {
-                styles = { min = 0, max = isMPCharachter and GetNumHeadOverlayValues(5) or 0, value = 0, enabled = isMPCharachter and isMPFemale },
-                opacities = { min = 0, max = isMPCharachter and 10 or 0, value = 0, enabled = isMPCharachter and isMPFemale },
-                colors = { min = 0, max = isMPCharachter and maxOverlayColors or 0, value = 0, enabled = isMPCharachter and isMPFemale }
+                styles = { min = 0, max = isMPCharachter and GetNumHeadOverlayValues(5) or 0, value = 0, enabled = isMPCharachter and isMPFemale, visible = false },
+                opacities = { min = 0, max = isMPCharachter and 10 or 0, value = 0, enabled = isMPCharachter and isMPFemale, visible = false },
+                colors = { min = 0, max = isMPCharachter and maxOverlayColors or 0, value = 0, enabled = isMPCharachter and isMPFemale, visible = false }
             },
             complexion = {
-                styles = { min = 0, max = isMPCharachter and GetNumHeadOverlayValues(6) or 0, value = 0, enabled = isMPCharachter },
-                opacities = { min = 0, max = isMPCharachter and 10 or 0, value = 0, enabled = isMPCharachter }
+                styles = { min = 0, max = isMPCharachter and GetNumHeadOverlayValues(6) or 0, value = 0, enabled = isMPCharachter, visible = false },
+                opacities = { min = 0, max = isMPCharachter and 10 or 0, value = 0, enabled = isMPCharachter, visible = false }
             },
             sunDamage = {
-                styles = { min = 0, max = isMPCharachter and GetNumHeadOverlayValues(7) or 0, value = 0, enabled = isMPCharachter },
-                opacities = { min = 0, max = isMPCharachter and 10 or 0, value = 0, enabled = isMPCharachter }
+                styles = { min = 0, max = isMPCharachter and GetNumHeadOverlayValues(7) or 0, value = 0, enabled = isMPCharachter, visible = false },
+                opacities = { min = 0, max = isMPCharachter and 10 or 0, value = 0, enabled = isMPCharachter, visible = false }
             },
             lipstick = {
-                styles = { min = 0, max = isMPCharachter and GetNumHeadOverlayValues(8) or 0, value = 0, enabled = isMPCharachter and isMPFemale },
-                opacities = { min = 0, max = isMPCharachter and 10 or 0, value = 0, enabled = isMPCharachter and isMPFemale },
-                colors = { min = 0, max = isMPCharachter and maxOverlayColors or 0, value = 0, enabled = isMPCharachter and isMPFemale }
+                styles = { min = 0, max = isMPCharachter and GetNumHeadOverlayValues(8) or 0, value = 0, enabled = isMPCharachter and isMPFemale, visible = false },
+                opacities = { min = 0, max = isMPCharachter and 10 or 0, value = 0, enabled = isMPCharachter and isMPFemale, visible = false },
+                colors = { min = 0, max = isMPCharachter and maxOverlayColors or 0, value = 0, enabled = isMPCharachter and isMPFemale, visible = false }
             },
             molesFreckle = {
-                styles = { min = 0, max = isMPCharachter and GetNumHeadOverlayValues(9) or 0, value = 0, enabled = isMPCharachter },
-                opacities = { min = 0, max = isMPCharachter and 10 or 0, value = 0, enabled = isMPCharachter }
+                styles = { min = 0, max = isMPCharachter and GetNumHeadOverlayValues(9) or 0, value = 0, enabled = isMPCharachter, visible = false },
+                opacities = { min = 0, max = isMPCharachter and 10 or 0, value = 0, enabled = isMPCharachter, visible = false }
             },
             chestHair = {
-                styles = { min = 0, max = isMPCharachter and GetNumHeadOverlayValues(10) or 0, value = 0, enabled = isMPCharachter and isMPMale },
-                opacities = { min = 0, max = isMPCharachter and 10 or 0, value = 0, enabled = isMPCharachter and isMPMale },
-                colors = { min = 0, max = isMPCharachter and maxOverlayColors or 0, value = 0, enabled = isMPCharachter and isMPMale }
+                styles = { min = 0, max = isMPCharachter and GetNumHeadOverlayValues(10) or 0, value = 0, enabled = isMPCharachter and isMPMale, visible = false },
+                opacities = { min = 0, max = isMPCharachter and 10 or 0, value = 0, enabled = isMPCharachter and isMPMale, visible = false },
+                colors = { min = 0, max = isMPCharachter and maxOverlayColors or 0, value = 0, enabled = isMPCharachter and isMPMale, visible = false }
             },
             bodyBlemish = {
-                styles = { min = 0, max = isMPCharachter and GetNumHeadOverlayValues(11) or 0, value = 0, enabled = isMPCharachter },
-                opacities = { min = 0, max = isMPCharachter and 10 or 0, value = 0, enabled = isMPCharachter }
+                styles = { min = 0, max = isMPCharachter and GetNumHeadOverlayValues(11) or 0, value = 0, enabled = isMPCharachter, visible = false },
+                opacities = { min = 0, max = isMPCharachter and 10 or 0, value = 0, enabled = isMPCharachter, visible = false }
             },
             eye = {
-                colors = { min = 0, max = isMPCharachter and 32 or 0, value = 0, enabled = isMPCharachter }
+                colors = { min = 0, max = isMPCharachter and 32 or 0, value = 0, enabled = isMPCharachter, visible = false }
             },
             head = {
-                styles = { min = 0, max = GetNumberOfPedDrawableVariations(handle, 0), value = 0, enabled = true },
-                textures = { min = 0, max = GetNumberOfPedTextureVariations(handle, 0, 0), value = 0, enabled = true }
+                styles = { min = 0, max = GetNumberOfPedDrawableVariations(handle, 0), value = 0, enabled = not isMPCharachter, visible = false },
+                textures = { min = 0, max = GetNumberOfPedTextureVariations(handle, 0, 0), value = 0, enabled = not isMPCharachter, visible = false }
             },
             masks = {
-                styles = { min = 0, max = GetNumberOfPedDrawableVariations(handle, 1), value = 0, enabled = true },
-                textures = { min = 0, max = GetNumberOfPedTextureVariations(handle, 1, 0), value = 0, enabled = true }
-            },
-            hairStyles = {
-                styles = { min = 0, max = GetNumberOfPedDrawableVariations(handle, 2), value = 0, enabled = not isMPCharachter },
-                textures = { min = 0, max = GetNumberOfPedTextureVariations(handle, 2, 0), value = 0, enabled = not isMPCharachter }
+                styles = { min = 0, max = GetNumberOfPedDrawableVariations(handle, 1), value = 0, enabled = true, visible = false },
+                textures = { min = 0, max = GetNumberOfPedTextureVariations(handle, 1, 0), value = 0, enabled = true, visible = false }
             },
             torsos = {
-                styles = { min = 0, max = GetNumberOfPedDrawableVariations(handle, 3), value = 0, enabled = true },
-                textures = { min = 0, max = GetNumberOfPedTextureVariations(handle, 3, 0), value = 0, enabled = true }
+                styles = { min = 0, max = GetNumberOfPedDrawableVariations(handle, 3), value = 0, enabled = true, visible = false },
+                textures = { min = 0, max = GetNumberOfPedTextureVariations(handle, 3, 0), value = 0, enabled = true, visible = false }
             },
             legs = {
-                styles = { min = 0, max = GetNumberOfPedDrawableVariations(handle, 4), value = 0, enabled = true },
-                textures = { min = 0, max = GetNumberOfPedTextureVariations(handle, 4, 0), value = 0, enabled = true }
+                styles = { min = 0, max = GetNumberOfPedDrawableVariations(handle, 4), value = 0, enabled = true, visible = false },
+                textures = { min = 0, max = GetNumberOfPedTextureVariations(handle, 4, 0), value = 0, enabled = true, visible = false }
             },
             bags = {
-                styles = { min = 0, max = GetNumberOfPedDrawableVariations(handle, 5), value = 0, enabled = true },
-                textures = { min = 0, max = GetNumberOfPedTextureVariations(handle, 5, 0), value = 0, enabled = true }
+                styles = { min = 0, max = GetNumberOfPedDrawableVariations(handle, 5), value = 0, enabled = true, visible = false },
+                textures = { min = 0, max = GetNumberOfPedTextureVariations(handle, 5, 0), value = 0, enabled = true, visible = false }
             },
             shoes = {
-                styles = { min = 0, max = GetNumberOfPedDrawableVariations(handle, 6), value = 0, enabled = true },
-                textures = { min = 0, max = GetNumberOfPedTextureVariations(handle, 6, 0), value = 0, enabled = true }
+                styles = { min = 0, max = GetNumberOfPedDrawableVariations(handle, 6), value = 0, enabled = true, visible = false },
+                textures = { min = 0, max = GetNumberOfPedTextureVariations(handle, 6, 0), value = 0, enabled = true, visible = false }
             },
             accessories = {
-                styles = { min = 0, max = GetNumberOfPedDrawableVariations(handle, 7), value = 0, enabled = true },
-                textures = { min = 0, max = GetNumberOfPedTextureVariations(handle, 7, 0), value = 0, enabled = true }
+                styles = { min = 0, max = GetNumberOfPedDrawableVariations(handle, 7), value = 0, enabled = true, visible = false },
+                textures = { min = 0, max = GetNumberOfPedTextureVariations(handle, 7, 0), value = 0, enabled = true, visible = false }
             },
             undershirts = {
-                styles = { min = 0, max = GetNumberOfPedDrawableVariations(handle, 8), value = 0, enabled = true },
-                textures = { min = 0, max = GetNumberOfPedTextureVariations(handle, 8, 0), value = 0, enabled = true }
+                styles = { min = 0, max = GetNumberOfPedDrawableVariations(handle, 8), value = 0, enabled = true, visible = false },
+                textures = { min = 0, max = GetNumberOfPedTextureVariations(handle, 8, 0), value = 0, enabled = true, visible = false }
             },
             bodyArmors = {
-                styles = { min = 0, max = GetNumberOfPedDrawableVariations(handle, 9), value = 0, enabled = true },
-                textures = { min = 0, max = GetNumberOfPedTextureVariations(handle, 9, 0), value = 0, enabled = true }
+                styles = { min = -1, max = GetNumberOfPedDrawableVariations(handle, 9), value = -1, enabled = true, visible = false },
+                textures = { min = 0, max = GetNumberOfPedTextureVariations(handle, 9, 0), value = 0, enabled = true, visible = false }
             },
             decals = {
-                styles = { min = 0, max = GetNumberOfPedDrawableVariations(handle, 10), value = 0, enabled = true },
-                textures = { min = 0, max = GetNumberOfPedTextureVariations(handle, 10, 0), value = 0, enabled = true }
+                styles = { min = 0, max = GetNumberOfPedDrawableVariations(handle, 10), value = 0, enabled = true, visible = false },
+                textures = { min = 0, max = GetNumberOfPedTextureVariations(handle, 10, 0), value = 0, enabled = true, visible = false }
             },
             tops = {
-                styles = { min = 0, max = GetNumberOfPedDrawableVariations(handle, 11), value = 0, enabled = true },
-                textures = { min = 0, max = GetNumberOfPedTextureVariations(handle, 11, 0), value = 0, enabled = true }
+                styles = { min = 0, max = GetNumberOfPedDrawableVariations(handle, 11), value = 0, enabled = true, visible = false },
+                textures = { min = 0, max = GetNumberOfPedTextureVariations(handle, 11, 0), value = 0, enabled = true, visible = false }
             },
             helmets = {
-                styles = { min = 0, max = GetNumberOfPedPropDrawableVariations(handle, 0), value = 0, enabled = true },
-                textures = { min = 0, max = GetNumberOfPedPropTextureVariations(handle, 0, 0), value = 0, enabled = true }
+                styles = { min = -1, max = GetNumberOfPedPropDrawableVariations(handle, 0), value = -1, enabled = true, visible = false },
+                textures = { min = 0, max = GetNumberOfPedPropTextureVariations(handle, 0, 0), value = 0, enabled = true, visible = false }
             },
             glasses = {
-                styles = { min = 0, max = GetNumberOfPedPropDrawableVariations(handle, 1), value = 0, enabled = true },
-                textures = { min = 0, max = GetNumberOfPedPropTextureVariations(handle, 1, 0), value = 0, enabled = true }
+                styles = { min = -1, max = GetNumberOfPedPropDrawableVariations(handle, 1), value = -1, enabled = true, visible = false },
+                textures = { min = 0, max = GetNumberOfPedPropTextureVariations(handle, 1, 0), value = 0, enabled = true, visible = false }
             },
             props = {
-                styles = { min = 0, max = GetNumberOfPedPropDrawableVariations(handle, 2), value = 0, enabled = true },
-                textures = { min = 0, max = GetNumberOfPedPropTextureVariations(handle, 2, 0), value = 0, enabled = true }
+                styles = { min = -1, max = GetNumberOfPedPropDrawableVariations(handle, 2), value = -1, enabled = true, visible = false },
+                textures = { min = 0, max = GetNumberOfPedPropTextureVariations(handle, 2, 0), value = 0, enabled = true, visible = false }
             },
             watches = {
-                styles = { min = 0, max = GetNumberOfPedPropDrawableVariations(handle, 6), value = 0, enabled = true },
-                textures = { min = 0, max = GetNumberOfPedPropTextureVariations(handle, 6, 0), value = 0, enabled = true }
+                styles = { min = -1, max = GetNumberOfPedPropDrawableVariations(handle, 6), value = -1, enabled = true, visible = false },
+                textures = { min = 0, max = GetNumberOfPedPropTextureVariations(handle, 6, 0), value = 0, enabled = true, visible = false }
             },
             bracles = {
-                styles = { min = 0, max = GetNumberOfPedPropDrawableVariations(handle, 7), value = 0, enabled = true },
-                textures = { min = 0, max = GetNumberOfPedPropTextureVariations(handle, 7, 0), value = 0, enabled = true }
+                styles = { min = -1, max = GetNumberOfPedPropDrawableVariations(handle, 7), value = -1, enabled = true, visible = false },
+                textures = { min = 0, max = GetNumberOfPedPropTextureVariations(handle, 7, 0), value = 0, enabled = true, visible = false }
             }
         }
     }
@@ -218,10 +243,12 @@ function skins:create(handle)
         local max = ensure(option.max, 0)
         local value = ensure(option.value, 0)
 
-        if (min >= value) then return min end
-        if (max <= value) then return max end
+        if (min >= value) then option.value = min end
+        if (max <= value) then option.value = max end
+        
+        option.visible = max > 0
 
-        return value
+        return option.value
     end
 
     function skin:refresh(callback)
@@ -233,15 +260,132 @@ function skins:create(handle)
         local isMPCharachter = isMPMale or isMPFemale
         local maxOverlayColors = GetNumHairColors()
 
+        --- Set min values
+        self.values.parents.father.min = 0
+        self.values.parents.mother.min = 0
+        self.values.parents.headMix.min = 0
+        self.values.parents.bodyMix.min = 0
+        self.values.faceShape.noseWidth.min = -10
+        self.values.faceShape.nosePeakHeight.min = -10
+        self.values.faceShape.nosePeakLength.min = -10
+        self.values.faceShape.nosePeakLowering.min = -10
+        self.values.faceShape.noseBoneHeight.min = -10
+        self.values.faceShape.noseBoneTwist.min = -10
+        self.values.faceShape.eyebrownHeight.min = -10
+        self.values.faceShape.eyebrwonDepth.min = -10
+        self.values.faceShape.eyeOpening.min = -10
+        self.values.faceShape.cheeckboneHeight.min = -10
+        self.values.faceShape.cheeckboneWidth.min = -10
+        self.values.faceShape.lipThickness.min = -10
+        self.values.faceShape.jawBoneWidth.min = -10
+        self.values.faceShape.jawBoneDepth.min = -10
+        self.values.faceShape.chinHeight.min = -10
+        self.values.faceShape.chinDepth.min = -10
+        self.values.faceShape.chinWidth.min = -10
+        self.values.faceShape.chinHoleSize.min = -10
+        self.values.faceShape.neckThickness.min = -10
+        self.values.hair.styles.min = 0
+        self.values.hair.textures.min = 0
+        self.values.hair.colors.min = 0
+        self.values.hair.highlights.min = 0
+        self.values.blemish.styles.min = 0
+        self.values.blemish.opacities.min = 0
+        self.values.beard.styles.min = 0
+        self.values.beard.opacities.min = 0
+        self.values.beard.colors.min = 0
+        self.values.beard.highlights.min = 0
+        self.values.eyebrow.styles.min = 0
+        self.values.eyebrow.opacities.min = 0
+        self.values.eyebrow.colors.min = 0
+        self.values.ageing.styles.min = 0
+        self.values.ageing.opacities.min = 0
+        self.values.makeup.styles.min = 0
+        self.values.makeup.opacities.min = 0
+        self.values.makeup.colors.min = 0
+        self.values.blush.styles.min = 0
+        self.values.blush.opacities.min = 0
+        self.values.blush.colors.min = 0
+        self.values.complexion.styles.min = 0
+        self.values.complexion.opacities.min = 0
+        self.values.sunDamage.styles.min = 0
+        self.values.sunDamage.opacities.min = 0
+        self.values.lipstick.styles.min = 0
+        self.values.lipstick.opacities.min = 0
+        self.values.lipstick.colors.min = 0
+        self.values.molesFreckle.styles.min = 0
+        self.values.molesFreckle.opacities.min = 0
+        self.values.chestHair.styles.min = 0
+        self.values.chestHair.opacities.min = 0
+        self.values.chestHair.colors.min = 0
+        self.values.bodyBlemish.styles.min = 0
+        self.values.bodyBlemish.opacities.min = 0
+        self.values.eye.colors.min = 0
+        self.values.head.styles.min = 0
+        self.values.head.textures.min = 0
+        self.values.masks.styles.min = 0
+        self.values.masks.textures.min = 0
+        self.values.torsos.styles.min = 0
+        self.values.torsos.textures.min = 0
+        self.values.legs.styles.min = 0
+        self.values.legs.textures.min = 0
+        self.values.bags.styles.min = 0
+        self.values.bags.textures.min = 0
+        self.values.shoes.styles.min = 0
+        self.values.shoes.textures.min = 0
+        self.values.accessories.styles.min = 0
+        self.values.accessories.textures.min = 0
+        self.values.undershirts.styles.min = 0
+        self.values.undershirts.textures.min = 0
+        self.values.bodyArmors.styles.min = 0
+        self.values.bodyArmors.textures.min = 0
+        self.values.decals.styles.min = 0
+        self.values.decals.textures.min = 0
+        self.values.tops.styles.min = 0
+        self.values.tops.textures.min = 0
+        self.values.helmets.styles.min = -1
+        self.values.helmets.textures.min = 0
+        self.values.glasses.styles.min = -1
+        self.values.glasses.textures.min = 0
+        self.values.props.styles.min = -1
+        self.values.props.textures.min = 0
+        self.values.watches.styles.min = -1
+        self.values.watches.textures.min = 0
+        self.values.bracles.styles.min = -1
+        self.values.bracles.textures.min = 0
+
         --- Set max values
-        self.values.hair.styles.max = GetNumberOfPedDrawableVariations(handle, 0)
+        self.values.parents.father.max = 46
+        self.values.parents.mother.max = 46
+        self.values.parents.headMix.max = 10
+        self.values.parents.bodyMix.max = 10
+        self.values.faceShape.noseWidth.max = 10
+        self.values.faceShape.nosePeakHeight.max = 10
+        self.values.faceShape.nosePeakLength.max = 10
+        self.values.faceShape.nosePeakLowering.max = 10
+        self.values.faceShape.noseBoneHeight.max = 10
+        self.values.faceShape.noseBoneTwist.max = 10
+        self.values.faceShape.eyebrownHeight.max = 10
+        self.values.faceShape.eyebrwonDepth.max = 10
+        self.values.faceShape.eyeOpening.max = 10
+        self.values.faceShape.cheeckboneHeight.max = 10
+        self.values.faceShape.cheeckboneWidth.max = 10
+        self.values.faceShape.lipThickness.max = 10
+        self.values.faceShape.jawBoneWidth.max = 10
+        self.values.faceShape.jawBoneDepth.max = 10
+        self.values.faceShape.chinHeight.max = 10
+        self.values.faceShape.chinDepth.max = 10
+        self.values.faceShape.chinWidth.max = 10
+        self.values.faceShape.chinHoleSize.max = 10
+        self.values.faceShape.neckThickness.max = 10
+        self.values.hair.styles.max = GetNumberOfPedDrawableVariations(handle, 2)
         self.values.hair.colors.max = maxOverlayColors
-        self.values.hair.hightlights.max = maxOverlayColors
+        self.values.hair.highlights.max = maxOverlayColors
         self.values.blemish.styles.max = isMPCharachter and GetNumHeadOverlayValues(0) or 0
         self.values.blemish.opacities.max = isMPCharachter and 10 or 0
-        self.values.beard.styles.max = isMPCharachter and GetNumHeadOverlayValues(1) or 0
-        self.values.beard.opacities.max = isMPCharachter and 10 or 0
-        self.values.beard.colors.max = isMPCharachter and maxOverlayColors or 0
+        self.values.beard.styles.max = isMPCharachter and isMPMale and GetNumHeadOverlayValues(1) or 0
+        self.values.beard.opacities.max = isMPCharachter and isMPMale and 10 or 0
+        self.values.beard.colors.max = isMPCharachter and isMPMale and maxOverlayColors or 0
+        self.values.beard.highlights.max = isMPCharachter and isMPMale and 10 or 0
         self.values.eyebrow.styles.max = isMPCharachter and GetNumHeadOverlayValues(2) or 0
         self.values.eyebrow.opacities.max = isMPCharachter and 10 or 0
         self.values.eyebrow.colors.max = isMPCharachter and maxOverlayColors or 0
@@ -269,49 +413,75 @@ function skins:create(handle)
         self.values.bodyBlemish.opacities.max = isMPCharachter and 10 or 0
         self.values.eye.colors.max = isMPCharachter and 32 or 0
         self.values.head.styles.max = GetNumberOfPedDrawableVariations(handle, 0)
-        self.values.head.textures.max = GetNumberOfPedTextureVariations(handle, 0, self:getValue(self.values.head.styles))
         self.values.masks.styles.max = GetNumberOfPedDrawableVariations(handle, 1)
-        self.values.masks.textures.max = GetNumberOfPedTextureVariations(handle, 1, self:getValue(self.values.masks.styles))
-        self.values.hairStyles.styles.max = GetNumberOfPedDrawableVariations(handle, 2)
-        self.values.hairStyles.textures.max = GetNumberOfPedTextureVariations(handle, 2, self:getValue(self.values.hairStyles.styles))
         self.values.torsos.styles.max = GetNumberOfPedDrawableVariations(handle, 3)
-        self.values.torsos.textures.max = GetNumberOfPedTextureVariations(handle, 3, self:getValue(self.values.torsos.styles))
         self.values.legs.styles.max = GetNumberOfPedDrawableVariations(handle, 4)
-        self.values.legs.textures.max = GetNumberOfPedTextureVariations(handle, 4, self:getValue(self.values.legs.styles))
         self.values.bags.styles.max = GetNumberOfPedDrawableVariations(handle, 5)
-        self.values.bags.textures.max = GetNumberOfPedTextureVariations(handle, 5, self:getValue(self.values.bags.styles))
         self.values.shoes.styles.max = GetNumberOfPedDrawableVariations(handle, 6)
-        self.values.shoes.textures.max = GetNumberOfPedTextureVariations(handle, 6, self:getValue(self.values.shoes.styles))
         self.values.accessories.styles.max = GetNumberOfPedDrawableVariations(handle, 7)
-        self.values.accessories.textures.max = GetNumberOfPedTextureVariations(handle, 7, self:getValue(self.values.accessories.styles))
         self.values.undershirts.styles.max = GetNumberOfPedDrawableVariations(handle, 8)
-        self.values.undershirts.textures.max = GetNumberOfPedTextureVariations(handle, 8, self:getValue(self.values.undershirts.styles))
         self.values.bodyArmors.styles.max = GetNumberOfPedDrawableVariations(handle, 9)
-        self.values.bodyArmors.textures.max = GetNumberOfPedTextureVariations(handle, 9, self:getValue(self.values.bodyArmors.styles))
         self.values.decals.styles.max = GetNumberOfPedDrawableVariations(handle, 10)
-        self.values.decals.textures.max = GetNumberOfPedTextureVariations(handle, 10, self:getValue(self.values.decals.styles))
         self.values.tops.styles.max = GetNumberOfPedDrawableVariations(handle, 11)
-        self.values.tops.textures.max = GetNumberOfPedTextureVariations(handle, 11, self:getValue(self.values.tops.styles))
         self.values.helmets.styles.max = GetNumberOfPedPropDrawableVariations(handle, 0)
-        self.values.helmets.textures.max = GetNumberOfPedPropTextureVariations(handle, 0, self:getValue(self.values.helmets.styles))
         self.values.glasses.styles.max = GetNumberOfPedPropDrawableVariations(handle, 1)
-        self.values.glasses.textures.max = GetNumberOfPedPropTextureVariations(handle, 1, self:getValue(self.values.glasses.styles))
         self.values.props.styles.max = GetNumberOfPedPropDrawableVariations(handle, 2)
-        self.values.props.textures.max = GetNumberOfPedPropTextureVariations(handle, 2, self:getValue(self.values.props.styles))
         self.values.watches.styles.max = GetNumberOfPedPropDrawableVariations(handle, 6)
-        self.values.watches.textures.max = GetNumberOfPedPropTextureVariations(handle, 6, self:getValue(self.values.watches.styles))
         self.values.bracles.styles.max = GetNumberOfPedPropDrawableVariations(handle, 7)
+
+        --- Set max value textures
+        self.values.hair.textures.max = GetNumberOfPedTextureVariations(handle, 2, self:getValue(self.values.hair.styles))
+        self.values.head.textures.max = GetNumberOfPedTextureVariations(handle, 0, self:getValue(self.values.head.styles))
+        self.values.masks.textures.max = GetNumberOfPedTextureVariations(handle, 1, self:getValue(self.values.masks.styles))
+        self.values.torsos.textures.max = GetNumberOfPedTextureVariations(handle, 3, self:getValue(self.values.torsos.styles))
+        self.values.legs.textures.max = GetNumberOfPedTextureVariations(handle, 4, self:getValue(self.values.legs.styles))
+        self.values.bags.textures.max = GetNumberOfPedTextureVariations(handle, 5, self:getValue(self.values.bags.styles))
+        self.values.shoes.textures.max = GetNumberOfPedTextureVariations(handle, 6, self:getValue(self.values.shoes.styles))
+        self.values.accessories.textures.max = GetNumberOfPedTextureVariations(handle, 7, self:getValue(self.values.accessories.styles))
+        self.values.undershirts.textures.max = GetNumberOfPedTextureVariations(handle, 8, self:getValue(self.values.undershirts.styles))
+        self.values.bodyArmors.textures.max = GetNumberOfPedTextureVariations(handle, 9, self:getValue(self.values.bodyArmors.styles))
+        self.values.decals.textures.max = GetNumberOfPedTextureVariations(handle, 10, self:getValue(self.values.decals.styles))
+        self.values.tops.textures.max = GetNumberOfPedTextureVariations(handle, 11, self:getValue(self.values.tops.styles))
+        self.values.helmets.textures.max = GetNumberOfPedPropTextureVariations(handle, 0, self:getValue(self.values.helmets.styles))
+        self.values.glasses.textures.max = GetNumberOfPedPropTextureVariations(handle, 1, self:getValue(self.values.glasses.styles))
+        self.values.props.textures.max = GetNumberOfPedPropTextureVariations(handle, 2, self:getValue(self.values.props.styles))
+        self.values.watches.textures.max = GetNumberOfPedPropTextureVariations(handle, 6, self:getValue(self.values.watches.styles))
         self.values.bracles.textures.max = GetNumberOfPedPropTextureVariations(handle, 7, self:getValue(self.values.bracles.styles))
         
         --- Enable or disable options
-        self.values.hair.styles.enabled = isMPCharachter
+        self.values.parents.father.enabled = isMPCharachter
+        self.values.parents.mother.enabled = isMPCharachter
+        self.values.parents.headMix.enabled = isMPCharachter
+        self.values.parents.bodyMix.enabled = isMPCharachter
+        self.values.faceShape.noseWidth.enabled = isMPCharachter
+        self.values.faceShape.nosePeakHeight.enabled = isMPCharachter
+        self.values.faceShape.nosePeakLength.enabled = isMPCharachter
+        self.values.faceShape.nosePeakLowering.enabled = isMPCharachter
+        self.values.faceShape.noseBoneHeight.enabled = isMPCharachter
+        self.values.faceShape.noseBoneTwist.enabled = isMPCharachter
+        self.values.faceShape.eyebrownHeight.enabled = isMPCharachter
+        self.values.faceShape.eyebrwonDepth.enabled = isMPCharachter
+        self.values.faceShape.eyeOpening.enabled = isMPCharachter
+        self.values.faceShape.cheeckboneHeight.enabled = isMPCharachter
+        self.values.faceShape.cheeckboneWidth.enabled = isMPCharachter
+        self.values.faceShape.lipThickness.enabled = isMPCharachter
+        self.values.faceShape.jawBoneWidth.enabled = isMPCharachter
+        self.values.faceShape.jawBoneDepth.enabled = isMPCharachter
+        self.values.faceShape.chinHeight.enabled = isMPCharachter
+        self.values.faceShape.chinDepth.enabled = isMPCharachter
+        self.values.faceShape.chinWidth.enabled = isMPCharachter
+        self.values.faceShape.chinHoleSize.enabled = isMPCharachter
+        self.values.faceShape.neckThickness.enabled = isMPCharachter
+        self.values.hair.styles.enabled = true
+        self.values.hair.textures.enabled = true
         self.values.hair.colors.enabled = isMPCharachter
-        self.values.hair.hightlights.enabled = isMPCharachter
+        self.values.hair.highlights.enabled = isMPCharachter
         self.values.blemish.styles.enabled = isMPCharachter
         self.values.blemish.opacities.enabled = isMPCharachter
         self.values.beard.styles.enabled = isMPCharachter and isMPMale
         self.values.beard.opacities.enabled = isMPCharachter and isMPMale
         self.values.beard.colors.enabled = isMPCharachter and isMPMale
+        self.values.beard.highlights.enabled = isMPCharachter and isMPMale
         self.values.eyebrow.styles.enabled = isMPCharachter
         self.values.eyebrow.opacities.enabled = isMPCharachter
         self.values.eyebrow.colors.enabled = isMPCharachter
@@ -338,12 +508,10 @@ function skins:create(handle)
         self.values.bodyBlemish.styles.enabled = isMPCharachter
         self.values.bodyBlemish.opacities.enabled = isMPCharachter
         self.values.eye.colors.enabled = isMPCharachter
-        self.values.head.styles.enabled = true
-        self.values.head.textures.enabled = true
+        self.values.head.styles.enabled = not isMPCharachter
+        self.values.head.textures.enabled = not isMPCharachter
         self.values.masks.styles.enabled = true
         self.values.masks.textures.enabled = true
-        self.values.hairStyles.styles.enabled = not isMPCharachter
-        self.values.hairStyles.textures.enabled = not isMPCharachter
         self.values.torsos.styles.enabled = true
         self.values.torsos.textures.enabled = true
         self.values.legs.styles.enabled = true
@@ -384,14 +552,17 @@ function skins:create(handle)
 
                 if (value.min >= value.value) then self.values[key][option].value = value.min end
                 if (value.max <= value.value) then self.values[key][option].value = value.max end
+                
+                self.values[key][option].visible = value.max > 0
             end
         end
 
-        if (self.values.hair.styles.enabled) then SetPedComponentVariation(handle, 2, 0, 2) end
-        if (self.values.hair.colors.enabled) then SetPedHairColor(handle, self.values.hair.colors.value, self.values.hair.hightlights.value) end
+        if (self.values.parents.father.enabled) then SetPedHeadBlendData(handle, self.values.parents.mother.value, self.values.parents.father.value, 0, self.values.parents.mother.value, self.values.parents.father.value, 0, round(self.values.parents.headMix.value / 10, 1), round(self.values.parents.bodyMix.value / 10, 1), 0, false) end
+        if (self.values.hair.styles.enabled) then SetPedComponentVariation(handle, 2, self.values.hair.styles.value, self.values.hair.textures.value, 2) end
+        if (self.values.hair.colors.enabled) then SetPedHairColor(handle, self.values.hair.colors.value, self.values.hair.highlights.value) end
         if (self.values.blemish.styles.enabled) then SetPedHeadOverlay(handle, 0, self.values.blemish.styles.value, round(self.values.blemish.opacities.value / 10, 1)) end
         if (self.values.beard.styles.enabled) then SetPedHeadOverlay(handle, 1, self.values.beard.styles.value, round(self.values.beard.opacities.value / 10, 1)) end
-        if (self.values.beard.colors.enabled) then SetPedHeadOverlayColor(handle, 1, 1, self.values.hair.colors.value, self.values.beard.colors.value) end
+        if (self.values.beard.colors.enabled) then SetPedHeadOverlayColor(handle, 1, 1, self.values.hair.colors.value, self.values.beard.highlights.value) end
         if (self.values.eyebrow.styles.enabled) then SetPedHeadOverlay(handle, 2, self.values.eyebrow.styles.value, round(self.values.eyebrow.opacities.value / 10, 1)) end
         if (self.values.eyebrow.colors.enabled) then SetPedHeadOverlayColor(handle, 1, 1, self.values.hair.colors.value, self.values.eyebrow.colors.value) end
         if (self.values.ageing.styles.enabled) then SetPedHeadOverlay(handle, 3, self.values.ageing.styles.value, round(self.values.ageing.opacities.value / 10, 1)) end
@@ -410,7 +581,6 @@ function skins:create(handle)
         if (self.values.eye.colors.enabled) then SetPedEyeColor(handle, self.values.eye.colors.value, 0, 1) end
         if (self.values.head.styles.enabled) then SetPedComponentVariation(handle, 0, self.values.head.styles.value, self.values.head.textures.value, 0) end
         if (self.values.masks.styles.enabled) then SetPedComponentVariation(handle, 1, self.values.masks.styles.value, self.values.masks.textures.value, 0) end
-        if (self.values.hairStyles.styles.enabled) then SetPedComponentVariation(handle, 2, self.values.hairStyles.styles.value, self.values.hairStyles.textures.value, 0) end
         if (self.values.torsos.styles.enabled) then SetPedComponentVariation(handle, 3, self.values.torsos.styles.value, self.values.torsos.textures.value, 0) end
         if (self.values.legs.styles.enabled) then SetPedComponentVariation(handle, 4, self.values.legs.styles.value, self.values.legs.textures.value, 0) end
         if (self.values.bags.styles.enabled) then SetPedComponentVariation(handle, 5, self.values.bags.styles.value, self.values.bags.textures.value, 0) end
@@ -420,11 +590,16 @@ function skins:create(handle)
         if (self.values.bodyArmors.styles.enabled) then SetPedComponentVariation(handle, 9, self.values.bodyArmors.styles.value, self.values.bodyArmors.textures.value, 0) end
         if (self.values.decals.styles.enabled) then SetPedComponentVariation(handle, 10, self.values.decals.styles.value, self.values.decals.textures.value, 0) end
         if (self.values.tops.styles.enabled) then SetPedComponentVariation(handle, 11, self.values.tops.styles.value, self.values.tops.textures.value, 0) end
-        if (self.values.helmets.styles.enabled) then SetPedPropIndex(handle, 0, self.values.helmets.styles.value, self.values.helmets.textures.value, true) end
-        if (self.values.glasses.styles.enabled) then SetPedPropIndex(handle, 1, self.values.glasses.styles.value, self.values.glasses.textures.value, true) end
-        if (self.values.props.styles.enabled) then SetPedPropIndex(handle, 2, self.values.props.styles.value, self.values.props.textures.value, true) end
-        if (self.values.watches.styles.enabled) then SetPedPropIndex(handle, 6, self.values.watches.styles.value, self.values.watches.textures.value, true) end
-        if (self.values.bracles.styles.enabled) then SetPedPropIndex(handle, 7, self.values.bracles.styles.value, self.values.bracles.textures.value, true) end
+        if (self.values.helmets.styles.enabled and self.values.helmets.styles.value <= -1) then ClearPedProp(handle, 0) end
+        if (self.values.helmets.styles.enabled and self.values.helmets.styles.value >= 0) then SetPedPropIndex(handle, 0, self.values.helmets.styles.value, self.values.helmets.textures.value, true) end
+        if (self.values.glasses.styles.enabled and self.values.glasses.styles.value <= -1) then ClearPedProp(handle, 1) end
+        if (self.values.glasses.styles.enabled and self.values.glasses.styles.value >= 0) then SetPedPropIndex(handle, 1, self.values.glasses.styles.value, self.values.glasses.textures.value, true) end
+        if (self.values.props.styles.enabled and self.values.props.styles.value <= -1) then ClearPedProp(handle, 2) end
+        if (self.values.props.styles.enabled and self.values.props.styles.value >= 0) then SetPedPropIndex(handle, 2, self.values.props.styles.value, self.values.props.textures.value, true) end
+        if (self.values.watches.styles.enabled and self.values.watches.styles.value <= -1) then ClearPedProp(handle, 6) end
+        if (self.values.watches.styles.enabled and self.values.watches.styles.value >= 0) then SetPedPropIndex(handle, 6, self.values.watches.styles.value, self.values.watches.textures.value, true) end
+        if (self.values.bracles.styles.enabled and self.values.bracles.styles.value <= -1) then ClearPedProp(handle, 7) end
+        if (self.values.bracles.styles.enabled and self.values.bracles.styles.value >= 0) then SetPedPropIndex(handle, 7, self.values.bracles.styles.value, self.values.bracles.textures.value, true) end
     
         callback(handle)
     end
@@ -512,11 +687,12 @@ RegisterEvent('skins:create', function(doneCallback)
 
                     local label = ('%s.%s'):format(category, option)
                     local enabled = ensure(optionValue.enabled, false)
+                    local visible = ensure(optionValue.visible, false)
                     local min = ensure(optionValue.min, 0)
                     local max = ensure(optionValue.max, 0)
                     local value = ensure(optionValue.value, 0)
 
-                    if (enabled and min < max) then
+                    if (enabled and visible) then
                         skinMenu:addItem({ type = 'range', label = label, min = min, max = max, value = value, params = { 'option', category, option } }, false)
                     end
                 end
