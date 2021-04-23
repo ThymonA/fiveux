@@ -65,3 +65,48 @@ constants.mapperIds = {
     'TOUCHPAD_ABSOLUTE_AXIS',
     'TOUCHPAD_CENTERED_AXIS'
 }
+
+constants.aces = {
+    job = {
+        all = 'jobace',
+        buy = {
+            all = 'jobace.buy',
+            weapons = 'jobace.buy.weapons',
+            items = 'jobace.buy.items',
+            vehicles = 'jobace.buy.vehicles'
+        },
+        sell = {
+            all = 'jobace.sell',
+            weapons = 'jobace.sell.weapons',
+            items = 'jobace.sell.items',
+            vehicles = 'jobace.sell.vehicles'
+        },
+        action = {
+            all = 'jobace.action',
+            handcuff = 'jobace.action.handcuff',
+            hostage = 'jobace.action.hostage',
+            drag = 'jobace.action.drag',
+            invehicle = 'jobace.action.invehicle',
+            outvehicle = 'jobace.action.outvehicle'
+        },
+        safe = {
+            all = 'jobace.safe',
+            wallet = {
+                all = 'jobace.safe.wallet',
+                add = 'jobace.safe.wallet.add',
+                remove = 'jobace.safe.wallet.remove'
+            },
+            item = {
+                all = 'jobace.safe.item',
+                add = 'jobace.safe.item.add',
+                remove = 'jobace.safe.item.remove'
+            },
+            weapon = {
+                all = 'jobace.safe.weapon',
+                add = 'jobace.safe.weapon.add',
+                remove = 'jobace.safe.weapon.remove'
+            }
+        },
+        wardrobe = 'jobace.wardrobe'
+    }
+}

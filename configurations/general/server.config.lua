@@ -24,3 +24,7 @@ config.defaultWallets = {
 --- Save all players interval
 --- [ Time in minutes ]
 config.savePlayersInterval = 1
+
+--- Save all jobs interval
+--- [ Time in minutes ]
+config.saveJobsInterval = 1

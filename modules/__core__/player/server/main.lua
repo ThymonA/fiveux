@@ -1,6 +1,7 @@
 import 'db'
 import 'logs'
 import 'wallets'
+import 'jobs'
 
 --- Configuration
 local cfg = ensure(config('general'), {})
@@ -21,7 +22,7 @@ local default_player = {
     spawn = ensure(cfg.defaultSpawn, vec(-206.79, -1015.12, 29.14))
 }
 
---- @class players
+---@class players
 players = {}
 
 --- Load a player based on given `source`
@@ -104,16 +105,61 @@ function players:loadByFx(fxid, name)
     if (playerData == nil) then return nil end
 
     local identifiers = self:loadIdentifiersByFx(fxid)
+    local job = jobs:loadByName(playerData.job)
+    local job2 = jobs:loadByName(playerData.job2)
+
+    if (job == nil) then
+        if (playerData.job == default_player.job) then
+            print_error(T('default_job_not_exists', default_player.job))
+            return nil
+        else
+            job = jobs:loadByName(default_player.job)
+
+            if (job == nil) then
+                print_error(T('default_job_not_exists', default_player.job))
+                return nil
+            end
+        end
+    end
+
+    if (job2 == nil) then
+        if (playerData.job2 == default_player.job2) then
+            print_error(T('default_job_not_exists', default_player.job2))
+            return nil
+        else
+            job2 = jobs:loadByName(default_player.job2)
+
+            if (job2 == nil) then
+                print_error(T('default_job_not_exists', default_player.job2))
+                return nil
+            end
+        end
+    end
+
+    local grade = job.grades[playerData.grade]
+
+    if (grade == nil) then grade = job.grades[0] end
+    if (grade == nil) then
+        print_error(T('default_grade_not_exists', job.name))
+        return nil
+    end
+
+    local grade2 = job2.grades[playerData.grade2]
+    if (grade2 == nil) then grade2 = job2.grades[0] end
+    if (grade2 == nil) then
+        print_error(T('default_grade_not_exists', job2.name))
+        return nil
+    end
 
     ---@class player
     local player = {
         fxid = fxid,
         name = playerData.name,
         group = playerData.group,
-        job = playerData.job,
-        grade = playerData.grade,
-        job2 = playerData.job2,
-        grade2 = playerData.grade2,
+        job = job,
+        grade = grade,
+        job2 = job2,
+        grade2 = grade2,
         stats = playerData.stats,
         position = playerData.position,
         identifier = identifiers[PRIMARY],
@@ -355,10 +401,10 @@ function players:loadByFx(fxid, name)
         db:execute('UPDATE `players` SET `name` = :name, `group` = :group, `job` = :job, `grade` = :grade, `job2` = :job2, `grade2` = :grade2, `stats` = :stats, `position` = :position WHERE `fxid` = :fxid', {
             ['name'] = name,
             ['group'] = ensure(self.group, default_player.group),
-            ['job'] = ensure(self.job, default_player.job),
-            ['grade'] = ensure(self.grade, default_player.grade),
-            ['job2'] = ensure(self.job2, default_player.job2),
-            ['grade2'] = ensure(self.grade2, default_player.grade2),
+            ['job'] = ensure(self.job.name, default_player.job),
+            ['grade'] = ensure(self.grade.grade, default_player.grade),
+            ['job2'] = ensure(self.job2.name, default_player.job2),
+            ['grade2'] = ensure(self.grade2.grade, default_player.grade2),
             ['stats'] = ensure(self.stats, '[]'),
             ['position'] = ensure(self.position, '[0, 0, 0]'),
             ['fxid'] = ensure(self.fxid, 'unknown')
@@ -387,13 +433,17 @@ function players:loadByFx(fxid, name)
 
     if (player.identifier ~= nil and player.identifier ~= 'unknown') then
         ExecuteCommand(('add_principal identifier.%s:%s group.%s'):format(PRIMARY, player.identifier, player.group))
-        ExecuteCommand(('add_principal identifier.%s:%s job.%s'):format(PRIMARY, player.identifier, player.job))
-        ExecuteCommand(('add_principal identifier.%s:%s job.%s'):format(PRIMARY, player.identifier, player.job2))
+        ExecuteCommand(('add_principal identifier.%s:%s job.%s'):format(PRIMARY, player.identifier, player.job.name))
+        ExecuteCommand(('add_principal identifier.%s:%s job.%s'):format(PRIMARY, player.identifier, player.job2.name))
+        ExecuteCommand(('add_principal identifier.%s:%s job.%s:%s'):format(PRIMARY, player.identifier, player.job.name, player.grade.name))
+        ExecuteCommand(('add_principal identifier.%s:%s job.%s:%s'):format(PRIMARY, player.identifier, player.job2.name, player.grade2.name))
     end
 
     ExecuteCommand(('add_principal identifier.fxid:%s group.%s'):format(player.fxid, player.group))
-    ExecuteCommand(('add_principal identifier.fxid:%s job.%s'):format(player.fxid, player.job))
-    ExecuteCommand(('add_principal identifier.fxid:%s job.%s'):format(player.fxid, player.job2))
+    ExecuteCommand(('add_principal identifier.fxid:%s job.%s'):format(player.fxid, player.job.name))
+    ExecuteCommand(('add_principal identifier.fxid:%s job.%s'):format(player.fxid, player.job2.name))
+    ExecuteCommand(('add_principal identifier.fxid:%s job.%s:%s'):format(player.fxid, player.job.name, player.grade.name))
+    ExecuteCommand(('add_principal identifier.fxid:%s job.%s:%s'):format(player.fxid, player.job2.name, player.grade2.name))
 
     data[fxid] = player
 

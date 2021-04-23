@@ -1,6 +1,6 @@
-name 'admin'
+name 'job'
 version '1.0.0'
-description 'FiveUX admin module'
+description 'FiveUX job module'
 
 license [[
     FiveUX Framework Copyright (C) 2021 Thymon Arens
@@ -21,12 +21,12 @@ license [[
 
 client_scripts {}
 server_scripts {
-    'server/commands.lua'
+    'server/main.lua'
 }
 shared_scripts {}
 
 dependencies {
-    'command',
-    'player',
-    'job'
+    'database',
+    'logging',
+    'wallet'
 }

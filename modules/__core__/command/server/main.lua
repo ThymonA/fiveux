@@ -18,7 +18,7 @@ function commands:add(name, callback)
     name = ensure(name, 'unknown'):replace(' ', '_')
     callback = ensure(callback, function() end)
 
-    local whitelist, blacklist = self:permissions(name)
+    local whitelist, blacklist, console = self:permissions(name)
 
     whitelist = ensureWhitelist(whitelist)
     blacklist = ensureWhitelist(blacklist)
@@ -28,7 +28,8 @@ function commands:add(name, callback)
         name = name,
         whitelist = whitelist,
         blacklist = blacklist,
-        callback = callback
+        callback = callback,
+        console = ensure(console, false)
     }
 
     --- Checks if player is allowed to execute command
@@ -37,7 +38,8 @@ function commands:add(name, callback)
     function command:allowed(source)
         source = ensure(source, 0)
 
-        if (source <= 0) then return false end
+        if (source < 0) then return false end
+        if (source == 0) then return ensure(self.console, false) end
 
         return IsPlayerAceAllowed(source, ('command.%s'):format(self.name))
     end
@@ -139,12 +141,12 @@ function commands:permissions(name)
 
     if (configPermissions == nil) then configPermissions = {} end
     if (configPermissions[name] == nil) then
-        return { 'superadmin' }, {}
+        return { 'superadmin' }, {}, false
     end
 
     local info = ensure(configPermissions[name], {})
 
-    return ensure(info.whitelist, { 'superadmin' }), ensure(info.blacklist, {})
+    return ensure(info.whitelist, { 'superadmin' }), ensure(info.blacklist, {}), ensure(info.console, false)
 end
 
 --- Export commands

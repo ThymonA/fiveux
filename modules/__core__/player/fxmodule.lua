@@ -32,5 +32,6 @@ dependencies {
     'database',
     'logging',
     'wallet',
-    'skin'
+    'skin',
+    'job'
 }

@@ -59,6 +59,60 @@ function logs:getWebhooks(action, fallback)
     return results
 end
 
+--- Returns a list of webhooks matching given action
+---@param self logs
+---@param action string Action to search webhook for
+---@param fallback string Fallback webhook if you don't want to use default one
+---@return table List of webhooks
+function logs:getJobWebhooks(job, action, fallback)
+    job = ensure(job, 'unknown')
+    action = ensure(action, 'unknown')
+
+    local results = {}
+    local configuration = ensure(config('jobs'), {})
+    local jobConfiguration = ensure(configuration[job], {})
+    local webhooks = ensure(jobConfiguration.webhooks, {})
+    local fbWebhook = ensure(webhooks.fallback, {})
+
+    fallback = ensure(fallback, fbWebhook)
+
+    if (webhooks[action] ~= nil) then
+        local webhooksList = ensureStringList(ensure(webhooks[action], {}))
+
+        for k, v in pairs(webhooksList) do
+            if (v:startsWith('https://') or v:startsWith('http://')) then
+                table.insert(results, v)
+            end
+        end
+
+        return results
+    end
+
+    local actionParts = ensure(action:split('.'), {})
+
+    if (#actionParts > 2) then
+        local newAction = ensure(actionParts[1], 'unknown')
+
+        for i = 2, (#actionParts - 1), 1 do
+            newAction = ('%s%s%s'):format(newAction, (i == 2 and '' or '.'), ensure(actionParts[i], 'unknown'))
+        end
+
+        return self:getJobWebhooks(newAction, fallback)
+    elseif (#actionParts == 2) then
+        return self:getJobWebhooks(ensure(actionParts[1], 'unknown'), fallback)
+    end
+
+    local fallbackList = ensureStringList(fallback)
+
+    for k, v in pairs(fallbackList) do
+        if (v:startsWith('https://') or v:startsWith('http://')) then
+            table.insert(results, v)
+        end
+    end
+
+    return results
+end
+
 --- Create a new log object
 ---@param self logs
 ---@param type string Type of logging (player/module)
@@ -66,7 +120,7 @@ end
 function logs:create(type, ...)
     type = ensure(type, 'module')
 
-    --- @class logger
+    ---@class logger
     local logger = {}
     local arguments = {...}
     local name = ensure(arguments[1], 'unknown')
@@ -98,6 +152,14 @@ function logs:create(type, ...)
         logger.identifiers = {}
         logger.type = type
         logger.avatar = ensure(configuration.avatarUrl, 'https://i.imgur.com/xa7JN6h.png')
+    elseif (type == 'job') then
+        logger.key = name
+        logger.name = name
+        logger.fxid = name
+        logger.identifier = name
+        logger.identifiers = {}
+        logger.type = type
+        logger.avatar = ensure(configuration.avatarUrl, 'https://i.imgur.com/xa7JN6h.png')
     end
 
     function logger:log(object)
@@ -110,7 +172,7 @@ function logs:create(type, ...)
         local message = ensure(object.message, '')
         local title = ensure(object.title, ('**[%s]** %s'):format(action, self.name))
         local username = ensure(object.username, ('[%s] %s'):format(action, self.name))
-        local webhooks = logs:getWebhooks(action)
+        local webhooks = self.type ~= 'job' and logs:getWebhooks(action) or logs:getJobWebhooks(self.name, action)
         local logDiscord = ensure(object.discord, true)
         local logDatabase = ensure(object.database, true)
 
@@ -133,6 +195,12 @@ function logs:create(type, ...)
                 }, function() end)
             elseif (self.type == 'module') then
                 db:insert('INSERT INTO `module_logs` (`name`, `action`, `arguments`) VALUES (:name, :action, :arguments)', {
+                    ['name'] = ensure(self.name, 'unknown'),
+                    ['action'] = ensure(action, 'unknown'),
+                    ['arguments'] = json.encode(arguments)
+                }, function() end)
+            elseif (self.type == 'job') then
+                db:insert('INSERT INTO `job_logs` (`name`, `action`, `arguments`) VALUES (:name, :action, :arguments)', {
                     ['name'] = ensure(self.name, 'unknown'),
                     ['action'] = ensure(action, 'unknown'),
                     ['arguments'] = json.encode(arguments)

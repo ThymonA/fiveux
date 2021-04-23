@@ -11,5 +11,6 @@ modules {
     { name = 'player', required = true },
     { name = 'marker', required = true },
     { name = 'command', required = true },
-    { name = 'skin', required = true }
+    { name = 'skin', required = true },
+    { name = 'job', required = true }
 }

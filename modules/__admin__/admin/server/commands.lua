@@ -1,5 +1,7 @@
 import 'commands'
 import 'modules'
+import 'players'
+import 'jobs'
 
 --- Command to spawn vehicles on player location
 ---@example /car adder
@@ -134,6 +136,102 @@ commands:add('remove_wallet', function(player, ...)
     if (targetPlayer == nil) then return end
 
     targetPlayer:removeWallet(targetWallet, targetAmount)
+end)
+
+--- Command to add money to wallet
+---@example /add_job_wallet cash 5000
+---@example /add_job_wallet bratva cash 5000
+---@see /add_job_wallet {wallet} {amount}
+---@see /add_job_wallet {job} {wallet} {amount}
+commands:add('add_job_wallet', function(player, ...)
+    local arguments = { ... }
+    local targetJobName = 'unknown'
+    local targetWallet = 'unknown'
+    local targetAmount = 0
+    local targetJob = player.job
+
+    if (#arguments < 2) then return end
+
+    if (#arguments == 2) then
+        targetWallet = ensure(arguments[1], targetWallet)
+        targetAmount = ensure(arguments[2], targetAmount)
+    elseif (#arguments >= 3) then
+        targetJobName = ensure(arguments[1], targetJobName)
+        targetWallet = ensure(arguments[2], targetWallet)
+        targetAmount = ensure(arguments[3], targetAmount)
+    end
+
+    if (targetJobName ~= targetJob.name) then
+        targetJob = jobs:loadByName(targetJobName)
+    end
+
+    if (targetJob == nil) then return end
+
+    targetJob:addWallet(targetWallet, targetAmount)
+end)
+
+--- Command to set balance of wallet
+---@example /set_job_wallet cash 5000
+---@example /set_job_wallet bratva cash 5000
+---@see /set_job_wallet {wallet} {amount}
+---@see /set_job_wallet {job} {wallet} {amount}
+commands:add('set_job_wallet', function(player, ...)
+    local arguments = { ... }
+    local targetJobName = 'unknown'
+    local targetWallet = 'unknown'
+    local targetAmount = 0
+    local targetJob = player.job
+
+    if (#arguments < 2) then return end
+
+    if (#arguments == 2) then
+        targetWallet = ensure(arguments[1], targetWallet)
+        targetAmount = ensure(arguments[2], targetAmount)
+    elseif (#arguments >= 3) then
+        targetJobName = ensure(arguments[1], targetJobName)
+        targetWallet = ensure(arguments[2], targetWallet)
+        targetAmount = ensure(arguments[3], targetAmount)
+    end
+
+    if (targetJobName ~= targetJob.name) then
+        targetJob = jobs:loadByName(targetJobName)
+    end
+
+    if (targetJob == nil) then return end
+
+    targetJob:setWallet(targetWallet, targetAmount)
+end)
+
+--- Command to remove balance from wallet
+---@example /remove_job_wallet cash 5000
+---@example /remove_job_wallet bratva cash 5000
+---@see /remove_job_wallet {wallet} {amount}
+---@see /remove_job_wallet {job} {wallet} {amount}
+commands:add('remove_job_wallet', function(player, ...)
+    local arguments = { ... }
+    local targetJobName = 'unknown'
+    local targetWallet = 'unknown'
+    local targetAmount = 0
+    local targetJob = player.job
+
+    if (#arguments < 2) then return end
+
+    if (#arguments == 2) then
+        targetWallet = ensure(arguments[1], targetWallet)
+        targetAmount = ensure(arguments[2], targetAmount)
+    elseif (#arguments >= 3) then
+        targetJobName = ensure(arguments[1], targetJobName)
+        targetWallet = ensure(arguments[2], targetWallet)
+        targetAmount = ensure(arguments[3], targetAmount)
+    end
+
+    if (targetJobName ~= targetJob.name) then
+        targetJob = jobs:loadByName(targetJobName)
+    end
+
+    if (targetJob == nil) then return end
+
+    targetJob:removeWallet(targetWallet, targetAmount)
 end)
 
 --- Reload NUI

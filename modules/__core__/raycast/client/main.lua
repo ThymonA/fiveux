@@ -9,7 +9,7 @@ local cfg = config('general')
 local raycastLength = ensure(cfg.raycastLength, 50.0)
 local mousePosition = vec(0, 0)
 
---- @class raycast
+---@class raycast
 raycast = {}
 
 --- Rotate rotation to direction
