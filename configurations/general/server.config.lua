@@ -28,3 +28,10 @@ config.savePlayersInterval = 1
 --- Save all jobs interval
 --- [ Time in minutes ]
 config.saveJobsInterval = 1
+
+--- Available groups
+config.groups = {
+    'superadmin',
+    'admin',
+    'user'
+}

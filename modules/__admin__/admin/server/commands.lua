@@ -234,18 +234,68 @@ commands:add('remove_job_wallet', function(player, ...)
     targetJob:removeWallet(targetWallet, targetAmount)
 end)
 
---- Reload NUI
----@example /reload_nui ui wheel
----@see /reload_nui {category} {module}
-commands:add('reload_nui', function(player, category, module)
-    category = ensure(category, 'unknown')
-    module = ensure(module, 'unknown')
+--- Set primary job of player
+---@example /setjob unemployed 0
+---@example /setjob 1 unemployed 0
+---@see /setjob {job} {grade}
+---@see /setjob {source} {job} {grade}
+commands:add('setjob', function(player, ...)
+    local arguments = { ... }
+    local source = ensure(player:getSource(), 0)
+    local targetId = ensure(source, 0)
+    local targetJob = 'unknown'
+    local targetGrade = 0
+    local targetPlayer = player
 
-    for _, module in pairs(modules) do
-        if (module.category == category and module.name == module) then
-            local key = ('%s:%s:%s'):format(module.category, module.name, module.ui_page)
+    if (#arguments < 2) then return end
 
-            TriggerRemote('fiveux:nui:reload', key)
-        end
+    if (#arguments == 2) then
+        targetJob = ensure(arguments[1], targetJob)
+        targetGrade = ensure(arguments[2], targetGrade)
+    elseif (#arguments >= 3) then
+        targetId = ensure(arguments[1], targetId)
+        targetJob = ensure(arguments[2], targetJob)
+        targetGrade = ensure(arguments[3], targetGrade)
     end
+
+    if (targetId ~= source) then
+        targetPlayer = players:loadBySource(targetId)
+    end
+
+    if (targetPlayer == nil) then return end
+
+    targetPlayer:setJob(targetJob, targetGrade)
+end)
+
+--- Set secondary job of player
+---@example /setjob2 unemployed 0
+---@example /setjob2 1 unemployed 0
+---@see /setjob2 {job} {grade}
+---@see /setjob2 {source} {job} {grade}
+commands:add('setjob2', function(player, ...)
+    local arguments = { ... }
+    local source = ensure(player:getSource(), 0)
+    local targetId = ensure(source, 0)
+    local targetJob = 'unknown'
+    local targetGrade = 0
+    local targetPlayer = player
+
+    if (#arguments < 2) then return end
+
+    if (#arguments == 2) then
+        targetJob = ensure(arguments[1], targetJob)
+        targetGrade = ensure(arguments[2], targetGrade)
+    elseif (#arguments >= 3) then
+        targetId = ensure(arguments[1], targetId)
+        targetJob = ensure(arguments[2], targetJob)
+        targetGrade = ensure(arguments[3], targetGrade)
+    end
+
+    if (targetId ~= source) then
+        targetPlayer = players:loadBySource(targetId)
+    end
+
+    if (targetPlayer == nil) then return end
+
+    targetPlayer:setJob2(targetJob, targetGrade)
 end)

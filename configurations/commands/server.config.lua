@@ -38,5 +38,15 @@ config.permissions = {
         whitelist = { groups = { 'superadmin' }, jobs = {} },
         blacklist = { groups = {}, jobs = {} },
         console = true
+    },
+    ['setjob'] = {
+        whitelist = { groups = { 'superadmin', 'admin' }, jobs = {} },
+        blacklist = { groups = {}, jobs = {} },
+        console = true
+    },
+    ['setjob2'] = {
+        whitelist = { groups = { 'superadmin', 'admin' }, jobs = {} },
+        blacklist = { groups = {}, jobs = {} },
+        console = true
     }
 }

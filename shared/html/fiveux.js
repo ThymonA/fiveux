@@ -119,17 +119,6 @@
                     case 'show_frame': { this.showFrame(msg.name); break; }
                     case 'hide_frame': { this.hideFrame(msg.name); break; }
                     case 'reset_focus': {this.resetFocus(); break; }
-                    case 'reload_frame': {
-                        const name = msg.name || 'unknown';
-
-                        if (this.frames[name]) {
-                            const frame = this.frames[name];
-                            const url = `${frame.url}`;
-
-                            this.destroyFrame(name);
-                            this.createFrame(name, url, true);
-                        }
-                    }
                     default: break;
                 }
             }

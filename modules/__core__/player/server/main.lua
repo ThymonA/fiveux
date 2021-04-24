@@ -5,6 +5,7 @@ import 'jobs'
 
 --- Configuration
 local cfg = ensure(config('general'), {})
+local groups = ensure(cfg.groups, {})
 
 --- Local storage
 local data = {}
@@ -195,10 +196,28 @@ function players:loadByFx(fxid, name)
 
     function player:kick(reason)
         reason = ensure(reason, T('no_reason'))
+
+        local source = self:getSource()
+
+        if (source > 0) then
+            return DropPlayer(source, reason)
+        end
     end
     
     function player:setGroup(group)
         group = ensure(group, 'user')
+
+        if (not any(group, groups, 'value')) then return end
+
+        self:removePrincipal(('group.%s'):format(self.group))
+        self:log({
+            arguments = { prev = self.group, new = group },
+            action = 'group.set',
+            discord = false
+        })
+
+        self.group = group
+        self:addPrincipal(('group.%s'):format(self.group))
     end
 
     function player:getWallet(name)
@@ -267,6 +286,74 @@ function players:loadByFx(fxid, name)
             self:triggerEvent('player:wallet:remove', name, newBalance, amount)
             self:logWallet('remove', name, amount, prevBalance, newBalance)
         end
+    end
+
+    function player:setJob(name, grade)
+        name = ensure(name, 'unknown')
+        grade = ensure(grade, 0)
+
+        if (name == 'unknown') then return end
+
+        local newJob = jobs:loadByName(name)
+
+        if (newJob == nil) then return end
+
+        local newJobGrade = newJob.grades[grade]
+
+        if (newJobGrade == nil) then return end
+
+        self:removePrincipal(('job.%s'):format(self.job.name))
+        self:removePrincipal(('job.%s'):format(self.job2.name))
+        self:removePrincipal(('job.%s:%s'):format(self.job.name, self.grade.name))
+        self:removePrincipal(('job.%s:%s'):format(self.job2.name, self.grade2.name))
+
+        self:log({
+            arguments = { prevJob = self.job.name, newJob = newJob.name, prevGrade = self.grade.grade, newGrade = newJobGrade.grade },
+            action = 'job.set',
+            discord = false
+        })
+
+        self.job = newJob
+        self.grade = newJobGrade
+
+        self:addPrincipal(('job.%s'):format(self.job.name))
+        self:addPrincipal(('job.%s'):format(self.job2.name))
+        self:addPrincipal(('job.%s:%s'):format(self.job.name, self.grade.name))
+        self:addPrincipal(('job.%s:%s'):format(self.job2.name, self.grade2.name))
+    end
+
+    function player:setJob2(name, grade)
+        name = ensure(name, 'unknown')
+        grade = ensure(grade, 0)
+
+        if (name == 'unknown') then return end
+
+        local newJob = jobs:loadByName(name)
+
+        if (newJob == nil) then return end
+
+        local newJobGrade = newJob.grades[grade]
+
+        if (newJobGrade == nil) then return end
+
+        self:removePrincipal(('job.%s'):format(self.job.name))
+        self:removePrincipal(('job.%s'):format(self.job2.name))
+        self:removePrincipal(('job.%s:%s'):format(self.job.name, self.grade.name))
+        self:removePrincipal(('job.%s:%s'):format(self.job2.name, self.grade2.name))
+
+        self:log({
+            arguments = { prevJob = self.job2.name, newJob = newJob.name, prevGrade = self.grade2.grade, newGrade = newJobGrade.grade },
+            action = 'job2.set',
+            discord = false
+        })
+
+        self.job2 = newJob
+        self.grade2 = newJobGrade
+
+        self:addPrincipal(('job.%s'):format(self.job.name))
+        self:addPrincipal(('job.%s'):format(self.job2.name))
+        self:addPrincipal(('job.%s:%s'):format(self.job.name, self.grade.name))
+        self:addPrincipal(('job.%s:%s'):format(self.job2.name, self.grade2.name))
     end
 
     function player:logWallet(type, name, amount, prevBalance, newBalance)
@@ -431,19 +518,31 @@ function players:loadByFx(fxid, name)
         print_success(T('player_saved', name))
     end
 
-    if (player.identifier ~= nil and player.identifier ~= 'unknown') then
-        ExecuteCommand(('add_principal identifier.%s:%s group.%s'):format(PRIMARY, player.identifier, player.group))
-        ExecuteCommand(('add_principal identifier.%s:%s job.%s'):format(PRIMARY, player.identifier, player.job.name))
-        ExecuteCommand(('add_principal identifier.%s:%s job.%s'):format(PRIMARY, player.identifier, player.job2.name))
-        ExecuteCommand(('add_principal identifier.%s:%s job.%s:%s'):format(PRIMARY, player.identifier, player.job.name, player.grade.name))
-        ExecuteCommand(('add_principal identifier.%s:%s job.%s:%s'):format(PRIMARY, player.identifier, player.job2.name, player.grade2.name))
+    function player:addPrincipal(principal)
+        principal = ensure(principal, 'unknown')
+
+        if (self.identifier ~= nil and self.identifier ~= 'unknown') then
+            ExecuteCommand(('add_principal identifier.%s:%s %s'):format(PRIMARY, self.identifier, principal))
+        end
+
+        ExecuteCommand(('add_principal identifier.fxid:%s %s'):format(self.fxid, principal))
     end
 
-    ExecuteCommand(('add_principal identifier.fxid:%s group.%s'):format(player.fxid, player.group))
-    ExecuteCommand(('add_principal identifier.fxid:%s job.%s'):format(player.fxid, player.job.name))
-    ExecuteCommand(('add_principal identifier.fxid:%s job.%s'):format(player.fxid, player.job2.name))
-    ExecuteCommand(('add_principal identifier.fxid:%s job.%s:%s'):format(player.fxid, player.job.name, player.grade.name))
-    ExecuteCommand(('add_principal identifier.fxid:%s job.%s:%s'):format(player.fxid, player.job2.name, player.grade2.name))
+    function player:removePrincipal(principal)
+        principal = ensure(principal, 'unknown')
+
+        if (self.identifier ~= nil and self.identifier ~= 'unknown') then
+            ExecuteCommand(('remove_principal identifier.%s:%s %s'):format(PRIMARY, self.identifier, principal))
+        end
+
+        ExecuteCommand(('remove_principal identifier.fxid:%s %s'):format(self.fxid, principal))
+    end
+
+    player:addPrincipal(('group.%s'):format(player.group))
+    player:addPrincipal(('job.%s'):format(player.job.name))
+    player:addPrincipal(('job.%s'):format(player.job2.name))
+    player:addPrincipal(('job.%s:%s'):format(player.job.name, player.grade.name))
+    player:addPrincipal(('job.%s:%s'):format(player.job2.name, player.grade2.name))
 
     data[fxid] = player
 
