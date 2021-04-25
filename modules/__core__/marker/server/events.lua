@@ -1,5 +1,7 @@
-on('playerJoined', function(player, playerSrc)
-    playerSrc = ensure(playerSrc, 0)
+local function updateMarkers(player)
+    local playerSrc = ensure(player:getSource(), 0)
+
+    if (playerSrc <= 0) then return end
 
     local markers = markers:getAllPlayerMarkers(playerSrc)
     local results = {}
@@ -17,4 +19,10 @@ on('playerJoined', function(player, playerSrc)
     end
 
     TriggerRemote('markers:update', playerSrc, results)
-end)
+end
+
+RegisterEvent('player:group:set', updateMarkers)
+RegisterEvent('player:job:set', updateMarkers)
+RegisterEvent('player:job2:set', updateMarkers)
+
+on('playerJoined', updateMarkers) 

@@ -35,3 +35,21 @@ config.groups = {
     'admin',
     'user'
 }
+
+--- X means letters like: A,B,C,D etc..
+--- 9 means digit like: 1,2,3,4 etc..
+config.plateFormats = {
+    'XX-99-99',
+    '99-99-XX',
+    '99-XX-99',
+    'XX-99-XX',
+    'XX-XX-99',
+    '99-XX-XX',
+    '99-XXX-9',
+    '9-XXX-99',
+    'XX-999-X',
+    'X-999-XX',
+    'XXX-99-X',
+    '9-XX-999',
+    '999-XX-9'
+}

@@ -115,7 +115,7 @@ end
 
 --- Create a new log object
 ---@param self logs
----@param type string Type of logging (player/module)
+---@param type string Type of logging (player/job/vehicle/module)
 ---@return logger|table Log object
 function logs:create(type, ...)
     type = ensure(type, 'module')
@@ -157,6 +157,16 @@ function logs:create(type, ...)
         logger.name = name
         logger.fxid = name
         logger.identifier = name
+        logger.identifiers = {}
+        logger.type = type
+        logger.avatar = ensure(configuration.avatarUrl, 'https://i.imgur.com/xa7JN6h.png')
+    elseif (type == 'vehicle') then
+        local plate = ensure(arguments[2], 'XXXXXXX')
+
+        logger.key = plate
+        logger.name = name
+        logger.fxid = plate
+        logger.identifier = plate
         logger.identifiers = {}
         logger.type = type
         logger.avatar = ensure(configuration.avatarUrl, 'https://i.imgur.com/xa7JN6h.png')
@@ -202,6 +212,12 @@ function logs:create(type, ...)
             elseif (self.type == 'job') then
                 db:insert('INSERT INTO `job_logs` (`name`, `action`, `arguments`) VALUES (:name, :action, :arguments)', {
                     ['name'] = ensure(self.name, 'unknown'),
+                    ['action'] = ensure(action, 'unknown'),
+                    ['arguments'] = json.encode(arguments)
+                }, function() end)
+            elseif (self.type == 'vehicle') then
+                db:insert('INSERT INTO `vehicle_logs` (`plate`, `action`, `arguments`) VALUES (:plate, :action, :arguments)', {
+                    ['plate'] = ensure(self.key, 'XXXXXXX'),
                     ['action'] = ensure(action, 'unknown'),
                     ['arguments'] = json.encode(arguments)
                 }, function() end)

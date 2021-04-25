@@ -37,6 +37,12 @@ constants.boldFonts = {
     ['5'] = '𝟱', ['6'] = '𝟲', ['7'] = '𝟳', ['8'] = '𝟴', ['9'] = '𝟵', ['0'] = '𝟬'
 }
 
+constants.allowedCharacters = {
+    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
+    'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
+    'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
+}
+
 constants.mapperIds = {
     'DIGITALBUTTON_AXIS',
     'GAME_CONTROLLED',
@@ -64,6 +70,98 @@ constants.mapperIds = {
     'PAD_DIGITALBUTTONANY',
     'TOUCHPAD_ABSOLUTE_AXIS',
     'TOUCHPAD_CENTERED_AXIS'
+}
+
+constants.vehicle = {
+    classes = {
+        compacts = 0,
+        sedans = 1,
+        suvs = 2,
+        coupes = 3,
+        muscle = 4,
+        sportsclassics = 5,
+        sports = 6,
+        super = 7,
+        motorcycles = 8,
+        offroad = 9,
+        industrial = 10,
+        utility = 11,
+        vans = 12,
+        cycles = 13,
+        boats = 14,
+        helicopters = 15,
+        planes = 16,
+        service = 17,
+        emergency = 18,
+        military = 19,
+        commercial = 20,
+        trains = 21
+    },
+    modTypes = {
+        spoilers = 0,
+        frontbumper = 1,
+        rearbumper = 2,
+        sideskirt = 3,
+        exhaust = 4,
+        frame = 5,
+        grille = 6,
+        hood = 7,
+        fender = 8,
+        rightfender = 9,
+        roof = 10,
+        engine = 11,
+        brakes = 12,
+        transmission = 13,
+        horns = 14,
+        suspension = 15,
+        armor = 16,
+        frontwheel = 23,
+        rearwheel = 24,
+        plateholder = 25,
+        vanityplates = 26,
+        trimdesign = 27,
+        ornaments = 28,
+        dashboard = 29,
+        dialdesign = 30,
+        doorspeakers = 31,
+        seats = 32,
+        steeringwheels = 33,
+        columnshifterlevers = 34,
+        plaques = 35,
+        speakers = 36,
+        trunk = 37,
+        hydraulics = 38,
+        engineblock = 39,
+        airfilter = 40,
+        struts = 41,
+        archcover = 42,
+        aerials = 43,
+        trim = 44,
+        tank = 45,
+        windows = 46,
+        unk47 = 47,
+        livery = 48
+    },
+    toggleModTypes = {
+        unk17 = 17,
+        turbo = 18,
+        unk19 = 19,
+        tiresmoke = 20,
+        unk21 = 21,
+        xenonheadlights = 22
+    },
+    wheelTypes = {
+        sport = 0,
+        muscle = 1,
+        lowrider = 2,
+        suv = 3,
+        offroad = 4,
+        tuner = 5,
+        bikewheels = 6,
+        highend = 7,
+        bennysoriginals = 8,
+        bennysbespoke = 9
+    }
 }
 
 constants.aces = {

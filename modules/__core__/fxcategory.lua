@@ -12,5 +12,6 @@ modules {
     { name = 'marker', required = true },
     { name = 'command', required = true },
     { name = 'skin', required = true },
-    { name = 'job', required = true }
+    { name = 'job', required = true },
+    { name = 'vehicle', required = true }
 }

@@ -3,5 +3,6 @@ categories {
     'game',
     'admin',
     'ui',
-    'menu'
+    'menu',
+    'gameplay'
 }

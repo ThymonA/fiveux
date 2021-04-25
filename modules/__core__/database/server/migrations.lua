@@ -1,10 +1,11 @@
 import 'modules'
 
-local migrations = {}
+---@class dbMigrations
+local dbMigrations = {}
 local __done = {}
 local hasMigration = true
 
-function migrations:exists(category, module, version)
+function dbMigrations:exists(category, module, version)
     category = ensure(category, 'global')
     module = ensure(module, 'unknown')
     version = ensure(version, 'unknown')
@@ -19,12 +20,25 @@ function migrations:exists(category, module, version)
     return ensure(dbResult, 0) == 1
 end
 
-function migrations:execute(category, module)
+function dbMigrations:migrationExists(module, version)
+    module = ensure(module, 'unknown')
+    version = ensure(version, 'unknown')
+
+    local query = "SELECT COUNT(*) AS 'exists' FROM `migrations` WHERE `module` = :module AND `name` = :name LIMIT 1"
+    local dbResult = db:fetchScalar(query, {
+        ['module'] = module,
+        ['name'] = ('%s.lua'):format(version)
+    })
+
+    return ensure(dbResult, 0) == 1
+end
+
+function dbMigrations:execute(category, module)
     category = ensure(category, 'global')
     module = ensure(module, 'unknown')
 end
 
-function migrations:init()
+function dbMigrations:init()
     local cfg = config('general')
     local db_name = ensure(cfg.databaseName, 'unknown')
 
@@ -131,7 +145,7 @@ function migrations:init()
                                         return
                                     end
 
-                                    while not self:migrationExists(dependencyModule, sqlVersion) do Citizen.Wait(0) end
+                                    while not dbMigrations:migrationExists(dependencyModule, sqlVersion) do Citizen.Wait(0) end
                                 end
 
                                 local sqlQuery = ensure(env.migration.query, 'unknown')
@@ -185,7 +199,7 @@ function migrations:init()
     hasMigration = false
 end
 
-migrations:init()
+dbMigrations:init()
 
 --- Checks if module has any depending migration
 ---@param name string Name of module
