@@ -68,6 +68,7 @@ files {
 }
 
 client_scripts {
+    'vendors/entityiter.lua',
     'shared/constants.lua',
     'shared/functions.lua',
     'shared/bootable.lua',

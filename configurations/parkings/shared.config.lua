@@ -1,4 +1,16 @@
-config['parking_01'] = {
+config.markers = {
+    available = {
+        type = 2,
+        rangeToShow = 5.0,
+        color = vec(255, 0, 0, 100),
+        size = vec(0.5, 0.5, 0.5),
+        bobUpAndDown = true,
+        rotate = true
+    }
+}
+
+config.parkings = {}
+config.parkings['parking_01'] = {
     whitelist = { groups = { 'all' }, jobs = { 'all' } },
     blacklist = { groups = {}, jobs = {} },
     spots = {

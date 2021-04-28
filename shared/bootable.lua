@@ -41,6 +41,7 @@ local __loaded = false
 local __nuiLoaded = false
 local __nuiCallbacks = {}
 local __nuiFocus = {}
+local __clientCallbacks = {}
 
 --- Create a new environment
 ---@param self bootable
@@ -722,6 +723,56 @@ function bootable:createModuleEnvironment(category, module, version)
             if (nui == nil) then return end
 
             __nuiFocus[nui.name] = { hasFocus, hasCursor }
+        end
+
+        env.RegisterClientCallback = function(event, callback)
+            if (__clientCallbacks == nil) then __clientCallbacks = {} end
+
+            event = ensure(event, 'unknown')
+            callback = ensure(callback, function() end)
+
+            __clientCallbacks[event] = callback
+        end
+    end
+
+    if (ENVIRONMENT == 'server') then
+        env.requestClientInfoAsync = function(event, source, callback, ...)
+            event = ensure(event, 'unknown')
+            source = ensure(source, 0)
+            callback = ensure(callback, function() end)
+
+            if (__clientCallbacks == nil) then __clientCallbacks = {} end
+            if (__clientCallbacks[source] == nil) then
+                __clientCallbacks[source] = { requestId = 1, callbacks = {} }
+            end
+
+            local requestId = __clientCallbacks[source].requestId
+
+            __clientCallbacks[source].callbacks[requestId] = callback
+
+            TriggerRemote('fiveux:triggerClientCallback', source, event, requestId, ...)
+
+            if requestId < 65535 then
+                __clientCallbacks[source].requestId = __clientCallbacks[source].requestId + 1
+            else
+                __clientCallbacks[source].requestId = 1
+            end
+        end
+
+        env.requestClientInfo = function(event, source, ...)
+            event = ensure(event, 'unknown')
+            source = ensure(source, 0)
+
+            local done, results = false, msgpack.pack(nil)
+
+            env.requestClientInfoAsync(event, source, function(...)
+                results = msgpack.pack(...)
+                done = true
+            end, ...)
+
+            repeat Citizen.Wait(0) until done == true
+
+            return msgpack.unpack(results)
         end
     end
 
@@ -1816,6 +1867,22 @@ if (ENVIRONMENT == 'server') then
 
         bootable:emit('playerSpawned', nil, player, playerSrc)
     end)
+
+    MarkEventAsGlobal('fiveux:triggerClientCallback')
+    RegisterEvent('fiveux:triggerClientCallback', function(requestId, ...)
+        local requestId = ensure(requestId, 0)
+        local source = ensure(source, 0)
+
+        if (__clientCallbacks == nil) then __clientCallbacks = {} end
+        if (__clientCallbacks[source] == nil) then
+            __clientCallbacks[source] = { requestId = 1, callbacks = {} }
+        end
+        if (__clientCallbacks[source].callbacks == nil or
+            __clientCallbacks[source].callbacks[requestId] == nil) then return end
+
+        __clientCallbacks[source].callbacks[requestId](...)
+        __clientCallbacks[source].callbacks[requestId] = nil
+    end)
 end
 
 --- Execute this function to start framework
@@ -1857,6 +1924,10 @@ _G.GetConfiguration = function(name)
     name = ensure(name, 'unknown')
 
     return bootable:loadConfiguration(name)
+end
+
+_G.GetClientCallbacks = function()
+    return __clientCallbacks
 end
 
 --- Start framework

@@ -5,15 +5,23 @@ import 'players'
 --- Local storage
 ---@type table<string, vehicle>
 local data = {}
+---@type table<number, string>
+local ids = {}
 
 ---@class vehicles
-local vehicles = {}
+vehicles = {}
+
 local cfg = config('general')
 local plateFormats = ensure(cfg.plateFormats, {})
 
-function vehicles:add(fxid, model)
+--- Add a vehicle to framework
+---@param fxid string FiveUX ID
+---@param model string Vehicle model
+---@return vehicle Generated vehicle object
+function vehicles:add(fxid, model, props)
     fxid = ensure(fxid, 'unknown')
     model = ensure(model, 'unknown')
+    props = ensure(props, {})
 
     if (data == nil) then data = {} end
 
@@ -26,14 +34,14 @@ function vehicles:add(fxid, model)
     local vehicleId = db:insert('INSERT INTO `vehicles` (`fxid`, `plate`, `vehicle`, `model`, `hash`) VALUES (:fxid, :plate, :vehicle, :model, :hash)', {
         ['fxid'] = owner.fxid,
         ['plate'] = newPlate,
-        ['vehicle'] = '[]',
+        ['vehicle'] = encode(props),
         ['model'] = model,
         ['hash'] = hash
     })
 
     if (vehicleId <= 0) then return nil end
 
-    local vehicle =  self:get(newPlate)
+    local vehicle =  self:getByPlate(newPlate)
 
     if (vehicle == nil) then return nil end
 
@@ -49,7 +57,22 @@ function vehicles:add(fxid, model)
     return vehicle
 end
 
-function vehicles:get(plate)
+function vehicles:getById(id)
+    id = ensure(id, 0)
+
+    if (ids == nil) then ids = {} end
+    if (ids[id] ~= nil) then return self.getByPlate(ids[id]) end
+
+    local dbResult = db:fetchAll('SELECT `plate` FROM `vehicles` WHERE `id` = :id LIMIT 1', { ['id'] = id })
+
+    dbResult = ensure(dbResult, {})
+
+    if (#dbResult <= 0) then return nil end
+
+    return self:getByPlate(ensure(dbResult[1].plate, 'XXXXXXX'))
+end
+
+function vehicles:getByPlate(plate)
     plate = ensure(plate, 'unknown')
 
     if (data == nil) then data = {} end
@@ -185,6 +208,7 @@ function vehicles:get(plate)
     end
 
     data[vehicle.plate] = vehicle
+    ids[vehicle.id] = vehicle.plate
 
     return vehicle
 end

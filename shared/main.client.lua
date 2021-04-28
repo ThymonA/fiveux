@@ -149,6 +149,27 @@ Citizen.CreateThread(function()
     __loaded = true
 end)
 
+MarkEventAsGlobal('fiveux:triggerClientCallback')
+RegisterEvent('fiveux:triggerClientCallback', function(event, requestId, ...)
+    event = ensure(event, 'unknown')
+    requestId = ensure(requestId, 0)
+
+    local callbacks = GetClientCallbacks()
+
+    if (callbacks == nil or callbacks[event] == nil) then return end
+
+    local done, results = false, msgpack.pack(nil)
+
+    callbacks[event](function(...)
+        results = msgpack.pack(...)
+        done = true
+    end, ...)
+
+    repeat Citizen.Wait(0) until done == true
+
+    TriggerRemote('fiveux:triggerClientCallback', requestId, msgpack.unpack(results))
+end)
+
 --- Checks if player is joined
 ---@return boolean Player joined
 _G.PlayerJoined = function()

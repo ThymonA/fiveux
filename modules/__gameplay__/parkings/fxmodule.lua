@@ -19,11 +19,17 @@ license [[
     along with this program.  If not, see <https://www.gnu.org/licenses/>
 ]]
 
-client_scripts {}
-server_scripts {}
+client_scripts {
+    'client/main.lua'
+}
+server_scripts {
+    'server/main.lua'
+}
 shared_scripts {}
 
 dependencies {
     'game',
-    'database'
+    'database',
+    'vehicle',
+    'marker'
 }

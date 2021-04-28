@@ -2,6 +2,7 @@ import 'commands'
 import 'modules'
 import 'players'
 import 'jobs'
+import 'vehicles'
 
 --- Command to spawn vehicles on player location
 ---@example /car adder
@@ -298,4 +299,24 @@ commands:add('setjob2', function(player, ...)
     if (targetPlayer == nil) then return end
 
     targetPlayer:setJob2(targetJob, targetGrade)
+end)
+
+--- Add a vehicle to garage
+---@example /addgarage
+---@see /addgarage
+commands:add('addgarage', function(player, ...)
+    local arguments = { ... }
+    local source = ensure(player:getSource(), 0)
+    local vehicle, props = requestClientInfo('fiveux:admin:requestVehicle', source)
+    local player = players:loadBySource(source)
+
+    if (vehicle == nil or player == nil) then return end
+
+    local vehicleCfg = config('vehicles')
+    local vehicleHashes = ensure(vehicleCfg.vehicleHashes, {})
+
+    if (vehicleHashes == nil or vehicleHashes[vehicle] == nil) then return end
+
+    local model = ensure(vehicleHashes[vehicle], 'unknown')
+    local veh = vehicles:add(player.fxid, model, props)
 end)

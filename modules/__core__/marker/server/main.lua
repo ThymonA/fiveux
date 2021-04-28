@@ -1,6 +1,21 @@
+--- Configuration
+local markerCfg = config('marker')
+
 --- Default values
 local default_vector3 = vec(0, 0, 0)
 local default_vector4 = vec(0, 0, 0, 0)
+local default_style = {
+    rangeToShow = ensure(markerCfg.defaultRangeToShow, 5.0),
+    direction = ensure(markerCfg.defaultDirection, default_vector3),
+    rotation = ensure(markerCfg.defaultRotation, default_vector3),
+    size = ensure(markerCfg.defaultSize, default_vector3),
+    color = ensure(markerCfg.defaultColor, default_vector4),
+    type = ensure(markerCfg.defaultType, 1),
+    bobUpAndDown = ensure(markerCfg.defaultBobUpAndDown, false),
+    faceCamera = ensure(markerCfg.defaultFaceCamera, false),
+    rotate = ensure(markerCfg.defaultRotate, false),
+    drawOnEnts = ensure(markerCfg.defaultDrawOnEnts, false)
+}
 
 --- Local storage
 local id = 0
@@ -148,6 +163,12 @@ function markers:getAllPlayerMarkers(source)
     end
 
     return results
+end
+
+--- Returns default style
+---@return table Default marker style
+function markers:getDefaultStyle()
+    return default_style
 end
 
 --- Export markers

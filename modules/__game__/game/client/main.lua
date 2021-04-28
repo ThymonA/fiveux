@@ -57,6 +57,58 @@ function game:spawnVehicle(model, coords, heading)
     return veh
 end
 
+--- Spawn local vehicle (async)
+---@param model any|number Model or hash of vehicle
+---@param coords vector3 Vehicle coords
+---@param heading number Heading of vehicle
+---@param callback function Callback to execute
+function game:spawnLocalVehicleAsync(model, coords, heading, callback)
+    model = ensureHash(model)
+    coords = ensure(coords, default_vector3)
+    heading = ensure(heading, 0.0)
+    callback = ensure(callback, function() end)
+
+    Citizen.CreateThread(function()
+        if (streaming:requestModel(model)) then
+            local vehicle = CreateVehicle(model, coords.x, coords.y, coords.z + 1.0, heading, false, false)
+
+            SetVehicleNeedsToBeHotwired(vehicle, false)
+            SetVehicleHasBeenOwnedByPlayer(vehicle, true)
+            SetEntityAsMissionEntity(vehicle, true, false)
+            SetVehicleIsStolen(vehicle, false)
+            SetVehicleIsWanted(vehicle, false)
+            SetVehRadioStation(vehicle, 'OFF')
+            SetModelAsNoLongerNeeded(model)
+
+            callback(vehicle)
+        else
+            callback(nil)
+        end
+    end)
+end
+
+--- Spawn vehicle (sync)
+---@param model any|number Model or hash of vehicle
+---@param coords vector3 Vehicle coords
+---@param heading number Heading of vehicle
+---@return number|nil Vehicle entity
+function game:spawnLocalVehicle(model, coords, heading)
+    model = ensureHash(model)
+    coords = ensure(coords, default_vector3)
+    heading = ensure(heading, 0.0)
+
+    local veh, finished = nil, false
+
+    self:spawnLocalVehicleAsync(model, coords, heading, function(vehicle)
+        veh = vehicle
+        finished = true
+    end)
+
+    repeat Citizen.Wait(0) until finished == true
+
+    return veh
+end
+
 --- Delete given vehicle
 ---@param entity any Vehicle entity to delete
 function game:deleteVehicle(entity)
@@ -325,6 +377,63 @@ function game:setVehicleProperties(vehicle, props, setNullToDefault)
         if (props[modKey] == nil and setNullToDefault) then props[modKey] = false end
         if (props[modKey] ~= nil) then ToggleVehicleMod(vehicle, modIndex, props[modKey]) end
     end
+end
+
+function game:getClosestEntity(entities, isPlayerEntities, coords, modelFilter)
+    local closestEntity, closestEntityDistance, filteredEntities = -1, -1, nil
+
+    entities = ensure(entities, {})
+    isPlayerEntities = ensure(isPlayerEntities, false)
+	coords = ensure(coords, default_vector3)
+    modelFilter = ensure(modelFilter, {})
+
+    if (coords == default_vector3) then
+        local playerPed = PlayerPedId()
+
+        coords = GetEntityCoords(playerPed)
+    end
+
+	if (#modelFilter > 0) then
+		filteredEntities = {}
+
+		for k,entity in pairs(entities) do
+			if (modelFilter[GetEntityModel(entity)]) then
+				table.insert(filteredEntities, entity)
+			end
+		end
+	end
+
+	for k,entity in pairs(filteredEntities or entities) do
+		local distance = #(coords - GetEntityCoords(entity))
+
+		if (closestEntityDistance == -1 or distance < closestEntityDistance) then
+			closestEntity, closestEntityDistance = isPlayerEntities and k or entity, distance
+		end
+	end
+
+	return closestEntity, closestEntityDistance
+end
+
+--- Returns closes vehicle based on given coords and filter
+---@param coords vector3 Coords to search for
+---@param modelFilter table Entity filter
+---@return number Founded closest entity
+---@return number Closest distance
+function game:getClosestVehicle(coords, modelFilter)
+    coords = ensure(coords, default_vector3)
+    modelFilter = ensure(modelFilter, {})
+
+    return self:getClosestEntity(self:getVehicles(), false, coords, modelFilter)
+end
+
+function game:getVehicles()
+	local vehicles = {}
+
+	for vehicle in EnumerateVehicles() do
+		table.insert(vehicles, vehicle)
+	end
+
+	return vehicles
 end
 
 --- Export game

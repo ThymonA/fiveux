@@ -1,0 +1,1 @@
+config.rangeToShow = 10.0

@@ -48,5 +48,10 @@ config.permissions = {
         whitelist = { groups = { 'superadmin', 'admin' }, jobs = {} },
         blacklist = { groups = {}, jobs = {} },
         console = true
+    },
+    ['addgarage'] = {
+        whitelist = { groups = { 'superadmin' }, jobs = {} },
+        blacklist = { groups = {}, jobs = {} },
+        console = true
     }
 }

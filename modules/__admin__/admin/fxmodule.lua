@@ -19,7 +19,9 @@ license [[
     along with this program.  If not, see <https://www.gnu.org/licenses/>
 ]]
 
-client_scripts {}
+client_scripts {
+    'client/main.lua'
+}
 server_scripts {
     'server/commands.lua'
 }
@@ -28,5 +30,7 @@ shared_scripts {}
 dependencies {
     'command',
     'player',
-    'job'
+    'job',
+    'game',
+    'vehicle'
 }
