@@ -1,1 +1,1 @@
-config.rangeToShow = 10.0
+config.rangeToShow = 75.0

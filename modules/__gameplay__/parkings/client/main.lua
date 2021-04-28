@@ -8,6 +8,7 @@ local default_vector4 = vector4(0, 0, 0, 0)
 local cfg = config('parkings')
 local data = {}
 local drawParkings = {}
+local vehicleHistory = {}
 local anyParkingClose = false
 local anyParkingDrawed = false
 local marker = nil
@@ -35,6 +36,8 @@ Citizen.CreateThread(function()
             local playerPed = PlayerPedId()
             local currentPosition = GetEntityCoords(playerPed)
 
+            if (vehicleHistory == nil) then vehicleHistory = {} end
+
             for _, parking in pairs(data) do
                 parking = ensure(parking, {})
 
@@ -49,6 +52,17 @@ Citizen.CreateThread(function()
                     if (#(position - currentPosition) <= rangeToShow) then
                         anyParkingClose = true
                         drawParkings[name] = spot
+
+                        if (vehicleHistory[name] == nil) then
+                            vehicleHistory[name] = {
+                                entity = nil,
+                                spawned = false
+                            }
+                        end
+                    elseif (vehicleHistory[name] ~= nil and vehicleHistory[name].entity ~= nil) then
+                        game:deleteVehicle(vehicleHistory[name].entity)
+                        vehicleHistory[name].entity = nil
+                        vehicleHistory[name].spawned = false
                     end
                 end
             end
@@ -65,58 +79,67 @@ Citizen.CreateThread(function()
 
         if (PlayerJoined()) then
             for _, parking in pairs(drawParkings) do
+                local name = ensure(parking.name, 'unknown')
                 local available = ensure(parking.available, true)
 
                 if (not available) then
-                    anyParkingDrawed = true
-                    parking = ensure(parking, {})
+                    local history = ensure(vehicleHistory[name], {})
+                    local spawned = ensure(history.spawned, false)
 
-                    local position = ensure(parking.position, default_vector4)
-                    local searchCoords = ensure(parking.position, default_vector3)
-                    local vehicle = ensure(parking.vehicle, {})
-                    local model = ensure(vehicle.model, 'unknown')
-                    local hash = GetHashKey(model)
-                    local vehicleData = ensure(vehicle.vehicle, {})
-                    local plate = ensure(vehicle.plate, 'XXXXXXX')
-                    local entity, closestDistance = game:getClosestVehicle(searchCoords)
+                    if (not spawned) then
+                        anyParkingDrawed = true
+                        parking = ensure(parking, {})
 
-                    if (closestDistance < 1 and DoesEntityExist(entity)) then
-                        local entityPlate = ensure(GetVehicleNumberPlateText(entity), 'XXXXXXX'):replace(' ', '-')
-                        local entityHash = GetEntityModel(entity)
+                        local position = ensure(parking.position, default_vector4)
+                        local searchCoords = ensure(parking.position, default_vector3)
+                        local vehicle = ensure(parking.vehicle, {})
+                        local model = ensure(vehicle.model, 'unknown')
+                        local hash = GetHashKey(model)
+                        local vehicleData = ensure(vehicle.vehicle, {})
+                        local plate = ensure(vehicle.plate, 'XXXXXXX')
+                        local entity, closestDistance = game:getClosestVehicle(searchCoords)
 
-                        if (entityPlate ~= plate or entityHash ~= hash) then
-                            game:deleteVehicle(entity)
+                        if (closestDistance < 1 and DoesEntityExist(entity)) then
+                            local entityPlate = ensure(GetVehicleNumberPlateText(entity), 'XXXXXXX'):replace(' ', '-')
+                            local entityHash = GetEntityModel(entity)
+
+                            if (entityPlate ~= plate or entityHash ~= hash) then
+                                game:deleteVehicle(entity)
+                                entity = nil
+                            end
+                        else
                             entity = nil
                         end
-                    else
-                        entity = nil
-                    end
 
-                    print(encode(vehicleData))
+                        if (entity == nil) then
+                            entity = game:spawnLocalVehicle(model, searchCoords, position.w)
 
-                    if (entity == nil) then
-                        entity = game:spawnLocalVehicle(model, searchCoords, position.w)
+                            if (DoesEntityExist(entity)) then
+                                vehicleData.plate = plate
 
-                        if (DoesEntityExist(entity)) then
-                            vehicleData.plate = plate
+                                game:setVehicleProperties(entity, vehicleData, true)
 
-                            game:setVehicleProperties(entity, vehicleData, true)
-
-                            PlaceObjectOnGroundProperly(entity)
-                            SetVehicleOnGroundProperly(entity)
-                            FreezeEntityPosition(entity, true)
-                            SetVehicleCanBeLockedOn(entity, false, false)
-                            SetVehicleCanBeTargetted(entity, false)
-                            SetVehicleCanBeVisiblyDamaged(entity, false)
-                            SetVehicleCanLeakOil(entity, false)
-                            SetVehicleCanLeakPetrol(entity, false)
-                            SetVehicleDirtLevel(entity, 0)
-                            SetVehicleDisableTowing(entity, true)
-                            SetVehicleDoorsLocked(entity, 2)
-                            SetVehicleDoorsLockedForAllPlayers(entity, true)
-                            SetVehicleDoorsLockedForNonScriptPlayers(entity, true)
-                            SetVehicleUndriveable(entity, true)
+                                PlaceObjectOnGroundProperly(entity)
+                                SetVehicleOnGroundProperly(entity)
+                                FreezeEntityPosition(entity, true)
+                                SetVehicleCanBeLockedOn(entity, false, false)
+                                SetVehicleCanBeTargetted(entity, false)
+                                SetVehicleCanBeVisiblyDamaged(entity, false)
+                                SetVehicleCanLeakOil(entity, false)
+                                SetVehicleCanLeakPetrol(entity, false)
+                                SetVehicleDirtLevel(entity, 0)
+                                SetVehicleDisableTowing(entity, true)
+                                SetVehicleDoorsLocked(entity, 2)
+                                SetVehicleDoorsLockedForAllPlayers(entity, true)
+                                SetVehicleDoorsLockedForNonScriptPlayers(entity, true)
+                                SetVehicleUndriveable(entity, true)
+                            end
                         end
+
+                        vehicleHistory[name] = {
+                            entity = entity,
+                            spawned = true
+                        }
                     end
                 end
             end
