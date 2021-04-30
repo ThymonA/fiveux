@@ -167,216 +167,215 @@ function game:getVehicleProperties(vehicle, ignoreDefault, ignoreModel, ignorePl
     ignorePlate = ensure(ignorePlate, true)
     ignoreStatus = ensure(ignoreStatus, true)
 
-    if (not DoesEntityExist(vehicle)) then return nil end
+    if (not DoesEntityExist(vehicle)) then return {} end
 
-    local colorPrimary, colorSecondary = GetVehicleColours(vehicle)
+    local primaryColor, secondaryColor = GetVehicleColours(vehicle)
     local pearlescentColor, wheelColor = GetVehicleExtraColours(vehicle)
+
+    primaryColor = ensure(primaryColor, 0)
+    secondaryColor = ensure(secondaryColor, 0)
+    pearlescentColor = ensure(pearlescentColor, 0)
+    wheelColor = ensure(wheelColor, 0)
+
     local results = {
-        ['colors'] = {
-            ['primary'] = colorPrimary,
-            ['secondary'] = colorSecondary,
-            ['pearlescent'] = pearlescentColor,
-            ['wheel'] = wheelColor
-        }
+        colors = {
+            primary = primaryColor,
+            secondary = secondaryColor,
+            pearlsecent = pearlescentColor,
+            wheel = wheelColor
+        },
+        extras = {},
+        neons = {},
+        mods = {},
+        info = {},
+        status = {}
     }
-    local vehicleExtras = {}
-    local vehicleNeonEnabled = {}
 
     --- Add all enabled extra's
-    for extra = 0, 14, 1 do
-        if (DoesExtraExist(vehicle, extra) and IsVehicleExtraTurnedOn(vehicle, extra) == 1) then
-            table.insert(vehicleExtras, extra)
+    for extraIndex = 0, 14, 1 do 
+        local hasExtra = DoesExtraExist(vehicle, extraIndex)
+        local extraTurnedOn = IsVehicleExtraTurnedOn(vehicle, extraIndex)
+
+        hasExtra = ensure(hasExtra, false)
+        extraTurnedOn = ensure(extraTurnedOn, false)
+
+        if (hasExtra and extraTurnedOn) then
+            table.insert(results.extras, extraIndex)
         end
     end
 
     --- Add all added neon lights
-    for neon = 0, 3, 1 do
-        local neonEnabled = IsVehicleNeonLightEnabled(vehicle, neon) == 1
+    for neonIndex = 0, 3, 1 do
+        local neonEnabled = IsVehicleNeonLightEnabled(vehicle, neonIndex)
+
+        neonEnabled = ensure(neonEnabled, false)
 
         if (neonEnabled) then
-            table.insert(vehicleNeonEnabled, neon)
+            table.insert(results.neons, neonIndex)
         end
     end
 
     --- Set all mod type values of vehicle entity
     for name, modIndex in pairs(constants.vehicle.modTypes) do
         local modValue = GetVehicleMod(vehicle, modIndex)
-        local modKey = ('mod%s'):format(name)
 
-        if ((not ignoreDefault or modValue >= 0) and modIndex ~= constants.vehicle.modTypes.livery) then
-            results[modKey] = modValue
+        modValue = ensure(modValue, 0)
+        name = name:lower()
+
+        if (not ignoreDefault or modValue > 0) then
+            results.mods[name] = modValue
         end
     end
 
     --- Set all toggable options of vehicle entity
-    for name, modIndex in pairs(constants.vehicle.toggleModTypes or {}) do
+    for name, modIndex in pairs(constants.vehicle.toggleModTypes) do
         local modValue = IsToggleModOn(vehicle, modIndex)
-        local modKey = ('mod%s'):format(name)
+        
+        modValue = ensure(modValue, false)
+        name = name:lower()
 
         if (not ignoreDefault or modValue) then
-            results[modKey] = modValue
+            results.mods[name] = modValue
         end
     end
 
-    if (not ignoreModel) then results['model'] = GetEntityModel(vehicle) end
-    if (not ignorePlate) then results['plate'] = GetVehicleNumberPlateText(vehicle) end
+    if (not ignorePlate) then
+        local plate = GetVehicleNumberPlateText(vehicle)
 
-    if (not ignoreStatus) then
-        local bodyHealth = round(GetVehicleBodyHealth(vehicle), 1)
-        local engineHealth = round(GetVehicleEngineHealth(vehicle), 1)
-        local tankHealth = round(GetVehiclePetrolTankHealth(vehicle), 1)
-        local fuelLevel = round(GetVehicleFuelLevel(vehicle), 1)
-        local dirtLevel = round(GetVehicleDirtLevel(vehicle), 1)
-
-        if (not ignoreDefault or bodyHealth <= 950) then results['bodyHealth'] = bodyHealth end
-        if (not ignoreDefault or engineHealth <= 950) then results['engineHealth'] = engineHealth end
-        if (not ignoreDefault or tankHealth <= 950) then results['tankHealth'] = tankHealth end
-        if (not ignoreDefault or fuelLevel <= 950) then results['fuelLevel'] = fuelLevel end
-        if (not ignoreDefault or dirtLevel >= 1) then results['dirtLevel'] = dirtLevel end
+        results.info.plate = ensure(plate, 'XXXXXXX')
+            :replace(' ', '-')
+            :upper()
     end
 
-    if (not ignoreDefault or #vehicleExtras > 0) then results['extras'] = vehicleExtras end
-    if (not ignoreDefault or #vehicleNeonEnabled > 0) then results['neonEnabled'] = vehicleNeonEnabled end
+    if (not ignoreModel) then
+        local model = GetEntityModel(vehicle)
+
+        results.info.model = ensure(model, 0)
+    end
+
+    if (not ignoreStatus) then
+        results.status.body = round(GetVehicleBodyHealth(vehicle), 1)
+        results.status.engine = round(GetVehicleEngineHealth(vehicle), 1)
+        results.status.tank = round(GetVehiclePetrolTankHealth(vehicle), 1)
+        results.status.fuel = round(GetVehicleFuelLevel(vehicle), 1)
+        results.status.dirt = round(GetVehicleDirtLevel(vehicle), 1)
+    end
 
     local plateIndex = GetVehicleNumberPlateTextIndex(vehicle)
     local windowTint = GetVehicleWindowTint(vehicle)
     local xenonColor = GetVehicleXenonLightsColour(vehicle)
     local livery = GetVehicleLivery(vehicle)
+    local neon = table.pack(GetVehicleNeonLightsColour(vehicle))
+    local tyresmoke = table.pack(GetVehicleTyreSmokeColor(vehicle))
 
-    if (not ignoreDefault or plateIndex > 0) then results['plateIndex'] = plateIndex end
-    if (not ignoreDefault or (windowTint > 0 and windowTint ~= 4)) then results['windowTint'] = windowTint end
-    if (not ignoreDefault or (xenonColor >= 0 and xenonColor ~= 255)) then results['colors']['xenon'] = xenonColor end
-    if (not ignoreDefault or (#vehicleNeonEnabled > 0)) then results['colors']['neon'] = table.pack(GetVehicleNeonLightsColour(vehicle)) end
-    if (not ignoreDefault or IsToggleModOn(vehicle, constants.vehicle.toggleModTypes.tiresmoke)) then results['colors']['tyreSmoke'] = table.pack(GetVehicleTyreSmokeColor(vehicle)) end
-    if (not ignoreDefault or livery > 0) then results['modLivery'] = livery end
+    plateIndex = ensure(plateIndex, 0)
+    windowTint = ensure(windowTint, 0)
+    xenonColor = ensure(xenonColor, 0)
+    livery = ensure(livery, 0)
+    neon = ensure(neon, {})
+    tyresmoke = ensure(tyresmoke, {})
 
-    results['wheels'] = GetVehicleWheelType(vehicle)
+    if (not ignoreDefault or plateIndex > 0) then results.mods.plateIndex = plateIndex end
+    if (not ignoreDefault or (windowTint > 0 and windowTint ~= 4)) then results.mods.windowTint = windowTint end
+    if (not ignoreDefault or (xenonColor >= 0 and xenonColor ~= 255)) then results.colors.xenon = xenonColor end
+    if (not ignoreDefault or livery > 0) then results.mods.livery = livery end
+    
+    results.colors.neon = { ensure(neon[1], 255), ensure(neon[2], 255), ensure(neon[3], 255) }
+    results.colors.tyresmoke = { ensure(tyresmoke[1], 255), ensure(tyresmoke[2], 255), ensure(tyresmoke[3], 255) }
+    results.mods.wheels = GetVehicleWheelType(vehicle)
 
     return results
 end
 
-function game:setVehicleProperties(vehicle, props, setNullToDefault)
+function game:setVehicleProperties(vehicle, props)
     vehicle = ensure(vehicle, 0)
-    setNullToDefault = ensure(setNullToDefault, false)
     props = ensure(props, {})
 
     if (not DoesEntityExist(vehicle)) then return end
-
+    
     SetVehicleModKit(vehicle, 0)
 
-    local colorPrimary, colorSecondary = GetVehicleColours(vehicle)
-    local pearlescentColor, wheelColor = GetVehicleExtraColours(vehicle)
+    local colors = ensure(props.colors, {})
+    local extras = ensure(props.extras, {})
+    local neons = ensure(props.neons, {})
+    local mods = ensure(props.mods, {})
+    local info = ensure(props.info, {})
+    local status = ensure(props.status, {})
 
-    if ((props.plateIndex == nil or not props.plateIndex) and setNullToDefault) then props.plateIndex = 0 end
-    if ((props.bodyHealth == nil or not props.bodyHealth) and setNullToDefault) then props.bodyHealth = 1000 end
-    if ((props.engineHealth == nil or not props.engineHealth) and setNullToDefault) then props.engineHealth = 1000 end
-    if ((props.tankHealth == nil or not props.tankHealth) and setNullToDefault) then props.tankHealth = 1000 end
-    if ((props.fuelLevel == nil or not props.fuelLevel) and setNullToDefault) then props.fuelLevel = 1000 end
-    if ((props.dirtLevel == nil or not props.dirtLevel) and setNullToDefault) then props.dirtLevel = 0 end
-    if ((props.windowTint == nil or not props.windowTint) and setNullToDefault) then props.windowTint = 4 end
-    if (props.colors == nil or not props.colors) then props.colors = {} end
-    if ((props.colors.xenon == nil or not props.colors.xenon) and setNullToDefault) then props.colors.xenon = -1 end
+    --- Set all enabled extra's
+    for extraIndex = 0, 14, 1 do 
+        local hasExtra = DoesExtraExist(vehicle, extraIndex)
+        local hasEnabled = any(extraIndex, extras, 'value')
 
-    if ((props.extras == nil or not props.extras) and setNullToDefault) then
-        props.extras = { [0] = false, [1] = false, [2] = false, [3] = false, [4] = false, [5] = false, [6] = false, [7] = false, [8] = false, [9] = false, [10] = false, [11] = false, [12] = false, [13] = false, [14] = false }
-    elseif(props.extras ~= nil and props.extras) then
-        local extras = {}
+        hasExtra = ensure(hasExtra, false)
+        hasEnabled = ensure(hasEnabled, false)
 
-        for _, index in pairs(props.extras or {}) do
-            extras[index] = true
-        end
-
-        props.extras = extras
-    else
-        props.extras = {}
-    end
-
-    if ((props.neonEnabled == nil or not props.neonEnabled) and setNullToDefault) then
-        props.neonEnabled = { [0] = false, [1] = false, [2] = false, [3] = false }
-    elseif(props.neonEnabled ~= nil and props.neonEnabled) then
-        local neonEnabled = {}
-
-        for _, index in pairs(props.neonEnabled or {}) do
-            neonEnabled[index] = true
-        end
-
-        props.neonEnabled = neonEnabled
-    else
-        props.neonEnabled = {}
-    end
-
-    if (props.plate ~= nil and props.plate) then SetVehicleNumberPlateText(vehicle, props.plate) end
-    if (props.plateIndex ~= nil and props.plateIndex) then SetVehicleNumberPlateTextIndex(vehicle, props.plateIndex) end
-    if (props.bodyHealth ~= nil and props.bodyHealth) then SetVehicleBodyHealth(vehicle, props.bodyHealth + 0.0) end
-    if (props.engineHealth ~= nil and props.engineHealth) then SetVehicleEngineHealth(vehicle, props.engineHealth + 0.0) end
-    if (props.tankHealth ~= nil and props.tankHealth) then SetVehiclePetrolTankHealth(vehicle, props.tankHealth + 0.0) end
-    if (props.fuelLevel ~= nil and props.fuelLevel) then SetVehicleFuelLevel(vehicle, props.fuelLevel + 0.0) end
-    if (props.dirtLevel ~= nil and props.dirtLevel) then SetVehicleDirtLevel(vehicle, props.dirtLevel + 0.0) end
-
-    if ((props.colors.primary ~= nil and props.colors.primary) or (props.colors.secondary ~= nil and props.colors.secondary)) then
-        SetVehicleColours(vehicle, props.colors.primary or colorPrimary, props.colors.secondary or colorSecondary)
-    end
-
-    if ((props.colors.pearlescent ~= nil and props.colors.pearlescent) or (props.colors.wheel ~= nil and props.colors.wheel)) then
-        SetVehicleExtraColours(vehicle, props.colors.pearlescent or pearlescentColor, props.colors.wheel or wheelColor)
-    end
-
-    if (props.colors.neon ~= nil and props.colors.neon) then
-        SetVehicleNeonLightsColour(vehicle, props.colors.neon[1] or 255, props.colors.neon[2] or 255, props.colors.neon[3] or 255)
-    end
-
-    if (props.colors.tyreSmoke ~= nil and props.colors.tyreSmoke) then
-        SetVehicleTyreSmokeColor(vehicle, props.colors.tyreSmoke[1] or 255, props.colors.tyreSmoke[2] or 255, props.colors.tyreSmoke[3] or 255)
-    end
-
-    if (props.colors.xenon ~= nil and props.colors.xenon) then SetVehicleXenonLightsColour(vehicle, props.colors.xenon) end
-    if (props.wheels ~= nil and props.wheels) then SetVehicleWheelType(vehicle, props.wheels) end
-    if (props.windowTint ~= nil and props.windowTint) then SetVehicleWindowTint(vehicle, props.windowTint) end
-
-    -- Enable or disbale neon's
-    for i = 0, 3, 1 do
-        if (props.neonEnabled[i]) then
-            SetVehicleNeonLightEnabled(vehicle, i, true)
-        elseif (setNullToDefault) then
-            SetVehicleNeonLightEnabled(vehicle, i, false)
+        if (hasExtra) then
+            SetVehicleExtra(vehicle, extraIndex, hasEnabled)
         end
     end
 
-    -- Enable or disable extra's
-    for i = 0, 14, 1 do
-        local extraExits = DoesExtraExist(vehicle, i)
+    --- Set all neon lights
+    for neonIndex = 0, 3, 1 do
+        local hasEnabled = any(neonIndex, neons, 'value')
 
-        if (extraExits and props.extras[i]) then
-            SetVehicleExtra(vehicle, i, false)
-        elseif (extraExits and setNullToDefault) then
-            SetVehicleExtra(vehicle, i, true)
-        end
+        hasEnabled = ensure(hasEnabled, false)
+
+        SetVehicleNeonLightEnabled(vehicle, neonIndex, hasEnabled)
     end
 
     --- Set all mod type values of vehicle entity
     for name, modIndex in pairs(constants.vehicle.modTypes) do
-        local modKey = ('mod%s'):format(name)
+        name = name:lower()
 
-        if ((props[modKey] == nil or not props[modKey]) and setNullToDefault) then props[modKey] = -1 end
+        local modValue = ensure(mods[name], 0)
 
-        if (props[modKey] ~= nil and props[modKey]) then
-            SetVehicleMod(vehicle, modIndex, props[modKey], false)
-
-            if (modIndex == constants.vehicle.modTypes.livery) then
-                if (props[modKey] == -1) then props[modKey] = 0 end
-
-                SetVehicleLivery(vehicle, props[modKey])
-            end
-        end
+        SetVehicleMod(vehicle, modIndex, modValue, false)
     end
 
-    --- Set all mod type values of vehicle entity
+    --- Set all toggable options of vehicle entity
     for name, modIndex in pairs(constants.vehicle.toggleModTypes) do
-        local modKey = ('mod%s'):format(name)
+        name = name:lower()
 
-        if (props[modKey] == nil and setNullToDefault) then props[modKey] = false end
-        if (props[modKey] ~= nil) then ToggleVehicleMod(vehicle, modIndex, props[modKey]) end
+        local modValue = ensure(mods[name], false)
+
+        ToggleVehicleMod(vehicle, modIndex, modValue)
     end
+
+    local primaryColor = ensure(colors.primary, 0)
+    local secondaryColor = ensure(colors.secondary, 0)
+    local pearlescentColor = ensure(colors.pearlsecent, 0)
+    local wheelColor = ensure(colors.wheel, 0)
+    local plate = ensure(info.plate, 'XXXXXXX'):replace(' ', '-'):upper()
+    local body = ensure(status.body, 1000) + 0.0
+    local engine = ensure(status.engine, 1000) + 0.0
+    local tank = ensure(status.tank, 1000) + 0.0
+    local fuel = ensure(status.fuel, 1000) + 0.0
+    local dirt = ensure(status.dirt, 0) + 0.0
+    local plateIndex = ensure(mods.plateIndex, 0)
+    local windowTint = ensure(mods.windowTint, 0)
+    local xenonColor = ensure(colors.xenon, 0)
+    local livery = ensure(mods.livery, 0)
+    local neon = ensure(colors.neon, {})
+    local tyresmoke = ensure(colors.tyresmoke, {})
+    local wheels = ensure(mods.wheels, 0)
+
+    if (plate ~= 'XXXXXXX') then SetVehicleNumberPlateText(vehicle, plate) end
+
+    SetVehicleColours(vehicle, primaryColor, secondaryColor)
+    SetVehicleExtraColours(vehicle, pearlescentColor, wheelColor)
+    SetVehicleBodyHealth(vehicle, body)
+    SetVehicleEngineHealth(vehicle, engine)
+    SetVehiclePetrolTankHealth(vehicle, tank)
+    SetVehicleFuelLevel(vehicle, fuel)
+    SetVehicleDirtLevel(vehicle, dirt)
+    SetVehicleNumberPlateTextIndex(vehicle, plateIndex)
+    SetVehicleWindowTint(vehicle, windowTint)
+    SetVehicleXenonLightsColour(vehicle, xenonColor)
+    SetVehicleLivery(vehicle, livery)
+    SetVehicleNeonLightsColour(vehicle, ensure(neon[1], 255), ensure(neon[2], 255), ensure(neon[3], 255))
+    SetVehicleTyreSmokeColor(vehicle, ensure(tyresmoke[1], 255), ensure(tyresmoke[2], 255), ensure(tyresmoke[3], 255))
+    SetVehicleWheelType(vehicle, wheels)
 end
 
 function game:getClosestEntity(entities, isPlayerEntities, coords, modelFilter)

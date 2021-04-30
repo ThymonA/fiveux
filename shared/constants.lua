@@ -139,8 +139,7 @@ constants.vehicle = {
         trim = 44,
         tank = 45,
         windows = 46,
-        unk47 = 47,
-        livery = 48
+        unk47 = 47
     },
     toggleModTypes = {
         unk17 = 17,

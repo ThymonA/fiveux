@@ -115,9 +115,9 @@ Citizen.CreateThread(function()
                             entity = game:spawnLocalVehicle(model, searchCoords, position.w)
 
                             if (DoesEntityExist(entity)) then
-                                vehicleData.plate = plate
+                                vehicleData.info.plate = plate
 
-                                game:setVehicleProperties(entity, vehicleData, true)
+                                game:setVehicleProperties(entity, vehicleData)
 
                                 PlaceObjectOnGroundProperly(entity)
                                 SetVehicleOnGroundProperly(entity)
@@ -132,7 +132,6 @@ Citizen.CreateThread(function()
                                 SetVehicleDoorsLocked(entity, 2)
                                 SetVehicleDoorsLockedForAllPlayers(entity, true)
                                 SetVehicleDoorsLockedForNonScriptPlayers(entity, true)
-                                SetVehicleUndriveable(entity, true)
                             end
                         end
 

@@ -12,7 +12,7 @@ RegisterClientCallback('fiveux:admin:requestVehicle', function(callback)
         vehicle = GetVehiclePedIsIn(playerPed, false)
 
         if (DoesEntityExist(vehicle)) then
-            data = game:getVehicleProperties(vehicle, true, true, true, true)
+            data = game:getVehicleProperties(vehicle, false, true, true, true)
         end
     end
 

@@ -34,7 +34,7 @@ function vehicles:add(fxid, model, props)
     local vehicleId = db:insert('INSERT INTO `vehicles` (`fxid`, `plate`, `vehicle`, `model`, `hash`) VALUES (:fxid, :plate, :vehicle, :model, :hash)', {
         ['fxid'] = owner.fxid,
         ['plate'] = newPlate,
-        ['vehicle'] = encode(props),
+        ['vehicle'] = encode(props, false, 0),
         ['model'] = model,
         ['hash'] = hash
     })
@@ -191,7 +191,7 @@ function vehicles:getByPlate(plate)
     function vehicle:save()
         return db:execute('UPDATE `vehicles` SET `fxid` = :fxid, `vehicle` = :vehicle, `status` = :status, `distance` = :distance, `price` = :price, `forSale` = :forSale, `saleLocation` = :saleLocation WHERE `plate` = :plate', {
             ['fxid'] = ensure(self.fxid, 'unknown'),
-            ['vehicle'] = encode(ensure(self.vehicle, {})),
+            ['vehicle'] = encode(ensure(self.vehicle, {}), false, 0),
             ['status'] = ensure(self.status, 0),
             ['distance'] = ensure(self.distance, 0),
             ['price'] = ensure(self.price, 0),
