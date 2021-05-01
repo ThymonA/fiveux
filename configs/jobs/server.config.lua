@@ -1,4 +1,0 @@
---
--- Unemployed
---
-config.unemployed.webhooks = {}

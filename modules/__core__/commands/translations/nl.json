@@ -1,6 +1,0 @@
-{
-    "console_not_allowed": "Je kan command '~x~%s~s~' niet uitvoeren vanaf je console.",
-    "player_not_allowed": "Je kan command '~x~%s~s~' niet uitvoeren.",
-    "invalid_wallet_action": "U heeft een ongeldige actie opgegeven, u kunt alleen kiezen uit: %s",
-    "invalid_target": "U heeft een niet bestaande speler opgegeven (%s)"
-}

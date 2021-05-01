@@ -4,64 +4,84 @@ lua54 'yes'
 
 name 'FiveUX Framework'
 version '1.0.0'
-description 'FiveM framework written from scratch by Thymon Arens'
+description 'FiveM framework written by Thymon Arens and licensed under GNU General Public License'
 author 'ThymonA'
 url 'https://github.com/ThymonA/fiveux/'
 
-ui_page 'html/fiveux.html'
+license [[
+    FiveUX Framework Copyright (C) 2021 Thymon Arens
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>
+]]
+
+ui_page 'shared/html/fiveux.html'
 ui_page_preload 'yes'
 
-server_scripts {
-	'modules/__boot__/functions/functions.lua',
-    'modules/__boot__/functions/string.lua',
-    'modules/__boot__/module/constants.lua',
-	'modules/__boot__/module/cache.lua',
-    'modules/__boot__/module/config.lua',
-    'modules/__boot__/module/debug.lua',
-    'modules/__boot__/module/translations.lua',
-    'modules/__boot__/module/modules.lua',
-    'modules/__boot__/module/env.lua',
-    'modules/__boot__/module/boot.lua'
+files {
+    'configurations/**/shared.config.lua',
+    'configurations/**/client.config.lua',
+    'shared/translations/*.lua',
+    'shared/html/*.html',
+    'shared/html/*.js',
+    'shared/html/*.css',
+    'modules/fxmodules.lua',
+    'modules/**/fxcategory.lua',
+    'modules/**/fxmodule.lua',
+    'modules/**/client/*.lua',
+    'modules/**/shared/*.lua',
+    'modules/**/translations/*.lua',
+    'modules/**/client/**/*.lua',
+    'modules/**/shared/**/*.lua',
+    'modules/**/**/fxmodule.lua',
+    'modules/**/**/client/*.lua',
+    'modules/**/**/shared/*.lua',
+    'modules/**/**/translations/*.lua',
+    'modules/**/**/client/**/*.lua',
+    'modules/**/**/shared/**/*.lua',
+    'modules/**/html/*',
+    'modules/**/html/*.*',
+    'modules/**/html/**/*',
+    'modules/**/html/**/*.*',
+    'modules/**/**/html/*',
+    'modules/**/**/html/*.*',
+    'modules/**/**/html/**/*',
+    'modules/**/**/html/**/*.*',
+    'modules/**/images/*',
+    'modules/**/images/*.*',
+    'modules/**/images/**/*',
+    'modules/**/images/**/*.*',
+    'modules/**/**/images/*',
+    'modules/**/**/images/*.*',
+    'modules/**/**/images/**/*',
+    'modules/**/**/images/**/*.*'
 }
 
 client_scripts {
-    '@menuv/menuv.lua',
-    'modules/__boot__/functions/functions.lua',
-    'modules/__boot__/functions/string.lua',
-    'modules/__boot__/module/constants.lua',
-	'modules/__boot__/module/cache.lua',
-    'modules/__boot__/module/config.lua',
-    'modules/__boot__/module/debug.lua',
-    'modules/__boot__/module/translations.lua',
-    'modules/__boot__/module/modules.lua',
-    'modules/__boot__/module/ui.lua',
-    'modules/__boot__/module/env.lua',
-    'modules/__boot__/module/boot.lua'
+    'vendors/entityiter.lua',
+    'shared/constants.lua',
+    'shared/functions.lua',
+    'shared/bootable.lua',
+    'shared/main.client.lua'
 }
 
-files {
-    'html/fiveux.html',
-    'html/assets/js/*.js',
-    'html/assets/css/*.css',
-    'configs/**/shared.config.lua',
-	'configs/**/client.config.lua',
-    'modules/categories.json',
-    'modules/**/modules.json',
-    'modules/**/**/module.json',
-    'modules/**/shared/*.lua',
-    'modules/**/client/*.lua',
-    'modules/**/translations/*.json',
-    'modules/**/html/assets/**/*.*',
-    'modules/**/html/assets/**/*',
-    'modules/**/html/assets/*.*',
-    'modules/**/html/assets/*',
-    'modules/**/html/**/*.*',
-    'modules/**/html/**/*',
-    'modules/**/html/*.*',
-    'modules/**/html/*'
+server_scripts {
+    'shared/constants.lua',
+    'shared/functions.lua',
+    'shared/bootable.lua'
 }
 
 dependencies {
-	'fivem-mysql',
+    'fivem-mysql',
     'menuv'
 }

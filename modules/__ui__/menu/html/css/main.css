@@ -1,0 +1,488 @@
+/*
+----------------------- [ menu ] -----------------------
+-- GitHub: https://github.com/ThymonA/menu/
+-- License: GNU General Public License v3.0
+--          https://choosealicense.com/licenses/gpl-3.0/
+-- Author: Thymon Arens <contact@arens.io>
+-- Name: menu
+-- Version: 1.0.0
+-- Description: FiveM menu library for creating menu's
+----------------------- [ menu ] -----------------------
+*/
+@import url('https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+html,
+body {
+    overflow: hidden;
+    font-family: 'Epilogue', sans-serif;
+    color: white;
+    background-color: transparent;
+}
+
+* .hide,
+html .hide,
+body .hide,
+div .hide,
+.menu.default.hide {
+    display: none !important;
+    opacity: 0;
+}
+
+.menu.default {
+    min-width: 20em;
+    max-width: 20em;
+    max-height: 90vh;
+    margin-top: 1em;
+    margin-left: 1em;
+    font-size: 0.85em;
+}
+
+.menu.default.topcenter {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.menu.default.topright {
+    margin-right: 1em;
+    margin-left: auto;
+}
+
+.menu.default.centerleft {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.menu.default.center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.menu.default.centerright {
+    position: absolute;
+    top: 50%;
+    right: 1em;
+    transform: translateY(-50%);
+}
+
+.menu.default.bottomleft {
+    position: absolute;
+    bottom: 1em;
+}
+
+.menu.default.bottomcenter {
+    position: absolute;
+    bottom: 1em;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.menu.default.bottomright {
+    position: absolute;
+    bottom: 1em;
+    right: 1em;
+}
+
+.menu.default.size-100 {
+    zoom: 1;
+}
+.menu.default.size-110 {
+    zoom: 1.1;
+}
+.menu.default.size-125 {
+    zoom: 1.25;
+}
+.menu.default.size-150 {
+    zoom: 1.50;
+}
+.menu.default.size-175 {
+    zoom: 1.75;
+}
+.menu.default.size-200 {
+    zoom: 2;
+}
+
+.menu.default .menu-header {
+    height: 3.5em;
+    max-height: 3.5em;
+    line-height: 3.5em;
+    width: 100%;
+    text-align: center;
+    letter-spacing: 0.25em;
+    font-size: 1.5em;
+    font-weight: 700;
+    background-color: black;
+    overflow: hidden;
+}
+
+.menu.default .menu-header strong {
+    position: relative;
+    z-index: 1;
+    color: white;
+}
+
+.menu.default .menu-header .menu-bg-icon {
+    display: flex;
+    position: fixed;
+    max-height: 3.5em;
+    max-width: 3.5em;
+    overflow: hidden;
+    top: 0.6em;
+    margin-left: 9.8em;
+}
+
+.menu.default .menu-header .menu-bg-icon i,
+.menu.default .menu-header .menu-bg-icon svg {
+    font-size: 5em;
+    opacity: 0.5;
+    color: blue;
+}
+
+.menu.default .menu-subheader {
+    background-color: blue;
+    text-align: left;
+    font-weight: 700;
+    font-size: 0.9em;
+    line-height: 2.5em;
+    text-transform: uppercase;
+    padding-left: 1em;
+    height: 2.5em;
+    max-height: 2.5em;
+}
+
+.menu.default .menu-items {
+    background-color: rgba(0, 0, 0, 0.65);
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    max-height: 50.75vh;
+    overflow: hidden;
+    color: white;
+    padding-inline-start: 0;
+}
+
+.menu.default.size-100 .menu-items {
+    max-height: 66.1vh;
+}
+
+.menu.default.size-110 .menu-items {
+    max-height: 59.2vh;
+}
+
+.menu.default.size-125 .menu-items {
+    max-height: 50.2vh;
+}
+
+.menu.default.size-150 .menu-items {
+    max-height: 45.8vh;
+}
+
+.menu.default.size-175 .menu-items {
+    max-height: 39vh;
+}
+
+.menu.default.size-200 .menu-items {
+    max-height: 32.2vh;
+}
+
+.menu.default .menu-items .menu-item {
+    padding: 0.25em 0.50em;
+    margin: 0;
+    font-size: 0.9em;
+    max-height: auto;
+    height: auto;
+    min-height: 2em;
+    vertical-align: middle;
+    line-height: normal;
+    color: white;
+    width: 100%;
+    min-width: 20em;
+    max-width: 30em;
+    border-top: none !important;
+}
+
+.menu.default .menu-items .menu-item i,
+.menu.default .menu-items .menu-item svg {
+    float: right;
+    margin-top: 0.125em;
+    font-size: 1.2em;
+}
+
+.menu.default .menu-items .menu-item.active {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+.menu.default .menu-items .menu-item.disabled {
+    opacity: 0.75;
+    background: #383838;
+    text-decoration: line-through;
+}
+
+.menu.default .menu-items .menu-item.active i,
+.menu.default .menu-items .menu-item.active svg {
+    color: black;
+}
+
+.menu.default .menu-items .item-title {
+    word-break: break-all;
+}
+
+.menu.default .menu-items .menu-item.active .item-title {
+    font-weight: bold;
+}
+
+.menu.default .menu-items span.menu-icon {
+    margin-left: 2.5px;
+    margin-right: 5px;
+    border-right: 1px solid white;
+    padding-right: 5px;
+    float: left;
+    width: 2em;
+    text-align: center;
+}
+
+.menu.default .menu-items .flex-left {
+    justify-content: left;
+}
+
+.menu.default .menu-items span.menu-title {
+    word-break: break-all;
+    display: inline-block;
+    overflow: hidden;
+    max-height: 2em;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 14em;
+}
+
+.menu.default .menu-items .item-icon {
+    width: 2.5em;
+    max-width: 2.5em;
+    margin-right: 5px;
+}
+
+.menu.default .menu-items .menu-item {
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    -webkit-box-align: center;
+
+    align-items: center;
+    border-top: none !important;
+}
+
+.menu.default .menu-items .menu-item.active span.menu-icon {
+    border-right: 1px solid black;
+}
+
+.menu.default .menu-items span.menu-options {
+    float: right;
+    font-size: 0.9em;
+    line-height: 1.85em;
+    text-transform: uppercase;
+}
+
+.menu.default .menu-items .menu-item.active span.menu-options {
+    font-weight: 700;
+}
+
+.menu.default .menu-items span.menu-options i,
+.menu.default .menu-items span.menu-options svg {
+    float: unset;
+    font-size: unset;
+}
+
+.menu.default .menu-items span.menu-options i:first-child,
+.menu.default .menu-items span.menu-options svg:first-child {
+    margin-right: 0.25em;
+}
+
+.menu.default .menu-items span.menu-options i:last-child,
+.menu.default .menu-items span.menu-options svg:last-child {
+    margin-left: 0.25em;
+}
+
+.menu.default .menu-items span.menu-options span.menu-btn {
+    background-color: white;
+    color: black;
+    padding: 0.25em 0.5em;
+    margin: 0.125em;
+    font-weight: bold;
+    font-weight: 500;
+    border-radius: 0.125em;
+}
+
+.menu.default .menu-items .menu-item span.menu-options span.menu-btn {
+    background-color: transparent;
+    color: white;
+}
+
+.menu.default .menu-items .menu-item.active span.menu-options span.menu-btn {
+    background-color: black;
+    color: white;
+}
+
+.menu.default .menu-items span.menu-options span.menu-btn.active {
+    background-color: blue;
+    color: white;
+    font-weight: 700;
+}
+
+.menu.default .menu-items .menu-item.active span.menu-options span.menu-btn.active {
+    background-color: blue;
+    color: white;
+}
+
+.menu.default .menu-items input[type="range"] {
+    display: flex;
+    float: right;
+    -webkit-appearance: none;
+    max-width: 6.5em;
+}
+
+.menu.default .menu-items input[type="range"]:focus {
+    outline: none;
+}
+
+.menu.default .menu-items input[type="range"]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 5px;
+    cursor: pointer;
+    box-shadow: 0px 0px 0px #000000;
+    background: blue;
+    border-radius: 0;
+    border: 0px solid #000000;
+}
+
+.menu.default .menu-items .menu-item.active input[type="range"]::-webkit-slider-runnable-track {
+    background: black;
+}
+
+.menu.default .menu-items input[type="range"]::-webkit-slider-thumb {
+    box-shadow: 0px 0px 0px #000000;
+    height: 18px;
+    width: 5px;
+    border-radius: 0;
+    border: 1px solid white;
+    background: rgba(255, 255, 255, 1);
+    cursor: pointer;
+    -webkit-appearance: none;
+    margin-top: -7px;
+}
+
+.menu.default .menu-items .menu-item.active input[type="range"]::-webkit-slider-thumb {
+    background: blue;
+    border: 1px solid rgba(0, 0, 255, 0.25);
+}
+
+.menu.default .menu-items input[type="range"]:focus::-webkit-slider-runnable-track {
+    background: blue;
+}
+
+.menu.default .menu-items .menu-item.active input[type="range"]:focus::-webkit-slider-runnable-track {
+    background: black;
+}
+
+.menu.default .menu-items .menu-desc {
+    display: none;
+    opacity: 0;
+    background-color: rgba(0, 0, 0, 0.65);
+    color: white;
+    position: absolute;
+    width: 100%;
+    max-width: 17.5em;
+    margin-left: 17.5em;
+    margin-top: -0.25em;
+    font-weight: 400;
+    font-size: 0.9em;
+    padding: 0.75em 1em;
+    line-height: 1.25em;
+    border-left: 0.375em solid blue;
+}
+
+.menu.default .menu-items .menu-item.active .menu-desc {
+    display: initial;
+    opacity: 1;
+}
+
+.menu.default .menu-items .menu-desc strong {
+    color: white;
+}
+
+.menu.default .menu-items .menu-desc table {
+    margin-left: -0.75em;
+    width: calc(100% + 0.75em);
+}
+
+.menu.default .menu-items .menu-desc table th {
+    color: white;
+    padding: 2px 5px;
+}
+
+.menu.default .menu-items .menu-desc table td {
+    padding: 2px 5px;
+}
+
+.menu.default .menu-items .menu-label {
+    float: right;
+    font-size: 1.125em;
+    font-weight: 800;
+}
+
+.menu.default .menu-pagination {
+    padding: 0.5em;
+    max-width: 20em;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    border-top: 2px solid white;
+    margin-top: 1em;
+}
+
+.menu.default .menu-pagination .menu-pagination-option {
+    display: inline-block;
+    height: 1.5em;
+    width: 3em;
+    background-color: white;
+    color: black;
+    text-align: center;
+    border-radius: 2.5px;
+    margin-left: 0.25em;
+    margin-right: 0.25em;
+    font-size: 0.8em;
+}
+
+.menu.default .menu-pagination .menu-pagination-option.active {
+    background-color: red;
+    color: white;
+}
+
+.menu.default .menu-pagination .menu-pagination-ellipsis {
+    display: inline-block;
+    height: 1.5em;
+    width: 1.5em;
+    background-color: transparent;
+    color: white;
+    text-align: center;
+}
+
+.menu.default .menu-description {
+    background-color: rgba(0, 0, 0, 0.65);
+    width: 100%;
+    max-width: 20em;
+    padding: 0.5em 1em;
+    margin-top: 0.5em;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.menu.default .menu-description strong {
+    color: white;
+    font-size: 0.8em;
+    font-weight: 400;
+}
