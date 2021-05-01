@@ -435,5 +435,36 @@ function game:getVehicles()
 	return vehicles
 end
 
+function game:draw3DText(x, y, z, r, g, b, a, string)
+    x, y, z = ensure(x, 0), ensure(y, 0), ensure(z, 0)
+    r, g, b, a = ensure(r, 0), ensure(g, 0), ensure(b, 0), ensure(a, 0)
+    string = ensure(string, '')
+
+    local onScreen, _x, _y = World3dToScreen2d(x, y, z + 1.0)
+    local px, py, pz = table.unpack(GetGameplayCamCoords())
+    local factor = string:len() / 370
+
+    onScreen = ensure(onScreen, false)
+    _x, _y = ensure(_x, 0), ensure(_y, 0) 
+    px, py, pz = ensure(px, 0), ensure(py, 0), ensure(pz, 0)
+    factor = ensure(factor, 0)
+  
+    if onScreen then
+        SetTextScale(0.35, 0.35)
+        SetTextFont(4)
+        SetTextProportional(1)
+        SetTextColour(255, 255, 255, 215)
+        SetTextDropShadow(0, 0, 0, 55)
+        SetTextEdge(0, 0, 0, 150)
+        SetTextDropShadow()
+        SetTextOutline()
+        SetTextEntry("STRING")
+        SetTextCentre(1)
+        AddTextComponentString(string)
+        DrawText(_x, _y)
+        DrawRect(_x, _y + 0.0125, 0.015 + factor, 0.03, r, g, b, a)
+    end
+end
+
 --- Export game
 export('game', game)

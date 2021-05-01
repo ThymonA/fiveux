@@ -567,6 +567,20 @@ function bootable:createModuleEnvironment(category, module, version)
         end
     end
 
+    env.get = function(name, ...)
+        name = ensure(name, 'unknown')
+
+        if (__exports == nil or __exports[name] == nil) then
+            return nil
+        end
+
+        if (typeof(__exports[name]) == 'function') then
+            return __exports[name](...)
+        else
+            return __exports[name]
+        end
+    end
+
     env.T = function(key, ...)
         key = ensure(key, 'unknown')
 
@@ -587,11 +601,23 @@ function bootable:createModuleEnvironment(category, module, version)
         return self:on(module, event, ...)
     end
 
+    env.onOnce = function(event, ...)
+        event = ensure(event, 'unknown')
+
+        return self:onOnce(ensure(env.MODULE, NAME), event, ...)
+    end
+
+    env.onRemove = function(event)
+        event = ensure(event, 'unknown')
+
+        return self:removeAllOnEvents(ensure(env.MODULE, NAME), event)
+    end
+
     env.emit = function(event, name, ...)
         event = ensure(event, 'unknown')
         name = ensure(name, 'unknown')
 
-        return bootable:emit(event, name, ...)
+        return self:emit(event, name, ...)
     end
 
     env.serverMessage = function(message, footer)
@@ -958,6 +984,24 @@ function bootable:onEvent(module, event, name, func)
     })
 end
 
+--- Add a event to `__events`
+---@param module string Name of module
+---@param event string Name of event
+---@param name string Name of entity / object / type etc.
+---@param func function Function to execute when event is triggered
+function bootable:onOnceEvent(module, event, name, func)
+    module = ensure(module, NAME)
+    event = ensure(event, 'unknown'):lower()
+    name = ensure(name, 'unknown'):lower()
+    func = ensure(func, function() end)
+
+    if (event == 'unknown') then return end
+
+    self:removeAllOnEvents(module, event)
+
+    return self:onEvent(module, event, name, func)
+end
+
 --- Filter arguments based on type
 --- @return function|nil Function to execute
 --- @return string|table|nil Name or List to add trigger for
@@ -1051,6 +1095,50 @@ function bootable:on(module, event, ...)
     if (callback == nil) then return end
 
     self:onEvent(module, event, name, callback)
+end
+
+function bootable:onOnce(module, event, ...)
+    event = ensure(event, 'unknown')
+    module = ensure(module, NAME)
+
+    local callback, name = self:filterEventArguments(...)
+
+    if (callback == nil) then return end
+
+    return self:onOnceEvent(module, event, name, callback)
+end
+
+function bootable:removeAllOnEvents(module, event)
+    module = ensure(module, 'unknown')
+    event = ensure(event, 'unknown'):lower()
+
+    if (event == 'unknown') then return end
+    if (__events == nil) then __events = {} end
+    if (__events[event] == nil) then __events[event] = { funcs = {}, params = {} } end
+
+    for key, info in pairs(__events[event].funcs) do
+        info = ensure(info, {})
+
+        if (module:lower() == ensure(info.module, 'unknown'):lower()) then
+            __events[event].funcs[key] = nil
+
+            table.remove(__events[event].funcs, key)
+        end
+    end
+
+    for eKey, events in pairs(__events[event].params) do
+        events = ensure(events, {})
+
+        for key, info in pairs(events) do
+            info = ensure(info, {})
+
+            if (module:lower() == ensure(info.module, 'unknown'):lower()) then
+                __events[event].params[eKey][key] = nil
+
+                table.remove(__events[event].params[eKey], key)
+            end
+        end
+    end
 end
 
 --- Trigger event

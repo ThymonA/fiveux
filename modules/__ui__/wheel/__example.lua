@@ -11,7 +11,7 @@ wheel:addItem('lights_on', 'las', 'la-lightbulb')
 wheel:on('select', function(value, entity)
     if (value == 'lights_on') then
         local _, lightsOn = GetVehicleLightsState(entity)
-        
+
         SetVehicleLights(entity, lightsOn == 1 and 1 or 3)
     end
 end)

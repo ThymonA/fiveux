@@ -43,4 +43,29 @@ on('playerJoined', function(player, source)
     local data = ensure(skin.skin, {})
 
     TriggerRemote('fiveux:spawn', src, model, player.position, data)
+    TriggerRemote('fiveux:setPlayerData', src, {
+        fxid = player.fxid,
+        identifier = player.identifier,
+        identifiers = player.identifiers,
+        group = player.group,
+        job = {
+            name = player.job.name,
+            label = player.job.label,
+            grade = {
+                grade = player.grade.grade,
+                name =  player.grade.name,
+                label = player.grade.label
+            }
+        },
+        job2 = {
+            name = player.job2.name,
+            label = player.job2.label,
+            grade = {
+                grade = player.grade2.grade,
+                name = player.grade.name,
+                label = player.grade.label
+            }
+        },
+        name = player.name
+    })
 end)

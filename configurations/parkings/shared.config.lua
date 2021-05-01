@@ -13,6 +13,7 @@ config.parkings = {}
 config.parkings['parking_01'] = {
     whitelist = { groups = { 'all' }, jobs = { 'all' } },
     blacklist = { groups = {}, jobs = {} },
+    spawn = vec(-125.07, -2536.84, 5.0, 235.5),
     spots = {
         vec(-121.07, -2534.47, 5.0, 234.5),
         vec(-119.02, -2531.71, 5.0, 235.5),

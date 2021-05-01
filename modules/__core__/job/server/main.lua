@@ -40,6 +40,7 @@ function jobs:loadByName(name)
         allowed = ensure(jobConfig.allowed, {}),
         denied = ensure(jobConfig.denied, {}),
         publicAllowed = ensure(jobConfig.publicAllowed, {}),
+        ---@type table <number, grade>
         grades = {},
         categories = {
             weapons = ensure(categories.weapons, {}),

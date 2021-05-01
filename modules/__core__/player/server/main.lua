@@ -323,7 +323,15 @@ function players:loadByFx(fxid, name)
         self:addPrincipal(('job.%s:%s'):format(self.job.name, self.grade.name))
         self:addPrincipal(('job.%s:%s'):format(self.job2.name, self.grade2.name))
         self:triggerLocal('player:job:set', self.job.name)
-        self:triggerEvent('player:job:set', self.job.name)
+        self:triggerEvent('player:job:set', {
+            name = self.job.name,
+            label = self.job.label,
+            grade = {
+                grade = self.grade.grade,
+                name = self.grade.name,
+                label = self.grade.label
+            }
+        })
     end
 
     function player:setJob2(name, grade)
@@ -359,7 +367,15 @@ function players:loadByFx(fxid, name)
         self:addPrincipal(('job.%s:%s'):format(self.job.name, self.grade.name))
         self:addPrincipal(('job.%s:%s'):format(self.job2.name, self.grade2.name))
         self:triggerLocal('player:job2:set', self.job2.name)
-        self:triggerEvent('player:job2:set', self.job2.name)
+        self:triggerEvent('player:job2:set', {
+            name = self.job2.name,
+            label = self.job2.label,
+            grade = {
+                grade = self.grade2.grade,
+                name = self.grade2.name,
+                label = self.grade2.label
+            }
+        })
     end
 
     function player:logWallet(type, name, amount, prevBalance, newBalance)

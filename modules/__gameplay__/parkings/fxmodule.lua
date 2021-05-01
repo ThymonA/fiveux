@@ -31,5 +31,7 @@ dependencies {
     'game',
     'database',
     'vehicle',
-    'marker'
+    'marker',
+    'player',
+    'wheel'
 }

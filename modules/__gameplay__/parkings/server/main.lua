@@ -65,6 +65,7 @@ for name, info in pairs(parkingLocations) do
 
     local whitelist = ensureWhitelist(info.whitelist)
     local blacklist = ensureWhitelist(info.blacklist)
+    local spawn = ensure(info.spawn, default_vector4)
     local spots = ensure(info.spots, {})
 
     ---@class parking
@@ -72,6 +73,7 @@ for name, info in pairs(parkingLocations) do
         name = name,
         whitelist = whitelist,
         blacklist = blacklist,
+        spawn = spawn,
         ---@type table<string, parkingSpot>
         spots = {}
     }
@@ -151,6 +153,7 @@ local function updateParkings(player)
             name = parking.name,
             whitelist = parking.whitelist,
             blacklist = parking.blacklist,
+            spawn = parking.spawn,
             spots = {}
         }
 
@@ -168,7 +171,8 @@ local function updateParkings(player)
                     vehicle = ensure(vehicle.vehicle, {}),
                     plate = ensure(vehicle.plate, 'XXXXXXX')
                 },
-                parkedBy = spot.parkedBy
+                parkedBy = spot.parkedBy,
+                ownedBy = ensure(vehicle.fxid, 'unknown')
             }
         end
     end

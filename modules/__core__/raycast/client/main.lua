@@ -87,7 +87,7 @@ function raycast:screen2dToWorld3D()
     local cameraDirection = camPosition + forwardDirection * raycastLength
     local raycastHandle = StartShapeTestRay(camera3dPosition, cameraDirection, 30, 0, 0)
     local retval, hit, endCoords, surfaceNormal, entityHit = GetShapeTestResult(raycastHandle)
-    
+
     entityHit = ensure(entityHit, 0)
 
     if (entityHit > 0) then
@@ -145,6 +145,7 @@ Citizen.CreateThread(function()
                     local entityHash = GetEntityModel(entity)
                     local entityType = ensure(type, 0)
 
+                    emit('raycast:hit', entity, entity, coords, entityType)
                     emit('raycast:entity', entityHash, entity, coords, entityType)
 
                     if (entityType == 4 or (entityType == 1 and PlayerPedId() == entity)) then
