@@ -102,6 +102,7 @@ Citizen.CreateThread(function()
                 if (not available) then
                     local history = ensure(vehicleHistory[name], {})
                     local spawned = ensure(history.spawned, false)
+                    local position = ensure(parking.position, default_vector4)
 
                     anyParkingDrawed = true
                     parking = ensure(parking, {})
@@ -110,7 +111,6 @@ Citizen.CreateThread(function()
                     local distance = #(searchCoords - currentPosition)
 
                     if (not spawned or not DoesEntityExist(history.entity)) then
-                        local position = ensure(parking.position, default_vector4)
                         local vehicle = ensure(parking.vehicle, {})
                         local model = ensure(vehicle.model, 'unknown')
                         local hash = GetHashKey(model)
@@ -158,6 +158,17 @@ Citizen.CreateThread(function()
                             entity = entity,
                             spawned = true
                         }
+                    end
+
+                    if (history ~= nil) then
+                        SetVehicleEngineHealth(history.entity, 1000)
+                        SetVehicleFixed(history.entity)
+                        SetVehicleDirtLevel(history.entity, 0.0)
+                        SetEntityCoords(history.entity, position.x, position.y, position.z)
+                        SetEntityHeading(history.entity, position.w)
+                        PlaceObjectOnGroundProperly(history.entity)
+                        FreezeEntityPosition(history.entity, true)
+                        StopEntityFire(history.entity)
                     end
 
                     if (closestVehicle == nil and history ~= nil) then
