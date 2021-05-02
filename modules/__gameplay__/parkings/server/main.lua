@@ -9,15 +9,13 @@ local default_vector4 = vector4(0, 0, 0, 0)
 local default_marker = markers:getDefaultStyle()
 local default_marker_add = vector4(0, 0, 0.4, 0)
 
---- Delete vehicles when not owned by player
-db:execute('DELETE FROM `vehicles` WHERE `fxid` IS NULL')
-
 --- Local storage
 ---@type table<string, parking>
 local data = {}
 ---@type table<string, table>
 local plateParkings = {}
 local parkingCfgs = config('parkings')
+local vehicleCfg = config('vehicles')
 local parkingLocations = ensure(parkingCfgs.parkings, {})
 local parkingMarkers = ensure(parkingCfgs.markers, {})
 local rawAvailableStyle = ensure(parkingMarkers.available, {})
@@ -294,6 +292,14 @@ RegisterEvent('parkings:spawnVehicle', function(plate)
 
     local playerPed = GetPlayerPed(source)
 
+    if (data[parkingName].spots[spotName].vehicle ~= nil) then
+        data[parkingName].spots[spotName].vehicle:log({
+            action = 'parking.remove',
+            arguments = { spot = spotName, parking = parkingName, fxid = player.fxid },
+            discord = false
+        })
+    end
+
     data[parkingName].spots[spotName].available = true
     data[parkingName].spots[spotName].vehicle = nil
     plateParkings[plate] = nil
@@ -308,6 +314,89 @@ RegisterEvent('parkings:spawnVehicle', function(plate)
     props.info.plate = plate
 
     TriggerRemote('parkings:setEntityProps', source, vehicle.model, veh, props)
+
+    player:log({
+        action = 'parking.remove',
+        arguments = { spot = spotName, parking = parkingName, plate = plate },
+        discord = false
+    })
+end)
+
+MarkEventAsGlobal('parkings:parkVehicle')
+RegisterEvent('parkings:parkVehicle', function(parkingName, spotName, props)
+    parkingName = ensure(parkingName, 'unknown')
+    spotName = ensure(spotName, 'unknown')
+    props = ensure(props, {})
+
+    local info = ensure(props.info, {})
+    local plate = ensure(info.plate, 'XXXXXXX')
+
+    if (plate == 'XXXXXXX') then return end
+    if (parkingName == 'unknown' or spotName == 'unknown') then return end
+    if (data[parkingName] == nil) then return end
+
+    ---@type parking
+    local parking = ensure(data[parkingName], {})
+
+    if (parking.spots == nil or parking.spots[spotName] == nil) then return end
+
+    ---@type parkingSpot
+    local spot = ensure(parking.spots[spotName], {})
+
+    if (spot.vehicle ~= nil) then return end
+
+    local player = players:loadBySource(source)
+
+    if (player == nil) then return end
+
+    local playerPed = GetPlayerPed(source)
+    local entity = GetVehiclePedIsIn(playerPed, false)
+
+    if (entity == nil) then return end
+
+    local hash = GetEntityModel(entity)
+    local vehicleHashes = ensure(vehicleCfg.vehicleHashes, {})
+
+    if (vehicleHashes == nil or vehicleHashes[hash] == nil) then return end
+
+    local vehicle = nil
+    local model = ensure(vehicleHashes[hash], 'unknown')
+    local vehExists = vehicles:plateExsits(plate)
+
+    if (not vehExists) then
+        vehicle = vehicles:add('none', model, props, plate, false)
+    else
+        vehicle = vehicles:getByPlate(plate)
+    end
+
+    DeleteEntity(entity)
+
+    data[parkingName].spots[spotName].available = false
+    data[parkingName].spots[spotName].vehicle = vehicle
+    data[parkingName].spots[spotName].parkedBy = player.fxid
+
+    if (data[parkingName].spots[spotName].marker ~= nil) then
+        data[parkingName].spots[spotName].marker:remove()
+        data[parkingName].spots[spotName].marker = nil
+    end
+
+    plateParkings[plate] = { parking = parkingName, spot = spotName }
+
+    parking:updateSpot(spotName)
+
+    player:log({
+        action = 'parking.add',
+        arguments = { spot = spotName, parking = parkingName, plate = plate },
+        discord = false
+    })
+
+    if (vehicle ~= nil) then
+        vehicle:log({
+            action = 'parking.add',
+            arguments = { spot = spotName, parking = parkingName, fxid = player.fxid },
+            discord = false
+        })
+    end
 end)
 
 local function updateParkings(player)

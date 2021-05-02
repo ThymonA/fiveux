@@ -7,7 +7,7 @@ RegisterClientCallback('fiveux:admin:requestVehicle', function(callback)
     local playerPed = PlayerPedId()
     local vehicle = nil
     local data = {}
-    
+
     if (IsPedInAnyVehicle(playerPed, false)) then
         vehicle = GetVehiclePedIsIn(playerPed, false)
 

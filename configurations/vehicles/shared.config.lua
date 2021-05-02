@@ -1,4 +1,6 @@
 config.vehicles = {
+    ['adder'] = {
+    },
     ['eldorado68'] = {
     },
     ['apache58'] = {

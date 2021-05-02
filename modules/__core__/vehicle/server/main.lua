@@ -2,6 +2,13 @@ import 'db'
 import 'logs'
 import 'players'
 
+db:execute("UPDATE `parkings` SET `vehicle` = NULL, `parkedBy` = 'unknown' WHERE `vehicle` IN (SELECT `id` AS `vehicle` FROM `vehicles` WHERE `fxid` = :fxid)", {
+    ['fxid'] = 'none'
+})
+db:execute("DELETE FROM `vehicles` WHERE `fxid` = :fxid", {
+    ['fxid'] = 'none'
+})
+
 --- Local storage
 ---@type table<string, vehicle>
 local data = {}
@@ -17,22 +24,27 @@ local plateFormats = ensure(cfg.plateFormats, {})
 --- Add a vehicle to framework
 ---@param fxid string FiveUX ID
 ---@param model string Vehicle model
+---@param props table Vehicle properties
+---@param plate string Vehicle plate
+---@param log boolean Log vehicle to discord/database
 ---@return vehicle Generated vehicle object
-function vehicles:add(fxid, model, props)
+function vehicles:add(fxid, model, props, plate, log)
     fxid = ensure(fxid, 'unknown')
     model = ensure(model, 'unknown')
     props = ensure(props, {})
+    plate = ensure(plate, 'unknown')
+    log = ensure(log, true)
 
     if (data == nil) then data = {} end
 
     local owner = players:loadByFx(fxid)
 
-    if (owner == nil) then return nil end
+    if (fxid ~= 'none' and owner == nil) then return nil end
 
-    local newPlate = self:generatePlate()
+    local newPlate = plate == 'unknown' and self:generatePlate() or plate
     local hash = GetHashKey(model)
     local vehicleId = db:insert('INSERT INTO `vehicles` (`fxid`, `plate`, `vehicle`, `model`, `hash`) VALUES (:fxid, :plate, :vehicle, :model, :hash)', {
-        ['fxid'] = owner.fxid,
+        ['fxid'] = fxid,
         ['plate'] = newPlate,
         ['vehicle'] = encode(props, false, 0),
         ['model'] = model,
@@ -45,14 +57,16 @@ function vehicles:add(fxid, model, props)
 
     if (vehicle == nil) then return nil end
 
-    vehicle:log({
-        action = 'vehicle.add',
-        color = constants.colors.green,
-        message = T('vehicle_add_message', newPlate, owner.name),
-        title = T('vehicle_add_title', newPlate),
-        footer = ('%s | %s | %s\n{time}'):format(newPlate, model, owner.fxid),
-        arguments = { fxid = owner.fxid }
-    })
+    if (log) then
+        vehicle:log({
+            action = 'vehicle.add',
+            color = constants.colors.green,
+            message = T('vehicle_add_message', newPlate, owner.name),
+            title = T('vehicle_add_title', newPlate),
+            footer = ('%s | %s | %s\n{time}'):format(newPlate, model, owner.fxid),
+            arguments = { fxid = owner.fxid }
+        })
+    end
 
     return vehicle
 end
@@ -91,7 +105,7 @@ function vehicles:getByPlate(plate)
     local vehicleData = json.decode(rawVehicleData);
     local vehiclePlate = ensure(dbVehicle.plate, 'XXXXXXX')
     local vehicleModel = ensure(dbVehicle.model, 'unknown')
-    
+
     ---@class vehicle
     local vehicle = {
         id = ensure(dbVehicle.id, 0),

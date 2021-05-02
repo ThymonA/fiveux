@@ -448,7 +448,7 @@ function game:draw3DText(x, y, z, r, g, b, a, string)
     _x, _y = ensure(_x, 0), ensure(_y, 0) 
     px, py, pz = ensure(px, 0), ensure(py, 0), ensure(pz, 0)
     factor = ensure(factor, 0)
-  
+
     if onScreen then
         SetTextScale(0.35, 0.35)
         SetTextFont(4)
@@ -463,6 +463,23 @@ function game:draw3DText(x, y, z, r, g, b, a, string)
         AddTextComponentString(string)
         DrawText(_x, _y)
         DrawRect(_x, _y + 0.0125, 0.015 + factor, 0.03, r, g, b, a)
+    end
+end
+
+function game:showHelpNotification(msg, thisFrame, beep, duration)
+    msg = ensure(msg, '')
+    thisFrame = ensure(thisFrame, false)
+    beep = ensure(beep, true)
+    duration = ensure(duration, -1)
+
+    BeginTextCommandDisplayHelp('STRING')
+    AddTextComponentSubstringPlayerName(msg)
+
+    if thisFrame then
+        DisplayHelpTextThisFrame(msg, false)
+    else
+        BeginTextCommandDisplayHelp('esxHelpNotification')
+        EndTextCommandDisplayHelp(0, false, beep, duration)
     end
 end
 

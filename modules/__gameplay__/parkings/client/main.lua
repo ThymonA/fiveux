@@ -13,7 +13,6 @@ local drawParkings = {}
 local vehicleHistory = {}
 local anyParkingClose = false
 local anyParkingDrawed = false
-local marker = nil
 local closestVehicle = nil
 local closestDistance = nil
 local closestParking = nil
@@ -21,20 +20,27 @@ local closestSet = false
 local currentVehicle = nil
 local currentParking = nil
 local currentCoords = nil
-local eventVehicle = nil
+local currentMarker = nil
+local currentParkingVehicle = nil
 local wheel = wheels:create()
 
 on('marker:enter', 'parking:spot', function(m)
-    marker = m
+    local playerPed = PlayerPedId()
+    local inVehicle = ensure(IsPedInAnyVehicle(playerPed, false), false)
 
-    local addon = ensure(marker.addon, {})
-    local parking = ensure(addon.parking, 'unknown')
-    local index = ensure(addon.index, 0)
-    local name = ensure(addon.name, 'unknown')
+    if (inVehicle) then
+        local vehicle = GetVehiclePedIsIn(playerPed, false)
+        local driver = GetPedInVehicleSeat(vehicle, -1)
+
+        if (driver == playerPed) then
+            currentMarker = ensure(m, {})
+            currentParkingVehicle = vehicle
+        end
+    end
 end)
 
 on('marker:leave', 'parking:spot', function(m)
-    marker = nil
+    currentMarker = nil
 end)
 
 --- Search for parkings in range of player
@@ -193,6 +199,32 @@ Citizen.CreateThread(function()
         end
 
         Citizen.Wait(250)
+    end
+end)
+
+Citizen.CreateThread(function()
+    while true do
+        if (currentMarker ~= nil) then
+            local entity = ensure(currentParkingVehicle, 0)
+
+            if (DoesEntityExist(entity)) then
+                game:showHelpNotification(T('park_interact_message'))
+
+                if (isControlJustPressed('interactbtn')) then
+                    currentMarker = ensure(currentMarker, {})
+
+                    local addon = ensure(currentMarker.addon, {})
+                    local parking = ensure(addon.parking, 'unknown')
+                    local name = ensure(addon.name, 'unknown')
+
+                    TriggerRemote('parkings:parkVehicle', parking, name, game:getVehicleProperties(entity, false, true, false, false))
+                end
+            else
+                currentMarker = nil
+            end
+        end
+
+        Citizen.Wait(0)
     end
 end)
 

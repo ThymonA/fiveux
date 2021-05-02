@@ -1431,6 +1431,8 @@ function bootable:init()
 
             return SendNUIMessage(data)
         end
+
+        bootable:registerKeybind(NAME, 'interactbtn', bootable:T('interact_button'), 'keyboard', 'e')
     end
 
     for i = 1, #modules, 1 do
@@ -1762,9 +1764,9 @@ if (ENVIRONMENT == 'client') then
     RegisterNUICallback('nui_ready', function(info, callback)
         info = ensure(info, {})
         callback = ensure(callback, function() end)
-        
+
         __nuiLoaded = true
-        
+
         callback('ok')
     end)
 
@@ -1798,7 +1800,7 @@ if (ENVIRONMENT == 'client') then
         if (__nuiCallbacks[name][event] ~= nil) then
             return __nuiCallbacks[name][event](message, callback)
         end
-        
+
         callback('ok')
     end)
 
