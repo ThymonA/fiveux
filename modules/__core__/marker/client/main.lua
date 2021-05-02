@@ -155,3 +155,25 @@ MarkEventAsGlobal('markers:update')
 RegisterEvent('markers:update', function(markers)
     data = ensure(markers, {})
 end)
+
+MarkEventAsGlobal('markers:add')
+RegisterEvent('markers:add', function(marker)
+    marker = ensure(marker, {})
+    data = ensure(data, {})
+
+    local id = ensure(marker.id, 0)
+
+    if (id ~= 0) then
+        data[id] = marker
+    end
+end)
+
+MarkEventAsGlobal('markers:remove')
+RegisterEvent('markers:remove', function(markerId)
+    markerId = ensure(markerId, 0)
+    data = ensure(data, {})
+
+    if (markerId ~= 0 and data[markerId] ~= nil) then
+        data[markerId] = nil
+    end
+end)

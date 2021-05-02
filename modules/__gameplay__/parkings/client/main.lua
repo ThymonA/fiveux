@@ -1,5 +1,6 @@
 import 'game'
 import 'wheels'
+import 'streaming'
 
 --- Default values
 local default_vector3 = vector3(0, 0, 0)
@@ -205,20 +206,12 @@ local function onSelect(value, entity)
         local coords = ensure(currentCoords, default_vector4)
         local parking = ensure(currentParking, {})
         local vehicle = ensure(parking.vehicle, {})
-        local model = ensure(vehicle.model, 'unknown')
-        local vehicleData = ensure(vehicle.vehicle, {})
         local plate = ensure(vehicle.plate, 'XXXXXXX')
         local spawn = ensure(parking.spawn, default_vector4)
 
         if (coords == default_vector4 or spawn == default_vector4) then return end
 
-        local newVehicle = game:spawnVehicle(model, spawn, spawn.w)
-
-        if (DoesEntityExist(newVehicle)) then
-            vehicleData.info.plate = plate
-
-            game:setVehicleProperties(newVehicle, vehicleData)
-        end
+        TriggerRemote('parkings:spawnVehicle', plate)
     end
 end
 
@@ -284,4 +277,52 @@ end)
 MarkEventAsGlobal('parkings:update')
 RegisterEvent('parkings:update', function(parkings)
     data = ensure(parkings, {})
+end)
+
+MarkEventAsGlobal('parkings:updateSpot')
+RegisterEvent('parkings:updateSpot', function(parkingName, spotName, info)
+    parkingName = ensure(parkingName, 'unknown')
+    spotName = ensure(spotName, 'unknown')
+    info = ensure(info, {})
+
+    if (parkingName == 'unknown' or spotName == 'unknown') then return end
+    if (data == nil) then data = {} end
+    if (data[parkingName] == nil or data[parkingName].spots == nil or data[parkingName].spots[spotName] == nil) then return end
+    if (vehicleHistory == nil) then vehicleHistory = {} end
+    if (vehicleHistory[spotName] ~= nil) then
+        local history = ensure(vehicleHistory[spotName], {})
+        local entity = ensure(history.entity, 0)
+
+        if (entity ~= 0 and DoesEntityExist(entity)) then
+            game:deleteVehicle(entity)
+        end
+    end
+
+    drawParkings = {}
+    data[parkingName].spots[spotName] = info
+end)
+
+MarkEventAsGlobal('parkings:setEntityProps')
+RegisterEvent('parkings:setEntityProps', function(model, entity, props)
+    model = ensure(model, 'unknown')
+    entity = ensure(entity, 0)
+    props = ensure(props, {})
+
+    streaming:requestModel(model)
+
+    if (entity == nil) then return end
+
+    if (not DoesEntityExist(entity)) then
+        local playerPed = PlayerPedId()
+
+        while not IsPedInAnyVehicle(playerPed, false) do Citizen.Wait(0) end
+
+        entity = GetVehiclePedIsIn(playerPed, false)
+    end
+
+    entity = ensure(entity, 0)
+
+    if (entity > 0 and DoesEntityExist(entity)) then
+        game:setVehicleProperties(entity, props)
+    end
 end)

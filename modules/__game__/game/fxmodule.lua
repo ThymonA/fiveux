@@ -22,7 +22,9 @@ license [[
 client_scripts {
     'client/main.lua'
 }
-server_scripts {}
+server_scripts {
+    'server/main.lua'
+}
 shared_scripts {}
 
 dependencies {

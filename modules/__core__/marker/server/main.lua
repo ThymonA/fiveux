@@ -34,9 +34,6 @@ markers = {}
 ---@param addon table Additonal information of marker
 ---@return marker Generated marker
 function markers:add(event, whitelist, blacklist, position, style, addon)
-    local cfg = config('general')
-    local defaultRange = ensure(cfg.markerRangeToShow, 5.0)
-
     id = id + 1
     event = ensure(event, 'unknown')
     whitelist = ensureWhitelist(whitelist)
@@ -78,6 +75,24 @@ function markers:add(event, whitelist, blacklist, position, style, addon)
 
     data[marker.id] = marker
 
+    local num = GetNumPlayerIndices()
+
+    for i = 0, num - 1 do
+        local src = ensure(GetPlayerFromIndex(i), 0)
+
+        if (src ~= 0 and marker:allowed(src)) then
+            TriggerRemote('markers:add', src, {
+                id = marker.id,
+                event = marker.event,
+                whitelist = marker.whitelist,
+                blacklist = marker.blacklist,
+                position = marker.position,
+                style = marker.style,
+                addon = marker.addon
+            })
+        end
+    end
+
     return marker
 end
 
@@ -98,6 +113,8 @@ function markers:remove(id)
 
     --- Remove marker from data
     data[id] = nil
+
+    TriggerRemote('markers:remove', -1, id)
 end
 
 --- Add marker permissions based on given `list` and `type`

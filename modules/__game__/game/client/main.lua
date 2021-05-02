@@ -279,7 +279,7 @@ function game:getVehicleProperties(vehicle, ignoreDefault, ignoreModel, ignorePl
     if (not ignoreDefault or (windowTint > 0 and windowTint ~= 4)) then results.mods.windowTint = windowTint end
     if (not ignoreDefault or (xenonColor >= 0 and xenonColor ~= 255)) then results.colors.xenon = xenonColor end
     if (not ignoreDefault or livery > 0) then results.mods.livery = livery end
-    
+
     results.colors.neon = { ensure(neon[1], 255), ensure(neon[2], 255), ensure(neon[3], 255) }
     results.colors.tyresmoke = { ensure(tyresmoke[1], 255), ensure(tyresmoke[2], 255), ensure(tyresmoke[3], 255) }
     results.mods.wheels = GetVehicleWheelType(vehicle)
@@ -292,7 +292,7 @@ function game:setVehicleProperties(vehicle, props)
     props = ensure(props, {})
 
     if (not DoesEntityExist(vehicle)) then return end
-    
+
     SetVehicleModKit(vehicle, 0)
 
     local colors = ensure(props.colors, {})
